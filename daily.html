@@ -235,11 +235,12 @@ const debtDueNet=dueL-dueO;
 let defOAll=0,defLAll=0;allMonth.filter(t=>t.type==='debt'&&(t.subType==='debt_def'||t.status==='def')).forEach(t=>{if(t.direction==='عليا')defOAll+=Number(t.amount);else defLAll+=Number(t.amount)});
 const debtDefNetAll=defLAll-defOAll;
 const isActive=includeDeferredInBalance;
+const netThere = incomeMonth - expenseMonth - dueO + dueL + (isActive ? debtDefNetAll : 0);
 const top5=`<div class="kpi-grid-5">
 <div class="stat pos"><small>إجمالي الدخل</small><b>${incomeMonth.toLocaleString()}</b></div>
 <div class="stat neg"><small>إجمالي المصروف</small><b>${expenseMonth.toLocaleString()}</b></div>
-<div class="stat neu"><small>إجمالي المستحقة</small><b>${debtDueNet.toLocaleString()}</b></div>
-<div class="stat neu"><small>الصافي هناك</small><b>${(incomeMonth-expenseMonth+(isActive?debtDefNetAll:0)).toLocaleString()}</b></div>
+<div class="stat neg"><small>إجمالي المستحقة</small><b>${(dueO - dueL).toLocaleString()}</b></div>
+<div class="stat neu"><small>الصافي هناك</small><b>${netThere.toLocaleString()}</b></div>
 <div class="stat def ${isActive?'active':'inactive'}" onclick="toggleDeferredInclude()"><span style="font-size:5px;background:${isActive?'#dcfce7':'#fee2e2'};color:${isActive?'#16a34a':'#ef4444'};padding:1px 4px;border-radius:10px">${isActive?'✅ مفعلة':'❌ مخفية'}</span><small>المؤجلة ⏳</small><b>${debtDefNetAll.toLocaleString()}</b></div>
 </div>`;
 document.querySelectorAll('[id^="stats-"]').forEach(el=>{
