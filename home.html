@@ -24,7 +24,7 @@
 </style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<!-- themes inline -->
+<script src="themes_core.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,'IBM Plex Sans Arabic',sans-serif}
 body{background:var(--bg);color:var(--text);padding-bottom:90px;transition:.3s}
@@ -239,7 +239,7 @@ const THEMES = {
   ice:{primary:'#06b6d4',hero:'linear-gradient(135deg,#06b6d4 0%,#0891b2 50%,#0e7490 100%)',bg:'#ecfeff',card:'#ffffff',border:'#a5f3fc',text:'#164e63',soft:'#22d3ee',bgSoft:'#cffafe',name:'🧊 ثلجي'},
   neon:{primary:'#a855f7',hero:'linear-gradient(135deg,#a855f7 0%,#ec4899 50%,#06b6d4 100%)',bg:'#faf5ff',card:'#ffffff',border:'#e9d5ff',text:'#581c87',soft:'#c084fc',bgSoft:'#f3e8ff',name:'⚡ نيون'}
 };
-function applyTheme(k){
+function applyTheme(k){ if(window.omarApplyTheme){ omarApplyTheme(k,true); } 
   const t = THEMES[k] || THEMES.light;
   const r = document.documentElement;
   r.style.setProperty('--primary', t.primary);
