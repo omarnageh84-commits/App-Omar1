@@ -6,7 +6,6 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#16A34A">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <script src="themes.js" defer></script>
 <style>
 :root{ --bg:#F0FDF4; --bg-soft:#DCFCE7; --card:#FFFFFF; --card-border:#BBF7D0; --text:#14532D; --text-soft:#4ADE80; --primary:#16A34A; --hero:#16A34A; --accent:#22C55E; --nav-bg: rgba(255,255,255,0.92); }
@@ -74,8 +73,35 @@ function switchPage(name,btn){
   if(navigator.vibrate) navigator.vibrate(10);
 }
 applyTheme(localStorage.getItem('omar_theme')||'green');
-// Defer service worker to not block first paint
-window.addEventListener("load", ()=>{ if("serviceWorker" in navigator){navigator.serviceWorker.register("./sw.js").then(()=>console.log("✅ PWA Ready"));} }); window.switchPage=switchPage;
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').then(()=>console.log('✅ PWA Ready - يمكنك تثبيته من كروم'));} window.switchPage=switchPage;
 </script>
+
+<script>
+// Remove splash avatar for fastest entry - keep drive sync intact
+document.addEventListener('DOMContentLoaded', () => {
+  const homeFrame = document.querySelector('iframe[data-page="home.html"]');
+  if(homeFrame){
+    homeFrame.addEventListener('load', () => {
+      try{
+        const doc = homeFrame.contentDocument;
+        if(!doc) return;
+        // Remove big avatar / splash image if exists
+        doc.querySelectorAll('img').forEach(img => {
+          if(img.src.includes('avatar') || img.width>150 || img.height>150){
+            // Keep it but hide to speed up, don't delete drive logic
+            if(img.closest('[id*="splash"]') || img.parentElement && img.parentElement.innerHTML.length < 500){
+               img.style.display='none';
+            }
+          }
+        });
+        // Also hide any splash container
+        const splash = doc.getElementById('splash') || doc.querySelector('.splash, #splashScreen, .intro, .welcome-img');
+        if(splash) splash.style.display='none';
+      }catch(e){}
+    });
+  }
+});
+</script>
+
 </body>
 </html>
