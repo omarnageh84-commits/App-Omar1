@@ -25,11 +25,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#16A34A">
-<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f172a">
 <link rel="icon" href="icon_192.png">
 <style>
-:root{--primary:#16A34A;--primary-soft:#DCFCE7;--bg:#F0FDF4;--card:#ffffff;--border:#BBF7D0}
+:root{--primary:#0f172a;--primary-hero:linear-gradient(135deg,#0f172a 0%,#334155 100%);--bg:#f8fafc;--card:#ffffff;--border:#e2e8f0}
 *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,'IBM Plex Sans Arabic',sans-serif}
 html,body{height:100%;background:var(--bg);transition:background .3s}
 body{display:flex;justify-content:center;align-items:flex-start}
@@ -37,10 +36,10 @@ body{display:flex;justify-content:center;align-items:flex-start}
 .pageWrap{flex:1;position:relative;background:var(--bg);overflow:hidden}
 .page{position:absolute;inset:0;width:100%;height:100%;border:none;opacity:0;pointer-events:none;transition:opacity .15s;background:var(--bg)}
 .page.active{opacity:1;pointer-events:auto;z-index:2}
-.nav{height:72px;margin:10px;background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);border:1.5px solid var(--border);border-radius:20px;display:flex;align-items:center;padding:6px;gap:5px;z-index:10;transition:.3s}
-.nav button{flex:1;height:100%;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:14px;color:var(--primary);font-size:9px;font-weight:700;cursor:pointer;transition:.2s;opacity:.6}
-.nav button.active{background:var(--primary);color:#fff;opacity:1;box-shadow:0 4px 12px rgba(0,0,0,.15)}
-.nav button .icon{font-size:18px}
+.nav{height:74px;margin:10px;background:rgba(255,255,255,0.94);backdrop-filter:blur(20px);border:1.5px solid var(--border);border-radius:20px;display:flex;align-items:center;padding:6px;gap:5px;z-index:10;transition:.3s;box-shadow:0 4px 20px rgba(0,0,0,.06)}
+.nav button{flex:1;height:100%;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:14px;color:var(--primary);font-size:9px;font-weight:800;cursor:pointer;transition:.2s;opacity:.5}
+.nav button.active{background:var(--primary-hero);color:#fff;opacity:1;box-shadow:0 6px 16px rgba(0,0,0,.18);transform:translateY(-1px)}
+.nav button .icon{font-size:19px}
 </style>
 </head>
 <body>
@@ -61,51 +60,47 @@ body{display:flex;justify-content:center;align-items:flex-start}
 <script src="drive-sync.js"></script>
 <script>
 const THEMES_MAP = {
-  light:{primary:'#0f172a',bg:'#f8fafc',card:'#ffffff',border:'#e2e8f0'},
-  dark:{primary:'#22c55e',bg:'#0f172a',card:'#1e293b',border:'#334155'},
-  black:{primary:'#ffffff',bg:'#000000',card:'#111111',border:'#222222'},
-  green:{primary:'#16A34A',bg:'#f0fdf4',card:'#ffffff',border:'#bbf7d0'},
-  blue:{primary:'#2563eb',bg:'#eff6ff',card:'#ffffff',border:'#bfdbfe'},
-  red:{primary:'#dc2626',bg:'#fef2f2',card:'#ffffff',border:'#fecaca'},
-  purple:{primary:'#9333ea',bg:'#faf5ff',card:'#ffffff',border:'#e9d5ff'}
+  light:{primary:'#0f172a',hero:'linear-gradient(135deg,#0f172a 0%,#334155 100%)',bg:'#f8fafc',border:'#e2e8f0'},
+  dark:{primary:'#22c55e',hero:'linear-gradient(135deg,#0f172a 0%,#1e293b 100%)',bg:'#0f172a',border:'#334155'},
+  ocean:{primary:'#0ea5e9',hero:'linear-gradient(135deg,#0ea5e9 0%,#0369a1 100%)',bg:'#f0f9ff',border:'#bae6fd'},
+  sunset:{primary:'#f97316',hero:'linear-gradient(135deg,#f97316 0%,#ec4899 50%,#8b5cf6 100%)',bg:'#fff7ed',border:'#fed7aa'},
+  forest:{primary:'#16a34a',hero:'linear-gradient(135deg,#16a34a 0%,#14532d 100%)',bg:'#f0fdf4',border:'#bbf7d0'},
+  royal:{primary:'#7c3aed',hero:'linear-gradient(135deg,#7c3aed 0%,#4c1d95 100%)',bg:'#f5f3ff',border:'#ddd6fe'},
+  midnight:{primary:'#ffffff',hero:'linear-gradient(135deg,#000000 0%,#1e293b 100%)',bg:'#000000',border:'#222222'},
+  rose:{primary:'#e11d48',hero:'linear-gradient(135deg,#e11d48 0%,#881337 100%)',bg:'#fff1f2',border:'#fecdd3'},
+  gold:{primary:'#d97706',hero:'linear-gradient(135deg,#d97706 0%,#78350f 100%)',bg:'#fffbeb',border:'#fde68a'},
+  teal:{primary:'#0d9488',hero:'linear-gradient(135deg,#0d9488 0%,#134e4a 100%)',bg:'#f0fdfa',border:'#99f6e4'},
+  ice:{primary:'#06b6d4',hero:'linear-gradient(135deg,#06b6d4 0%,#0e7490 100%)',bg:'#ecfeff',border:'#a5f3fc'},
+  neon:{primary:'#a855f7',hero:'linear-gradient(135deg,#a855f7 0%,#ec4899 50%,#06b6d4 100%)',bg:'#faf5ff',border:'#e9d5ff'}
 };
 function applyNavTheme(k){
   const t = THEMES_MAP[k]||THEMES_MAP.light;
-  const r = document.documentElement;
-  r.style.setProperty('--primary', t.primary);
-  r.style.setProperty('--bg', t.bg);
-  r.style.setProperty('--card', t.card);
-  r.style.setProperty('--border', t.border);
+  document.documentElement.style.setProperty('--primary', t.primary);
+  document.documentElement.style.setProperty('--primary-hero', t.hero);
+  document.documentElement.style.setProperty('--bg', t.bg);
+  document.documentElement.style.setProperty('--border', t.border);
   document.querySelector('meta[name="theme-color"]').setAttribute('content', t.primary);
   document.querySelector('.phone-shell').style.background = t.bg;
 }
-function loadNavTheme(){
-  const saved = localStorage.getItem('omar_theme')||'light';
-  applyNavTheme(saved);
-}
-// listen to theme changes from home.html
-window.addEventListener('storage', (e)=>{
-  if(e.key==='omar_theme'){ applyNavTheme(e.newValue); }
-});
-// also poll because iframe same-origin
+function loadNavTheme(){ applyNavTheme(localStorage.getItem('omar_theme')||'light'); }
+window.addEventListener('storage', e=>{ if(e.key==='omar_theme') applyNavTheme(e.newValue); });
 setInterval(()=>{
   const cur = localStorage.getItem('omar_theme');
-  if(cur && cur!==window._lastNavTheme){ window._lastNavTheme=cur; applyNavTheme(cur); }
-},500);
-
+  if(cur && cur!==window._last){ window._last=cur; applyNavTheme(cur); }
+},400);
 const frames=document.querySelectorAll('.page');
 function switchPage(name,btn){
   frames.forEach(f=>{
     const is=f.dataset.page===name;
     f.classList.toggle('active',is);
-    if(is && f.src.includes('about:blank')){ f.src=name; }
+    if(is && f.src.includes('about:blank')) f.src=name;
   });
   document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
 }
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js?v=17').then(()=>console.log('PWA v17 ready'));
-  caches.keys().then(keys=>keys.forEach(k=>{ if(!k.includes('v17')) caches.delete(k); }));
+  navigator.serviceWorker.register('./sw.js?v=18').then(()=>console.log('v18'));
+  caches.keys().then(keys=>keys.forEach(k=>{ if(!k.includes('v18')) caches.delete(k); }));
 }
 loadNavTheme();
 </script>
