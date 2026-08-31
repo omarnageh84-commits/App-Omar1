@@ -312,7 +312,7 @@ function render(){
 function quickDelete(id){let t=tasks.find(x=>x.id===id);if(!t)return;cur=t;document.getElementById('delTaskPreview').innerText=t.text;document.getElementById('delConfirmCheck').checked=false;document.getElementById('finalDelBtn').disabled=true;document.getElementById('deleteWarningModal').classList.add('show');}
 function toggleDelBtn(){let chk=document.getElementById('delConfirmCheck').checked;let btn=document.getElementById('finalDelBtn');btn.disabled=!chk;btn.style.background=chk?'#ef4444':'#E5E7EB';btn.style.color=chk?'#fff':'#9CA3AF';}
 function closeDeleteWarning(){document.getElementById('deleteWarningModal').classList.remove('show');}
-function confirmDelete(){if(!cur)return;tasks=tasks.filter(x=>x.id!==cur.id);closeModal();cur=null;closeDeleteWarning();saveLS();}
+function confirmDelete(){if(!cur)return;let delId=cur.id;cur=null;document.getElementById('modal').style.display='none';closeDeleteWarning();tasks=tasks.filter(x=>x.id!==delId);saveLS();}
 function filterTasksTab(tab){activeTaskTab=tab;document.querySelectorAll('.filter-chip').forEach(b=>b.classList.remove('active'));let el=document.getElementById('tt_'+tab);if(el)el.classList.add('active');render();}
 function addQuick(){let text=document.getElementById('mainInput').value.trim();if(!text){openNewTaskModal();return;}doAdd();}
 function doAdd(){let text=document.getElementById('mainInput').value.trim();if(!text)return;let catSel=document.getElementById('cat').value;tasks.unshift({id:Date.now(),text:text,cat:catSel,color:selectedHex,done:false,note:'',subtasks:[],innerTabs:[],media:[]});document.getElementById('mainInput').value='';saveLS();}
