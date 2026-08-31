@@ -225,7 +225,7 @@ function editTodayAtt(){const now=new Date();const key=`${now.getFullYear()}-${n
 function delTodayAtt(){if(!confirm('مسح حضور اليوم؟')) return;const now=new Date();const key=`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;let data=JSON.parse(localStorage.getItem('att_fixed_final')||'{}');delete data[key];localStorage.setItem('att_fixed_final',JSON.stringify(data));renderHome();}
 
 const THEMES = {
-  light:{primary:'#16A34A',hero:'#16A34A',bg:'#f8fafc',card:'#ffffff',border:'#e2e8f0',text:'#0f172a',soft:'#64748b',bgSoft:'#f1f5f9'},
+  light:{primary:'#0f172a',hero:'#0f172a',bg:'#f8fafc',card:'#ffffff',border:'#e2e8f0',text:'#0f172a',soft:'#64748b',bgSoft:'#f1f5f9'},
   dark:{primary:'#22c55e',hero:'#15803d',bg:'#0f172a',card:'#1e293b',border:'#334155',text:'#f8fafc',soft:'#94a3b8',bgSoft:'#0f172a'},
   black:{primary:'#ffffff',hero:'#000000',bg:'#000000',card:'#111111',border:'#222222',text:'#ffffff',soft:'#888888',bgSoft:'#111111'},
   green:{primary:'#16A34A',hero:'#16A34A',bg:'#f0fdf4',card:'#ffffff',border:'#bbf7d0',text:'#14532d',soft:'#4ade80',bgSoft:'#dcfce7'},
