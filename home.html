@@ -24,7 +24,7 @@
 </style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<script src="themes.js"></script>
+<!-- themes inline -->
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,'IBM Plex Sans Arabic',sans-serif}
 body{background:var(--bg);color:var(--text);padding-bottom:90px;transition:.3s}
@@ -223,9 +223,66 @@ function inAtt(){const now=new Date();const key=`${now.getFullYear()}-${now.getM
 function outAtt(){const now=new Date();const key=`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;let data=JSON.parse(localStorage.getItem('att_fixed_final')||'{}');if(!data[key]) data[key]={in:'',out:''};data[key].out=now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});localStorage.setItem('att_fixed_final',JSON.stringify(data));renderHome();}
 function editTodayAtt(){const now=new Date();const key=`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;let data=JSON.parse(localStorage.getItem('att_fixed_final')||'{}');let rec=data[key]||{in:'',out:''};let nin=prompt('دخول اليوم:',rec.in||'');if(nin===null) return;let nout=prompt('خروج اليوم:',rec.out||'');if(nout===null) return;data[key]={in:nin,out:nout};localStorage.setItem('att_fixed_final',JSON.stringify(data));renderHome();}
 function delTodayAtt(){if(!confirm('مسح حضور اليوم؟')) return;const now=new Date();const key=`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;let data=JSON.parse(localStorage.getItem('att_fixed_final')||'{}');delete data[key];localStorage.setItem('att_fixed_final',JSON.stringify(data));renderHome();}
-function toggleThemeMenu(){const m=document.getElementById('themeMenu');m.style.display=m.style.display==='none'?'block':'none';if(m.style.display==='block') renderThemeMenu();}
-function renderThemeMenu(){const menu=document.getElementById('themeMenu');if(!menu||!window.THEMES) return;menu.innerHTML=Object.entries(THEMES).map(([k,v])=>`<div onclick="applyTheme('${k}')" style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;cursor:pointer"><span style="width:14px;height:14px;border-radius:50%;background:${v.primary};display:inline-block"></span><span style="font-size:9px;font-weight:800">${k}</span></div>`).join('');}
-function applyTheme(k){if(window.applyThemeFunc) applyThemeFunc(k);else if(window.setTheme) setTheme(k);const m=document.getElementById('themeMenu');if(m) m.style.display='none';}
+
+const THEMES = {
+  light:{primary:'#16A34A',hero:'#16A34A',bg:'#f8fafc',card:'#ffffff',border:'#e2e8f0',text:'#0f172a',soft:'#64748b',bgSoft:'#f1f5f9'},
+  dark:{primary:'#22c55e',hero:'#15803d',bg:'#0f172a',card:'#1e293b',border:'#334155',text:'#f8fafc',soft:'#94a3b8',bgSoft:'#0f172a'},
+  black:{primary:'#ffffff',hero:'#000000',bg:'#000000',card:'#111111',border:'#222222',text:'#ffffff',soft:'#888888',bgSoft:'#111111'},
+  green:{primary:'#16A34A',hero:'#16A34A',bg:'#f0fdf4',card:'#ffffff',border:'#bbf7d0',text:'#14532d',soft:'#4ade80',bgSoft:'#dcfce7'},
+  blue:{primary:'#2563eb',hero:'#1d4ed8',bg:'#eff6ff',card:'#ffffff',border:'#bfdbfe',text:'#1e3a8a',soft:'#60a5fa',bgSoft:'#dbeafe'},
+  red:{primary:'#dc2626',hero:'#b91c1c',bg:'#fef2f2',card:'#ffffff',border:'#fecaca',text:'#7f1d1d',soft:'#f87171',bgSoft:'#fee2e2'},
+  purple:{primary:'#9333ea',hero:'#7e22ce',bg:'#faf5ff',card:'#ffffff',border:'#e9d5ff',text:'#581c87',soft:'#c084fc',bgSoft:'#f3e8ff'}
+};
+function applyTheme(k){
+  const t = THEMES[k] || THEMES.light;
+  const r = document.documentElement;
+  r.style.setProperty('--primary', t.primary);
+  r.style.setProperty('--hero', t.hero);
+  r.style.setProperty('--bg', t.bg);
+  r.style.setProperty('--card', t.card);
+  r.style.setProperty('--card-border', t.border);
+  r.style.setProperty('--text', t.text);
+  r.style.setProperty('--text-soft', t.soft);
+  r.style.setProperty('--bg-soft', t.bgSoft);
+  localStorage.setItem('omar_theme', k);
+  const dot=document.getElementById('currentDot'); if(dot) dot.style.background=t.primary;
+  const name=document.getElementById('currentName'); if(name) name.textContent=k;
+  const menu=document.getElementById('themeMenu'); if(menu) menu.style.display='none';
+  // force rerender chart with new color
+  setTimeout(renderHome,100);
+}
+function renderThemeMenu(){
+  const menu=document.getElementById('themeMenu');
+  if(!menu) return;
+  const cur = localStorage.getItem('omar_theme')||'light';
+  menu.innerHTML = Object.entries(THEMES).map(([k,v])=>{
+    const active = k===cur ? 'outline:2px solid var(--primary);' : '';
+    return `<div onclick="applyTheme('${k}')" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;${active}"><span style="width:14px;height:14px;border-radius:50%;background:${v.primary};display:inline-block;border:1px solid #0002"></span><span style="font-size:10px;font-weight:800">${k}</span>${k===cur?'<span style="margin-right:auto;font-size:10px">✓</span>':''}</div>`;
+  }).join('');
+}
+function toggleThemeMenu(){
+  const m=document.getElementById('themeMenu');
+  if(!m) return;
+  if(m.style.display==='none' || !m.style.display){ renderThemeMenu(); m.style.display='block'; }
+  else m.style.display='none';
+}
+// init theme
+(function(){
+  const saved = localStorage.getItem('omar_theme')||'light';
+  // set CSS vars without saving again
+  const t = THEMES[saved]||THEMES.light;
+  const r = document.documentElement;
+  r.style.setProperty('--primary', t.primary);
+  r.style.setProperty('--hero', t.hero);
+  r.style.setProperty('--bg', t.bg);
+  r.style.setProperty('--card', t.card);
+  r.style.setProperty('--card-border', t.border);
+  r.style.setProperty('--text', t.text);
+  r.style.setProperty('--text-soft', t.soft);
+  r.style.setProperty('--bg-soft', t.bgSoft);
+  setTimeout(()=>{ const d=document.getElementById('currentDot'); if(d) d.style.background=t.primary; const n=document.getElementById('currentName'); if(n) n.textContent=saved; },100);
+})();
+
 renderHome();setInterval(renderHome,3000);
 </script>
 <script src="drive-sync.js"></script>
