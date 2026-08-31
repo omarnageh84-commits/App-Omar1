@@ -224,14 +224,20 @@ function outAtt(){const now=new Date();const key=`${now.getFullYear()}-${now.get
 function editTodayAtt(){const now=new Date();const key=`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;let data=JSON.parse(localStorage.getItem('att_fixed_final')||'{}');let rec=data[key]||{in:'',out:''};let nin=prompt('دخول اليوم:',rec.in||'');if(nin===null) return;let nout=prompt('خروج اليوم:',rec.out||'');if(nout===null) return;data[key]={in:nin,out:nout};localStorage.setItem('att_fixed_final',JSON.stringify(data));renderHome();}
 function delTodayAtt(){if(!confirm('مسح حضور اليوم؟')) return;const now=new Date();const key=`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;let data=JSON.parse(localStorage.getItem('att_fixed_final')||'{}');delete data[key];localStorage.setItem('att_fixed_final',JSON.stringify(data));renderHome();}
 
+
 const THEMES = {
-  light:{primary:'#0f172a',hero:'#0f172a',bg:'#f8fafc',card:'#ffffff',border:'#e2e8f0',text:'#0f172a',soft:'#64748b',bgSoft:'#f1f5f9'},
-  dark:{primary:'#22c55e',hero:'#15803d',bg:'#0f172a',card:'#1e293b',border:'#334155',text:'#f8fafc',soft:'#94a3b8',bgSoft:'#0f172a'},
-  black:{primary:'#ffffff',hero:'#000000',bg:'#000000',card:'#111111',border:'#222222',text:'#ffffff',soft:'#888888',bgSoft:'#111111'},
-  green:{primary:'#16A34A',hero:'#16A34A',bg:'#f0fdf4',card:'#ffffff',border:'#bbf7d0',text:'#14532d',soft:'#4ade80',bgSoft:'#dcfce7'},
-  blue:{primary:'#2563eb',hero:'#1d4ed8',bg:'#eff6ff',card:'#ffffff',border:'#bfdbfe',text:'#1e3a8a',soft:'#60a5fa',bgSoft:'#dbeafe'},
-  red:{primary:'#dc2626',hero:'#b91c1c',bg:'#fef2f2',card:'#ffffff',border:'#fecaca',text:'#7f1d1d',soft:'#f87171',bgSoft:'#fee2e2'},
-  purple:{primary:'#9333ea',hero:'#7e22ce',bg:'#faf5ff',card:'#ffffff',border:'#e9d5ff',text:'#581c87',soft:'#c084fc',bgSoft:'#f3e8ff'}
+  light:{primary:'#0f172a',hero:'linear-gradient(135deg,#0f172a 0%,#334155 100%)',bg:'#f8fafc',card:'#ffffff',border:'#e2e8f0',text:'#0f172a',soft:'#64748b',bgSoft:'#f1f5f9',name:'⚪ نضيف'},
+  dark:{primary:'#22c55e',hero:'linear-gradient(135deg,#0f172a 0%,#1e293b 100%)',bg:'#0f172a',card:'#1e293b',border:'#334155',text:'#f8fafc',soft:'#94a3b8',bgSoft:'#1e293b',name:'🌙 ليلي'},
+  ocean:{primary:'#0ea5e9',hero:'linear-gradient(135deg,#0ea5e9 0%,#0284c7 50%,#0369a1 100%)',bg:'#f0f9ff',card:'#ffffff',border:'#bae6fd',text:'#0c4a6e',soft:'#38bdf8',bgSoft:'#e0f2fe',name:'🌊 محيط'},
+  sunset:{primary:'#f97316',hero:'linear-gradient(135deg,#f97316 0%,#ec4899 50%,#8b5cf6 100%)',bg:'#fff7ed',card:'#ffffff',border:'#fed7aa',text:'#7c2d12',soft:'#fb923c',bgSoft:'#ffedd5',name:'🌅 غروب'},
+  forest:{primary:'#16a34a',hero:'linear-gradient(135deg,#16a34a 0%,#15803d 50%,#14532d 100%)',bg:'#f0fdf4',card:'#ffffff',border:'#bbf7d0',text:'#14532d',soft:'#4ade80',bgSoft:'#dcfce7',name:'🌲 غابة'},
+  royal:{primary:'#7c3aed',hero:'linear-gradient(135deg,#7c3aed 0%,#5b21b6 50%,#4c1d95 100%)',bg:'#f5f3ff',card:'#ffffff',border:'#ddd6fe',text:'#4c1d95',soft:'#a78bfa',bgSoft:'#ede9fe',name:'👑 ملكي'},
+  midnight:{primary:'#e2e8f0',hero:'linear-gradient(135deg,#000000 0%,#1e293b 100%)',bg:'#000000',card:'#111111',border:'#222222',text:'#ffffff',soft:'#888888',bgSoft:'#1a1a1a',name:'🖤 منتصف الليل'},
+  rose:{primary:'#e11d48',hero:'linear-gradient(135deg,#e11d48 0%,#be123c 50%,#881337 100%)',bg:'#fff1f2',card:'#ffffff',border:'#fecdd3',text:'#881337',soft:'#fb7185',bgSoft:'#ffe4e6',name:'🌹 وردي'},
+  gold:{primary:'#d97706',hero:'linear-gradient(135deg,#d97706 0%,#b45309 50%,#78350f 100%)',bg:'#fffbeb',card:'#ffffff',border:'#fde68a',text:'#78350f',soft:'#fbbf24',bgSoft:'#fef3c7',name:'🏆 ذهبي'},
+  teal:{primary:'#0d9488',hero:'linear-gradient(135deg,#0d9488 0%,#0f766e 50%,#134e4a 100%)',bg:'#f0fdfa',card:'#ffffff',border:'#99f6e4',text:'#134e4a',soft:'#2dd4bf',bgSoft:'#ccfbf1',name:'💎 تركواز'},
+  ice:{primary:'#06b6d4',hero:'linear-gradient(135deg,#06b6d4 0%,#0891b2 50%,#0e7490 100%)',bg:'#ecfeff',card:'#ffffff',border:'#a5f3fc',text:'#164e63',soft:'#22d3ee',bgSoft:'#cffafe',name:'🧊 ثلجي'},
+  neon:{primary:'#a855f7',hero:'linear-gradient(135deg,#a855f7 0%,#ec4899 50%,#06b6d4 100%)',bg:'#faf5ff',card:'#ffffff',border:'#e9d5ff',text:'#581c87',soft:'#c084fc',bgSoft:'#f3e8ff',name:'⚡ نيون'}
 };
 function applyTheme(k){
   const t = THEMES[k] || THEMES.light;
@@ -246,9 +252,9 @@ function applyTheme(k){
   r.style.setProperty('--bg-soft', t.bgSoft);
   localStorage.setItem('omar_theme', k);
   const dot=document.getElementById('currentDot'); if(dot) dot.style.background=t.primary;
-  const name=document.getElementById('currentName'); if(name) name.textContent=k;
+  const name=document.getElementById('currentName'); if(name) name.textContent=t.name;
+  const hero = document.querySelector('.hero'); if(hero) hero.style.background = t.hero;
   const menu=document.getElementById('themeMenu'); if(menu) menu.style.display='none';
-  // force rerender chart with new color
   setTimeout(renderHome,100);
 }
 function renderThemeMenu(){
@@ -256,8 +262,8 @@ function renderThemeMenu(){
   if(!menu) return;
   const cur = localStorage.getItem('omar_theme')||'light';
   menu.innerHTML = Object.entries(THEMES).map(([k,v])=>{
-    const active = k===cur ? 'outline:2px solid var(--primary);' : '';
-    return `<div onclick="applyTheme('${k}')" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;${active}"><span style="width:14px;height:14px;border-radius:50%;background:${v.primary};display:inline-block;border:1px solid #0002"></span><span style="font-size:10px;font-weight:800">${k}</span>${k===cur?'<span style="margin-right:auto;font-size:10px">✓</span>':''}</div>`;
+    const active = k===cur ? 'outline:2px solid var(--primary);background:var(--bg-soft);' : '';
+    return `<div onclick="applyTheme('${k}')" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;${active}"><span style="width:20px;height:20px;border-radius:50%;background:${v.hero};display:inline-block;border:1px solid #0001;flex-shrink:0"></span><span style="font-size:11px;font-weight:800">${v.name}</span>${k===cur?'<span style="margin-right:auto;font-size:12px">✓</span>':''}</div>`;
   }).join('');
 }
 function toggleThemeMenu(){
@@ -266,10 +272,8 @@ function toggleThemeMenu(){
   if(m.style.display==='none' || !m.style.display){ renderThemeMenu(); m.style.display='block'; }
   else m.style.display='none';
 }
-// init theme
 (function(){
   const saved = localStorage.getItem('omar_theme')||'light';
-  // set CSS vars without saving again
   const t = THEMES[saved]||THEMES.light;
   const r = document.documentElement;
   r.style.setProperty('--primary', t.primary);
@@ -280,7 +284,11 @@ function toggleThemeMenu(){
   r.style.setProperty('--text', t.text);
   r.style.setProperty('--text-soft', t.soft);
   r.style.setProperty('--bg-soft', t.bgSoft);
-  setTimeout(()=>{ const d=document.getElementById('currentDot'); if(d) d.style.background=t.primary; const n=document.getElementById('currentName'); if(n) n.textContent=saved; },100);
+  setTimeout(()=>{ 
+    const d=document.getElementById('currentDot'); if(d) d.style.background=t.primary; 
+    const n=document.getElementById('currentName'); if(n) n.textContent=t.name;
+    const hero = document.querySelector('.hero'); if(hero) hero.style.background = t.hero;
+  },100);
 })();
 
 renderHome();setInterval(renderHome,3000);
