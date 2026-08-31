@@ -6,7 +6,8 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#16A34A">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@500;600;700&display=swap" rel="stylesheet">
-<script src="themes.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<script src="themes.js" defer></script>
 <style>
 :root{ --bg:#F0FDF4; --bg-soft:#DCFCE7; --card:#FFFFFF; --card-border:#BBF7D0; --text:#14532D; --text-soft:#4ADE80; --primary:#16A34A; --hero:#16A34A; --accent:#22C55E; --nav-bg: rgba(255,255,255,0.92); }
 *{box-sizing:border-box;margin:0;padding:0;font-family:'IBM Plex Sans Arabic',sans-serif}
@@ -51,7 +52,7 @@ body{display:flex;justify-content:center;align-items:flex-start;background:#0f17
     <button onclick="switchPage('tasks.html',this)"><span class="icon">✓</span><span>المهام</span></button>
   </nav>
 </div>
-<script src="drive-sync.js"></script>
+<script src="drive-sync.js" defer></script>
 <script>
 const frames=document.querySelectorAll('.page');
 function switchPage(name,btn){
@@ -73,7 +74,8 @@ function switchPage(name,btn){
   if(navigator.vibrate) navigator.vibrate(10);
 }
 applyTheme(localStorage.getItem('omar_theme')||'green');
-if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').then(()=>console.log('✅ PWA Ready - يمكنك تثبيته من كروم'));} window.switchPage=switchPage;
+// Defer service worker to not block first paint
+window.addEventListener("load", ()=>{ if("serviceWorker" in navigator){navigator.serviceWorker.register("./sw.js").then(()=>console.log("✅ PWA Ready"));} }); window.switchPage=switchPage;
 </script>
 </body>
 </html>
