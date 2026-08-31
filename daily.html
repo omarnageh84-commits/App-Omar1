@@ -3,11 +3,10 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>اليومية</title>
-<script src="themes.js?v=13"></script>
+<script src="themes.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
-@font-face{font-family:"Optimistic";font-style:normal;font-weight:400 600;font-display:swap;src:url("/fonts/OptimisticAI_VF_Optimized.woff2") format("woff2")}
-:where(html){font-family:"Optimistic",system-ui,sans-serif}
+
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Tajawal',sans-serif}
 html,body{overflow-x:hidden;max-width:100vw;background:var(--bg);color:var(--text);transition:.3s}
 body{padding-bottom:94px}
@@ -357,5 +356,38 @@ persist();closeAdd();refreshCurrent();renderTotal();
 }
 (function init(){document.getElementById('today').textContent=new Date().toLocaleDateString('ar-EG');ensureMaster();if(transactions.length===0){transactions=[{id:'1',type:'expense',item:'الإيجار',person:'الإيجار',amount:1000,date:'2026-08-15',wallet:'كاش'}];persist()}updateMonthLabels();applyMonthToInputs();switchTab('expense');})();
 </script>
+
+<script>
+// Fix net to include مستحقة - patch v15 without changing logic
+(function(){
+  const originalRenderTotal = window.renderTotal;
+  if(!originalRenderTotal) return;
+  window.renderTotal = function(){
+    try{ originalRenderTotal(); }catch(e){}
+    try{
+      const txs = JSON.parse(localStorage.getItem('omar_tx_v3')||'[]');
+      let income=0, expense=0, debtOn=0, debtFor=0;
+      const curMonth = window.curMonth!==undefined ? window.curMonth : new Date().getMonth();
+      const curYear = window.curYear!==undefined ? window.curYear : new Date().getFullYear();
+      txs.forEach(t=>{
+        const d = new Date(t.date);
+        if(d.getMonth()!==curMonth || d.getFullYear()!==curYear) return;
+        if(t.excludeFromBalance) return;
+        if(t.type==='income') income+=Number(t.amount||0);
+        else if(t.type==='expense') expense+=Number(t.amount||0);
+        else if(t.type==='debt'){
+          if(t.direction==='عليا') debtOn+=Number(t.amount||0);
+          else debtFor+=Number(t.amount||0);
+        }
+      });
+      const net = income - expense - debtOn + debtFor;
+      // Update UI if element exists
+      const netEl = document.getElementById('net') || document.querySelector('[data-kpi="net"] b') || document.getElementById('outNet');
+      if(netEl) netEl.textContent = net.toLocaleString('en-US');
+    }catch(e){ console.warn('net patch failed', e); }
+  };
+})();
+</script>
+
 </body>
 </html>
