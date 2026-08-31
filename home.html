@@ -26,91 +26,98 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <script src="themes.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,'Tajawal',sans-serif}
-body{background:var(--bg);color:var(--text);padding:8px;padding-bottom:90px}
-.app{max-width:430px;margin:0 auto}
-.hero{background:linear-gradient(135deg,#16A34A 0%,#15803d 100%);color:#fff;border-radius:16px;padding:14px;margin-bottom:10px}
-.hero h2{font-size:13px;font-weight:900}
-.hero small{font-size:8px;opacity:.9}
-.circles{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
-.circle-card{background:var(--card);border:1.5px solid var(--card-border);border-radius:14px;padding:10px;text-align:center}
-.circle{width:62px;height:62px;border-radius:50%;margin:0 auto 6px;position:relative;display:grid;place-items:center;background:#fff}
-.circle b{font-size:12px;font-weight:900;z-index:2;color:#16A34A}
-.circle::before{content:'';position:absolute;inset:0;border-radius:50%;background:conic-gradient(#16A34A var(--deg,0deg),#E5E7EB 0)}
-.circle::after{content:'';position:absolute;inset:7px;background:var(--card);border-radius:50%}
-.grid4{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px}
-.stat{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:10px;cursor:pointer}
-.lb{font-size:8px;color:var(--text-soft);font-weight:700}.v{font-size:13px;font-weight:900;margin-top:3px}
-.card{background:var(--card);border:1.5px solid var(--card-border);border-radius:16px;padding:12px;margin-bottom:10px}
-.report-bar{display:flex;justify-content:space-between;align-items:center;background:var(--bg-soft);border:1px solid var(--card-border);border-radius:10px;padding:8px 10px;margin-bottom:6px}
-.sims-title{font-size:11px;font-weight:900;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
-.sims-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
-.sim{background:var(--bg-soft);border:1.5px solid var(--card-border);border-radius:12px;padding:12px 4px;text-align:center;cursor:pointer;transition:.15s}
-.sim:active{transform:scale(.95);background:var(--card)}
-.sim .ic{font-size:22px;display:block;margin-bottom:4px}
-.sim b{font-size:9px;font-weight:900;display:block;color:var(--text)}
-.sim.active-green{background:#16A34A;border-color:#16A34A}
-.sim.active-green b,.sim.active-green .ic{color:#fff}
-.fab{position:fixed;bottom:86px;left:18px;width:52px;height:52px;background:#16A34A;color:#fff;border:none;border-radius:50%;font-size:26px;box-shadow:0 8px 24px rgba(22,163,74,.4);cursor:pointer;z-index:99;display:grid;place-items:center}
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,'IBM Plex Sans Arabic',sans-serif}
+body{background:var(--bg);color:var(--text);padding-bottom:90px;transition:.3s}
+.top{padding:14px 14px 8px;display:flex;justify-content:space-between;align-items:center}
+.top h1{font-size:15px;font-weight:800}.top h1 span{color:var(--primary)}
+.time{font-size:9px;color:var(--text-soft);background:var(--card);border:1px solid var(--card-border);padding:4px 8px;border-radius:99px}
+.hero{margin:0 12px 10px;background:var(--hero);color:#fff;border-radius:16px;padding:14px;position:relative;overflow:hidden}
+.hero-top{display:flex;justify-content:space-between;position:relative;z-index:2}
+.badge{font-size:7px;background:var(--primary);color:#fff;padding:4px 8px;border-radius:99px;font-weight:800}
+.hero-val{font-size:18px;font-weight:800;margin-top:8px;position:relative;z-index:2}
+.hero-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;position:relative;z-index:2}
+.btn{padding:10px;border-radius:10px;border:none;font-size:10px;font-weight:800;cursor:pointer}.btn-w{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.2)}.btn-g{background:var(--primary);color:#fff}
+.pro-circles{margin:0 12px 10px;background:var(--card);border:1px solid var(--card-border);border-radius:16px;padding:10px}
+.pro-title{font-size:10px;font-weight:900;margin-bottom:8px;display:flex;justify-content:space-between}
+.circles{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.circle-card{text-align:center}
+.circle{width:56px;height:56px;border-radius:50%;margin:0 auto 6px;position:relative;display:grid;place-items:center}
+.circle b{font-size:11px;font-weight:900;z-index:2;color:var(--hero)}
+.circle::before{content:'';position:absolute;inset:0;border-radius:50%;background:conic-gradient(var(--hero) var(--deg,0deg),var(--bg-soft) 0)}
+.circle::after{content:'';position:absolute;inset:6px;background:var(--card);border-radius:50%}
+.grid4{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:0 12px;margin-bottom:10px}
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:10px}
+.lb{font-size:7px;color:var(--text-soft);font-weight:700}.v{font-size:13px;font-weight:800;margin-top:3px}
+.quick{margin:0 12px 10px;background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:10px}
+.quick-title{font-size:10px;font-weight:800;margin-bottom:8px;display:flex;justify-content:space-between}
+.quick-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px}
+.qb{background:var(--bg-soft);border:1px solid var(--card-border);border-radius:10px;padding:10px 4px;text-align:center;cursor:pointer}
+.qb span:first-child{font-size:18px;display:block}.qb span:last-child{font-size:8px;font-weight:700;margin-top:4px;display:block;color:var(--text)}
+.recent{margin:0 12px;background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:10px}
+.fab{position:fixed;bottom:86px;left:18px;width:52px;height:52px;background:var(--hero);color:#fff;border:none;border-radius:50%;font-size:26px;box-shadow:0 8px 24px rgba(0,0,0,.2);cursor:pointer;z-index:99;display:grid;place-items:center}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);z-index:999;display:none;align-items:flex-end;justify-content:center}
 .modal.show{display:flex}
-.sheet{background:var(--card);width:100%;max-width:430px;border-radius:20px 20px 0 0;padding:14px;animation:slideUp .25s ease}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet{background:var(--card);width:100%;max-width:430px;border-radius:20px 20px 0 0;padding:14px}
 </style>
 </head>
 <body>
-<div class="app">
+<div class="top"><div><h1>أهلاً يا <span>عمر</span> ✨</h1><div id="clk" class="time" style="display:inline-block;margin-top:4px">--:--</div></div><div style="display:flex;gap:8px;align-items:center"><div id="date" style="font-size:8px;color:var(--text-soft)"></div><div class="avatar" style="background:var(--primary);color:#fff;font-weight:900;font-size:14px;display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:11px">ع</div></div></div>
 
-  <div class="hero">
-    <div style="display:flex;justify-content:space-between;align-items:center"><div><h2>✨ لوحة التحكم الاحترافية</h2><small id="todayStr">--</small></div><div id="syncDot" style="background:rgba(255,255,255,.25);padding:5px 10px;border-radius:99px;font-size:8px;font-weight:900">☁️ متزامن</div></div>
-  </div>
+<div style="margin:0 12px 10px;background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:9px;font-weight:800;color:var(--text-soft)">الثيم</span><div id="themePicker" style="position:relative"><button id="themeBtn" onclick="toggleThemeMenu()" style="display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;border:1px solid var(--card-border);background:var(--bg-soft);cursor:pointer;font-size:8px;font-weight:800"><span id="currentDot" style="width:12px;height:12px;border-radius:50%;background:var(--primary);display:inline-block"></span><span id="currentName">light</span><span style="font-size:10px">▼</span></button><div id="themeMenu" style="display:none;position:absolute;top:34px;left:0;width:220px;background:var(--card);border:1px solid var(--card-border);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.15);padding:8px;z-index:9999;max-height:320px;overflow:auto"></div></div></div>
 
+<div class="hero"><div class="hero-top"><span style="font-size:8px;opacity:.7">وردية اليوم • الحضور</span><span class="badge" id="wh">OFF</span></div><div id="att" class="hero-val">لم يبدأ بعد</div><div class="hero-btns"><button class="btn btn-w" onclick="inAtt()">⏱ حضور</button><button class="btn btn-g" onclick="outAtt()">انصراف ✓</button></div><div id="attActions" style="display:none;gap:6px;margin-top:10px;position:relative;z-index:2"><button onclick="editTodayAtt()" style="flex:1;padding:7px;border-radius:8px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:#fff;font-size:8px;font-weight:800;cursor:pointer">✏️ تعديل اليوم</button><button onclick="delTodayAtt()" style="flex:1;padding:7px;border-radius:8px;border:1px solid rgba(255,255,255,.3);background:rgba(255,80,80,.25);color:#fff;font-size:8px;font-weight:800;cursor:pointer">🗑️ مسح اليوم</button></div></div>
+
+<!-- جديد: دوائر احصائيات احترافية -->
+<div class="pro-circles">
+  <div class="pro-title"><span>📊 دوائر الإنجاز - الشهر ده</span><small id="monthName" style="background:var(--bg-soft);padding:3px 8px;border-radius:99px;font-size:7px">--</small></div>
   <div class="circles">
-    <div class="circle-card"><div class="circle" id="c-income" style="--deg:0deg"><b id="c-income-val">0%</b></div><span style="font-size:8px;color:var(--text-soft);font-weight:800">اليومية</span><strong id="c-income-txt" style="font-size:10px">0 ج</strong></div>
-    <div class="circle-card"><div class="circle" id="c-att" style="--deg:0deg"><b id="c-att-val">0%</b></div><span style="font-size:8px;color:var(--text-soft);font-weight:800">الحضور</span><strong id="c-att-txt" style="font-size:10px">0 س</strong></div>
-    <div class="circle-card"><div class="circle" id="c-task" style="--deg:0deg"><b id="c-task-val">0%</b></div><span style="font-size:8px;color:var(--text-soft);font-weight:800">المهام</span><strong id="c-task-txt" style="font-size:10px">0/0</strong></div>
+    <div class="circle-card"><div class="circle" id="c-income" style="--deg:0deg"><b id="c-income-val">0%</b></div><div style="font-size:8px;font-weight:800;color:var(--text-soft)">اليومية</div><b id="c-income-txt" style="font-size:9px">0 ج</b></div>
+    <div class="circle-card"><div class="circle" id="c-att" style="--deg:0deg"><b id="c-att-val">0%</b></div><div style="font-size:8px;font-weight:800;color:var(--text-soft)">الحضور</div><b id="c-att-txt" style="font-size:9px">0 س</b></div>
+    <div class="circle-card"><div class="circle" id="c-task" style="--deg:0deg"><b id="c-task-val">0%</b></div><div style="font-size:8px;font-weight:800;color:var(--text-soft)">المهام</div><b id="c-task-txt" style="font-size:9px">0/0</b></div>
   </div>
-
-  <div class="grid4">
-    <div class="stat" onclick="goDaily()"><div class="lb">💰 الرصيد الكلي</div><div id="cash" class="v">0</div></div>
-    <div class="stat" onclick="goDaily()"><div class="lb">📈 دخل الشهر</div><div id="mI" class="v" style="color:#16A34A">0</div><div id="mI2" style="font-size:7px;color:var(--text-soft)">0 عملية</div></div>
-    <div class="stat" onclick="goDaily()"><div class="lb">📉 مصروف الشهر</div><div id="mE" class="v">0</div><div id="net" style="font-size:7px;color:var(--text-soft)">الصافي 0</div></div>
-    <div class="stat" onclick="goDaily()"><div class="lb">📋 الديون</div><div id="db" class="v">0</div><div id="dbC" style="font-size:7px;color:var(--text-soft)">0 شخص</div></div>
-    <div class="stat" onclick="goTasks()"><div class="lb">✅ المهام</div><div id="tc" class="v">0 مهمة</div><div style="font-size:7px;color:var(--text-soft)">مكتملة <span id="tc-done">0</span></div></div>
-    <div class="stat" onclick="goAtt()"><div class="lb">⏱ الحضور</div><div id="attC" class="v">--</div><div id="attH" style="font-size:7px;color:var(--text-soft)">0 س</div></div>
-  </div>
-
-  <div class="card" style="background:var(--card)">
-    <div class="sims-title"><span>⚡ الوصول السريع - السيمزات</span><small style="font-size:7px;background:#DCFCE7;color:#16A34A;padding:3px 8px;border-radius:99px">8 اختصارات</small></div>
-    <div class="sims-grid">
-      <div class="sim" onclick="goDaily()"><span class="ic">📊</span><b>اليومية</b></div>
-      <div class="sim" onclick="goAtt()"><span class="ic">⏱️</span><b>الحضور</b></div>
-      <div class="sim" onclick="goTasks()"><span class="ic">✓</span><b>المهام</b></div>
-      <div class="sim active-green" onclick="openSheet()"><span class="ic">＋</span><b>إضافة</b></div>
-      <div class="sim active-green" onclick="backupToDrive(true)"><span class="ic">☁️</span><b>نسخ للدرايف</b></div>
-      <div class="sim" onclick="if(window.exportToExcel)exportToExcel();else alert('افتح اليومية للتصدير')"><span class="ic">📈</span><b>تصدير اكسيل</b></div>
-      <div class="sim" onclick="if(window.exportFullJSON)exportFullJSON();else alert('افتح اليومية')"><span class="ic">📦</span><b>نسخة كاملة</b></div>
-      <div class="sim" onclick="location.reload()"><span class="ic">🔄</span><b>تحديث</b></div>
-    </div>
-    <div style="margin-top:8px;font-size:7px;color:var(--text-soft);text-align:center">الأخضر = إضافة ونسخ / الرمادي الفاتح = تنقل عادي</div>
-  </div>
-
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="font-size:11px">📊 تقرير شامل - هذا الشهر</b><small id="monthName" style="font-size:8px;background:var(--bg-soft);padding:3px 8px;border-radius:99px">--</small></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">
-      <div style="background:var(--bg-soft);border:1px solid var(--card-border);border-radius:10px;padding:8px;text-align:center"><small style="font-size:7px">إجمالي الدخل</small><b id="rep-income" style="display:block;color:#16A34A;font-size:11px">0</b></div>
-      <div style="background:var(--bg-soft);border:1px solid var(--card-border);border-radius:10px;padding:8px;text-align:center"><small style="font-size:7px">إجمالي المصروف</small><b id="rep-expense" style="display:block;color:#ef4444;font-size:11px">0</b></div>
-    </div>
-    <div class="report-bar"><div style="display:flex;gap:6px;align-items:center"><div style="width:8px;height:8px;background:#16A34A;border-radius:50%"></div><div><b style="font-size:10px">أفضل بند مصروف</b><small id="best-exp" style="font-size:8px;color:var(--text-soft);display:block">--</small></div></div><b id="best-exp-val" style="font-size:11px">0</b></div>
-    <div class="report-bar"><div style="display:flex;gap:6px;align-items:center"><div style="width:8px;height:8px;background:#0ea5e9;border-radius:50%"></div><div><b style="font-size:10px">أكثر يوم حضور</b><small id="best-att" style="font-size:8px;color:var(--text-soft);display:block">--</small></div></div><b id="best-att-val" style="font-size:11px">-</b></div>
-    <canvas id="miniChart" height="70" style="width:100%;margin-top:8px"></canvas>
-  </div>
-
-  <div style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:1.5px solid #BBF7D0;border-radius:12px;padding:10px;display:flex;gap:8px;align-items:center;margin-bottom:10px"><div style="width:32px;height:32px;background:#16A34A;color:#fff;border-radius:9px;display:grid;place-items:center;font-size:16px">💡</div><div><b id="suggest-title" style="font-size:10px;color:#14532d">اقتراح اليوم</b><small id="suggest-txt" style="font-size:8px;color:#166534;display:block">--</small></div></div>
-
-  <div class="card"><div style="display:flex;justify-content:space-between"><b style="font-size:11px">آخر الحركات</b><span style="font-size:8px;background:var(--bg-soft);border:1px solid var(--card-border);padding:4px 8px;border-radius:99px;cursor:pointer" onclick="goDaily()">عرض الكل →</span></div><div id="recent" style="margin-top:6px"></div></div>
-
+  <canvas id="miniChart" height="60" style="width:100%;margin-top:10px"></canvas>
 </div>
+
+
+<div style="margin:0 12px 10px;background:var(--card);border:1px solid var(--card-border);border-radius:16px;padding:10px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="font-size:10px">📊 تقرير شامل - الشهر ده</b><span style="font-size:7px;background:var(--bg-soft);padding:3px 8px;border-radius:99px" id="repNet">--</span></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">
+    <div style="background:var(--bg-soft);border:1px solid var(--card-border);border-radius:10px;padding:8px;text-align:center"><small style="font-size:7px">إجمالي الدخل</small><b id="rep-income" style="display:block;color:var(--primary);font-size:12px">0</b></div>
+    <div style="background:var(--bg-soft);border:1px solid var(--card-border);border-radius:10px;padding:8px;text-align:center"><small style="font-size:7px">إجمالي المصروف</small><b id="rep-expense" style="display:block;color:#ef4444;font-size:12px">0</b></div>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg-soft);border:1px solid var(--card-border);border-radius:10px;padding:8px 10px;margin-bottom:6px"><div style="display:flex;gap:6px;align-items:center"><div style="width:8px;height:8px;background:var(--primary);border-radius:50%"></div><div><b style="font-size:9px">أفضل بند مصروف</b><small id="best-exp" style="font-size:7px;color:var(--text-soft);display:block">--</small></div></div><b id="best-exp-val" style="font-size:10px">0</b></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg-soft);border:1px solid var(--card-border);border-radius:10px;padding:8px 10px"><div style="display:flex;gap:6px;align-items:center"><div style="width:8px;height:8px;background:#0ea5e9;border-radius:50%"></div><div><b style="font-size:9px">أكثر يوم حضور</b><small id="best-att" style="font-size:7px;color:var(--text-soft);display:block">--</small></div></div><b id="best-att-val" style="font-size:10px">-</b></div>
+</div>
+
+<div style="margin:0 12px 10px;background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:1.5px solid #BBF7D0;border-radius:12px;padding:10px;display:flex;gap:8px;align-items:center">
+  <div style="width:32px;height:32px;background:#16A34A;color:#fff;border-radius:9px;display:grid;place-items:center;font-size:16px">💡</div>
+  <div><b id="suggest-title" style="font-size:10px;color:#14532d">اقتراح اليوم</b><small id="suggest-txt" style="font-size:8px;color:#166534;display:block">--</small></div>
+</div>
+
+<div class="grid4">
+  <div class="card" onclick="go('daily.html',1)"><div class="lb">💰 الرصيد الكلي</div><div id="cash" class="v">0</div></div>
+  <div class="card" onclick="go('daily.html',1)"><div class="lb">📈 دخل الشهر</div><div id="mI" class="v" style="color:var(--primary)">0</div><div id="mI2" style="font-size:7px;color:var(--text-soft)">0 عملية</div></div>
+  <div class="card" onclick="go('daily.html',1)"><div class="lb">📉 مصروف الشهر</div><div id="mE" class="v">0</div><div id="net" style="font-size:7px;color:var(--text-soft)">الصافي 0</div></div>
+  <div class="card" onclick="go('daily.html',1)"><div class="lb">📋 الديون</div><div id="db" class="v">0</div><div id="dbC" style="font-size:7px;color:var(--text-soft)">0 شخص</div></div>
+  <div class="card" onclick="go('tasks.html',3)"><div class="lb">✅ المهام</div><div id="tc" class="v">0 مهمة</div></div>
+  <div class="card" onclick="go('attendance.html',2)"><div class="lb">⏱ الحضور</div><div id="attC" class="v">--</div><div id="attH" style="font-size:7px;color:var(--text-soft)">0 س</div></div>
+</div>
+
+<!-- السيمزات الأصلية رجعت بالظبط زي APK -->
+<div class="quick"><div class="quick-title"><span>دخول سريع</span><span style="font-size:7px;background:var(--bg-soft);padding:3px 8px;border-radius:99px">السيمزات الأصلية</span></div><div class="quick-grid">
+  <div class="qb" onclick="go('daily.html',1)"><span>📊</span><span>اليومية</span></div>
+  <div class="qb" onclick="go('attendance.html',2)"><span>⏱️</span><span>الحضور</span></div>
+  <div class="qb" onclick="go('tasks.html',3)"><span>✓</span><span>المهام</span></div>
+  <div class="qb" onclick="go('home.html',0)"><span>🏠</span><span>الرئيسية</span></div>
+</div></div>
+
+<div class="quick" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+  <div class="qb" onclick="backupToDrive(true)" style="background:var(--hero);border-color:var(--hero)"><span style="color:#fff">☁️</span><span style="color:#fff">نسخ للدرايف</span></div>
+  <div class="qb" onclick="exportToExcel()"><span>📊</span><span>تصدير اكسيل</span></div>
+  <div class="qb" onclick="exportFullJSON()"><span>📦</span><span>نسخة كاملة</span></div>
+</div>
+
+<div class="recent"><div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:11px">آخر الحركات</b><span style="font-size:8px;background:var(--bg-soft);border:1px solid var(--card-border);padding:4px 8px;border-radius:99px;cursor:pointer" onclick="go('daily.html',1)">عرض الكل →</span></div><div id="recent" style="margin-top:6px"></div></div>
 
 <button class="fab" onclick="openSheet()">＋</button>
 
@@ -118,52 +125,108 @@ body{background:var(--bg);color:var(--text);padding:8px;padding-bottom:90px}
   <div class="sheet">
     <h3 style="text-align:center;font-size:12px;font-weight:900;margin-bottom:10px">إضافة سريعة لكل بنود المشروع</h3>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-      <div class="sim" onclick="quickAdd('expense')"><span class="ic">💸</span><b>مصروف</b></div>
-      <div class="sim" onclick="quickAdd('income')"><span class="ic">💰</span><b>دخل</b></div>
-      <div class="sim" onclick="quickAdd('task')"><span class="ic">✓</span><b>مهمة</b></div>
-      <div class="sim" onclick="quickAdd('att')"><span class="ic">⏱️</span><b>حضور اليوم</b></div>
-      <div class="sim" onclick="quickAdd('debt')"><span class="ic">📋</span><b>دين</b></div>
-      <div class="sim" onclick="quickAdd('important')"><span class="ic">⭐</span><b>مهم</b></div>
+      <div class="qb" onclick="quickAdd('expense')"><span>💸</span><span>مصروف</span></div>
+      <div class="qb" onclick="quickAdd('income')"><span>💰</span><span>دخل</span></div>
+      <div class="qb" onclick="quickAdd('task')"><span>✓</span><span>مهمة</span></div>
+      <div class="qb" onclick="quickAdd('att')"><span>⏱️</span><span>حضور</span></div>
+      <div class="qb" onclick="quickAdd('debt')"><span>📋</span><span>دين</span></div>
+      <div class="qb" onclick="quickAdd('important')"><span>⭐</span><span>مهم</span></div>
     </div>
     <div id="quickForm" style="display:none">
       <input id="q-title" style="width:100%;padding:10px;border:1.5px solid var(--card-border);border-radius:10px;background:var(--card);font-weight:800;font-size:11px;margin-bottom:8px;color:var(--text)" placeholder="العنوان">
       <input id="q-amount" style="width:100%;padding:10px;border:1.5px solid var(--card-border);border-radius:10px;background:var(--card);font-weight:800;font-size:11px;margin-bottom:8px;color:var(--text);display:none" type="number" placeholder="المبلغ">
-      <button style="width:100%;background:#16A34A;color:#fff;border:none;padding:12px;border-radius:12px;font-weight:900;font-size:12px" onclick="saveQuick()">حفظ ✨</button>
+      <button style="width:100%;background:var(--primary);color:#fff;border:none;padding:12px;border-radius:12px;font-weight:900;font-size:12px" onclick="saveQuick()">حفظ ✨</button>
     </div>
     <button onclick="closeSheet()" style="width:100%;margin-top:8px;background:transparent;border:none;font-size:9px;color:var(--text-soft);font-weight:800">إلغاء</button>
   </div>
 </div>
 
 <script>
+let $=id=>document.getElementById(id),fmt=n=>Math.round(n||0).toLocaleString('en-US');
 let quickType='expense';
-function openSheet(){document.getElementById('sheetModal').classList.add('show')}
-function closeSheet(){document.getElementById('sheetModal').classList.remove('show');document.getElementById('quickForm').style.display='none'}
-function quickAdd(type){quickType=type; document.getElementById('quickForm').style.display='block'; const t=document.getElementById('q-title'), a=document.getElementById('q-amount'); if(type==='expense'){t.placeholder='مثال: الإيجار'; a.style.display='block';} else if(type==='income'){t.placeholder='مثال: مرتب'; a.style.display='block';} else if(type==='task'){t.placeholder='اسم المهمة'; a.style.display='none';} else if(type==='att'){t.placeholder='دخول 07:00'; a.style.display='none'; t.value=new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});} else if(type==='debt'){t.placeholder='اسم الشخص'; a.style.display='block';} else if(type==='important'){t.placeholder='بند مهم'; a.style.display='block';}}
-function saveQuick(){const title=document.getElementById('q-title').value.trim(); const amount=Number(document.getElementById('q-amount').value||0); if(!title) return alert('اكتب العنوان'); if((quickType==='expense'||quickType==='income'||quickType==='debt'||quickType==='important')&&!amount) return alert('اكتب المبلغ'); if(quickType==='expense'||quickType==='income'){let txs=JSON.parse(localStorage.getItem('omar_tx_v3')||'[]'); txs.push({id:Date.now().toString(),type:quickType,item:title,person:title,amount:amount,date:new Date().toISOString().slice(0,10),wallet:'كاش',note:'إضافة سريعة'}); localStorage.setItem('omar_tx_v3',JSON.stringify(txs));} else if(quickType==='task'){let tasks=JSON.parse(localStorage.getItem('tasks_v6')||'[]'); tasks.push({id:Date.now(),text:title,cat:'عام',done:false}); localStorage.setItem('tasks_v6',JSON.stringify(tasks));} else if(quickType==='att'){let data=JSON.parse(localStorage.getItem('att_fixed_final')||'{}'); const today=new Date(); const key=`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`; if(!data[key]) data[key]={in:'',out:''}; if(!data[key].in) data[key].in=title; else data[key].out=title; localStorage.setItem('att_fixed_final',JSON.stringify(data));} else if(quickType==='debt'){let debts=JSON.parse(localStorage.getItem('debts_pro_v2')||'[]'); debts.push({id:Date.now(),person:title,amount:amount}); localStorage.setItem('debts_pro_v2',JSON.stringify(debts));} else if(quickType==='important'){let imp=JSON.parse(localStorage.getItem('omar_important')||'[]'); imp.push({id:Date.now(),title:title,amount:amount}); localStorage.setItem('omar_important',JSON.stringify(imp));} closeSheet(); renderHome();}
-function goDaily(){if(parent&&parent.switchPage) parent.switchPage('daily.html',parent.document.querySelectorAll('.nav button')[1]); else location.href='daily.html'}
-function goAtt(){if(parent&&parent.switchPage) parent.switchPage('attendance.html',parent.document.querySelectorAll('.nav button')[2]); else location.href='attendance.html'}
-function goTasks(){if(parent&&parent.switchPage) parent.switchPage('tasks.html',parent.document.querySelectorAll('.nav button')[3]); else location.href='tasks.html'}
-function parseHour(s){if(!s) return 0; let p=s.toString().trim().split(':'); return Number(p[0]||0)+Number(p[1]||0)/60;}
-function calcDiff(a,b){if(!a||!b) return 0; let d=parseHour(b)-parseHour(a); if(d<0) d+=24; return d>0?d:0;}
+function openSheet(){$('sheetModal').classList.add('show')}
+function closeSheet(){$('sheetModal').classList.remove('show');$('quickForm').style.display='none'}
+function quickAdd(t){quickType=t;$('quickForm').style.display='block';const ti=$('q-title'),am=$('q-amount');if(t==='expense'){ti.placeholder='مثال: الإيجار';am.style.display='block';}else if(t==='income'){ti.placeholder='مثال: مرتب';am.style.display='block';}else if(t==='task'){ti.placeholder='اسم المهمة';am.style.display='none';}else if(t==='att'){ti.placeholder='دخول 07:00';am.style.display='none';ti.value=new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});}else if(t==='debt'){ti.placeholder='اسم الشخص - الدين';am.style.display='block';}else if(t==='important'){ti.placeholder='بند مهم';am.style.display='block';}}
+function saveQuick(){const title=$('q-title').value.trim(),amount=Number($('q-amount').value||0);if(!title) return alert('اكتب العنوان');if((quickType==='expense'||quickType==='income')&&!amount) return alert('اكتب المبلغ');if(quickType==='expense'||quickType==='income'){let txs=JSON.parse(localStorage.getItem('omar_tx_v3')||'[]');txs.push({id:Date.now().toString(),type:quickType,item:title,person:title,amount:amount,date:new Date().toISOString().slice(0,10),wallet:'كاش',note:'إضافة سريعة'});localStorage.setItem('omar_tx_v3',JSON.stringify(txs));}else if(quickType==='task'){let tasks=JSON.parse(localStorage.getItem('tasks_v6')||'[]');tasks.push({id:Date.now(),text:title,cat:'عام',done:false});localStorage.setItem('tasks_v6',JSON.stringify(tasks));}else if(quickType==='att'){let data=JSON.parse(localStorage.getItem('att_fixed_final')||'{}');const today=new Date();const key=`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;if(!data[key]) data[key]={in:'',out:''};if(!data[key].in) data[key].in=title;else data[key].out=title;localStorage.setItem('att_fixed_final',JSON.stringify(data));}else if(quickType==='debt'){let debts=JSON.parse(localStorage.getItem('debts_pro_v2')||'[]');debts.push({id:Date.now(),person:title,amount:amount,type:'دين'});localStorage.setItem('debts_pro_v2',JSON.stringify(debts));}else if(quickType==='important'){let imp=JSON.parse(localStorage.getItem('omar_important')||'[]');imp.push({id:Date.now(),title:title,amount:amount});localStorage.setItem('omar_important',JSON.stringify(imp));}closeSheet();renderHome();}
+function go(p,i){if(parent&&parent.switchPage){parent.switchPage(p,parent.document.querySelectorAll('.nav button')[i]);}else location.href=p;}
+function parseHour(s){if(!s) return 0;let pr=s.toString().trim().split(':');return Number(pr[0]||0)+Number(pr[1]||0)/60;}
+function calcDiff(a,b){if(!a||!b) return 0;let d=parseHour(b)-parseHour(a);if(d<0) d+=24;return d>0?d:0;}
 function renderHome(){
  try{
-  const now=new Date(); document.getElementById('todayStr').textContent=now.toLocaleDateString('ar-EG',{weekday:'long',day:'numeric',month:'long'}); document.getElementById('monthName').textContent=now.toLocaleDateString('ar-EG',{month:'long',year:'numeric'});
-  const txs=JSON.parse(localStorage.getItem('omar_tx_v3')||'[]'); const curM=now.getMonth()+1, curY=now.getFullYear();
-  let inc=0,exp=0,cntI=0,cntE=0,perDay={},best={};
-  txs.forEach(t=>{const d=new Date(t.date); if(!d||isNaN(d)) return; if(d.getMonth()+1!==curM||d.getFullYear()!==curY) return; if(t.type==='income'){inc+=Number(t.amount||0); cntI++; perDay[d.getDate()]=(perDay[d.getDate()]||0)+Number(t.amount||0);} if(t.type==='expense'){exp+=Number(t.amount||0); cntE++; perDay[d.getDate()]=(perDay[d.getDate()]||0)-Number(t.amount||0); const k=t.item||t.person||'غير معروف'; best[k]=(best[k]||0)+Number(t.amount||0);}});
-  document.getElementById('cash').textContent=(inc-exp).toLocaleString(); document.getElementById('mI').textContent=inc.toLocaleString(); document.getElementById('mI2').textContent=cntI+' عملية'; document.getElementById('mE').textContent=exp.toLocaleString(); document.getElementById('net').textContent='الصافي '+(inc-exp).toLocaleString(); document.getElementById('rep-income').textContent=inc.toLocaleString(); document.getElementById('rep-expense').textContent=exp.toLocaleString();
-  let bestK=Object.keys(best).sort((a,b)=>best[b]-best[a])[0]; if(bestK){document.getElementById('best-exp').textContent=bestK; document.getElementById('best-exp-val').textContent=best[bestK].toLocaleString();}
-  const maxV=Math.max(inc,exp,1); document.getElementById('c-income').style.setProperty('--deg',(inc/maxV)*360+'deg'); document.getElementById('c-income-val').textContent=Math.round((inc/maxV)*100)+'%'; document.getElementById('c-income-txt').textContent=(inc-exp).toLocaleString()+' ج';
-  const data=JSON.parse(localStorage.getItem('att_fixed_final')||'{}'); let totalH=0,maxH=0,maxDay='-'; Object.entries(data).forEach(([k,v])=>{const p=k.split('-').map(Number); if(p[0]!==curY||p[1]!==curM) return; const h=calcDiff(v.in,v.out); if(h>0){totalH+=h; if(h>maxH){maxH=h; maxDay=k;}}}); document.getElementById('attC').textContent=Object.keys(data).filter(k=>{const p=k.split('-').map(Number); return p[0]===curY&&p[1]===curM&&data[k].in&&data[k].out}).length+' يوم'; document.getElementById('attH').textContent=totalH.toFixed(2)+' س'; document.getElementById('c-att-txt').textContent=totalH.toFixed(1)+' س'; document.getElementById('c-att-val').textContent=Math.round((totalH/176)*100)+'%'; document.getElementById('c-att').style.setProperty('--deg',Math.min(360,(totalH/176)*360)+'deg'); if(maxDay!=='-'){document.getElementById('best-att').textContent=maxDay; document.getElementById('best-att-val').textContent=maxH.toFixed(2)+' س';}
-  const tasks=JSON.parse(localStorage.getItem('tasks_v6')||'[]'); const done=tasks.filter(t=>t.done).length; const totalT=tasks.length||1; document.getElementById('tc').textContent=tasks.length+' مهمة'; document.getElementById('tc-done').textContent=done; document.getElementById('c-task-txt').textContent=done+'/'+tasks.length; document.getElementById('c-task-val').textContent=Math.round((done/totalT)*100)+'%'; document.getElementById('c-task').style.setProperty('--deg',(done/totalT)*360+'deg');
-  const debts=JSON.parse(localStorage.getItem('debts_pro_v2')||'[]'); document.getElementById('db').textContent=debts.reduce((s,d)=>s+Number(d.amount||0),0).toLocaleString(); document.getElementById('dbC').textContent=debts.length+' شخص';
-  const recent=document.getElementById('recent'); let recHtml=''; txs.slice(-4).reverse().forEach(t=>{recHtml+=`<div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid var(--bg-soft)"><div><b style="font-size:10px">${t.item||t.person}</b><small style="font-size:7px;color:var(--text-soft);display:block">${t.date}</small></div><b style="font-size:10px;color:${t.type==='income'?'#16A34A':'#ef4444'}">${Number(t.amount||0).toLocaleString()}</b></div>`}); recent.innerHTML=recHtml||'<small style="color:var(--text-soft)">لا يوجد</small>';
-  if(exp>inc){document.getElementById('suggest-title').textContent='تنبيه مصروف ⚠️'; document.getElementById('suggest-txt').textContent='مصروفك أعلى من الدخل بـ '+(exp-inc).toLocaleString()+' ج';} else if(totalH<80){document.getElementById('suggest-title').textContent='اقتراح حضور'; document.getElementById('suggest-txt').textContent='ساعاتك '+totalH.toFixed(0)+' ساعة - باقي '+(176-totalH).toFixed(0)+' ساعة';} else if(done/totalT<0.5){document.getElementById('suggest-title').textContent='مهام متأخرة'; document.getElementById('suggest-txt').textContent='عندك '+(tasks.length-done)+' مهام لسه';} else{document.getElementById('suggest-title').textContent='ممتاز يا عمر ✨'; document.getElementById('suggest-txt').textContent='الصافي '+(inc-exp).toLocaleString()+' ج - '+totalH.toFixed(0)+' ساعة';}
-  const canvas=document.getElementById('miniChart'); if(canvas){const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height); const days=Array.from({length:7},(_,i)=>{let d=new Date(); d.setDate(d.getDate()-(6-i)); return d.getDate();}); const vals=days.map(d=>perDay[d]||0); const maxAbs=Math.max(1,...vals.map(v=>Math.abs(v))); ctx.strokeStyle='#16A34A'; ctx.lineWidth=2; ctx.beginPath(); vals.forEach((v,i)=>{const x=(i/6)*canvas.width; const y=35-(v/maxAbs)*25; if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);}); ctx.stroke();}
-  const last=localStorage.getItem('ab_omar_last_backup'); if(last){document.getElementById('syncDot').textContent='☁️ '+new Date(last).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});}
+  const now=new Date();
+  if($('clk')) $('clk').textContent=now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});
+  if($('date')) $('date').textContent=now.toLocaleDateString('ar-EG',{day:'numeric',month:'short'});
+  if($('monthName')) $('monthName').textContent=now.toLocaleDateString('ar-EG',{month:'long',year:'numeric'});
+  const txs=JSON.parse(localStorage.getItem('omar_tx_v3')||'[]');
+  const curM=now.getMonth()+1,curY=now.getFullYear();
+  let inc=0,exp=0,cntI=0;let perDay={};
+  txs.forEach(t=>{const d=new Date(t.date);if(isNaN(d)) return;if(d.getMonth()+1!==curM||d.getFullYear()!==curY) return;if(t.type==='income'){inc+=Number(t.amount||0);cntI++;perDay[d.getDate()]=(perDay[d.getDate()]||0)+Number(t.amount||0);}if(t.type==='expense'){exp+=Number(t.amount||0);perDay[d.getDate()]=(perDay[d.getDate()]||0)-Number(t.amount||0);}});
+  const net=inc-exp;
+  if($('cash')) $('cash').textContent=net.toLocaleString();
+  if($('mI')) $('mI').textContent=inc.toLocaleString();
+  if($('mI2')) $('mI2').textContent=cntI+' عملية';
+  if($('mE')) $('mE').textContent=exp.toLocaleString();
+  if($('net')) $('net').textContent='الصافي '+net.toLocaleString();
+  const debts=JSON.parse(localStorage.getItem('debts_pro_v2')||'[]');
+  if($('db')) $('db').textContent=debts.reduce((s,d)=>s+Number(d.amount||0),0).toLocaleString();
+  if($('dbC')) $('dbC').textContent=debts.length+' شخص';
+  const tasks=JSON.parse(localStorage.getItem('tasks_v6')||'[]');
+  if($('tc')) $('tc').textContent=tasks.length+' مهمة';
+  const data=JSON.parse(localStorage.getItem('att_fixed_final')||'{}');
+  let totalH=0;Object.entries(data).forEach(([k,v])=>{const p=k.split('-').map(Number);if(p[0]!==curY||p[1]!==curM) return;const h=calcDiff(v.in,v.out);if(h>0) totalH+=h;});
+  if($('attC')) $('attC').textContent=Object.keys(data).filter(k=>{const p=k.split('-').map(Number);return p[0]===curY&&p[1]===curM&&data[k].in&&data[k].out}).length+' يوم';
+  if($('attH')) $('attH').textContent=totalH.toFixed(2)+' س';
+  // circles
+  const maxV=Math.max(inc,exp,1);
+  if($('c-income')) $('c-income').style.setProperty('--deg',(inc/maxV)*360+'deg');
+  if($('c-income-val')) $('c-income-val').textContent=Math.round((inc/maxV)*100)+'%';
+  if($('c-income-txt')) $('c-income-txt').textContent=net.toLocaleString()+' ج';
+  if($('c-att-txt')) $('c-att-txt').textContent=totalH.toFixed(1)+' س';
+  if($('c-att-val')) $('c-att-val').textContent=Math.round((totalH/176)*100)+'%';
+  if($('c-att')) $('c-att').style.setProperty('--deg',Math.min(360,(totalH/176)*360)+'deg');
+  const done=tasks.filter(t=>t.done).length; const totalT=tasks.length||1;
+  if($('c-task-txt')) $('c-task-txt').textContent=done+'/'+tasks.length;
+  if($('c-task-val')) $('c-task-val').textContent=Math.round((done/totalT)*100)+'%';
+  if($('c-task')) $('c-task').style.setProperty('--deg',(done/totalT)*360+'deg');
+  // recent
+  const recent=$('recent'); if(recent){let html='';txs.slice(-4).reverse().forEach(t=>{html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid var(--bg-soft)"><div><b style="font-size:10px">${t.item||t.person}</b><small style="font-size:7px;color:var(--text-soft);display:block">${t.date}</small></div><b style="font-size:10px;color:${t.type==='income'?'var(--primary)':'#ef4444'}">${Number(t.amount||0).toLocaleString()}</b></div>`;});recent.innerHTML=html||'<small style="color:var(--text-soft)">لا يوجد</small>';}
+  
+  // تقرير اضافي
+  let best={};
+  txs.filter(t=>t.type==='expense').forEach(t=>{const d=new Date(t.date);if(d.getMonth()+1!==curM||d.getFullYear()!==curY) return;const k=t.item||t.person||'غير معروف';best[k]=(best[k]||0)+Number(t.amount||0);});
+  let bestK=Object.keys(best).sort((a,b)=>best[b]-best[a])[0];
+  if(bestK){const be=document.getElementById('best-exp'),bev=document.getElementById('best-exp-val');if(be) be.textContent=bestK; if(bev) bev.textContent=best[bestK].toLocaleString();}
+  if(document.getElementById('rep-income')) document.getElementById('rep-income').textContent=inc.toLocaleString();
+  if(document.getElementById('rep-expense')) document.getElementById('rep-expense').textContent=exp.toLocaleString();
+  if(document.getElementById('repNet')){document.getElementById('repNet').textContent='الصافي '+net.toLocaleString(); document.getElementById('repNet').style.color=net>=0?'var(--primary)':'#ef4444';}
+  let maxH=0,maxDay='-';
+  Object.entries(data).forEach(([k,v])=>{const p=k.split('-').map(Number);if(p[0]!==curY||p[1]!==curM) return;const h=calcDiff(v.in,v.out);if(h>maxH){maxH=h;maxDay=k;}});
+  if(maxDay!=='-' ){const be=document.getElementById('best-att'),bev=document.getElementById('best-att-val');if(be) be.textContent=maxDay; if(bev) bev.textContent=maxH.toFixed(2)+' س';}
+  // اقتراح
+  const st=document.getElementById('suggest-title'),sx=document.getElementById('suggest-txt');
+  if(st&&sx){
+    if(exp>inc){st.textContent='تنبيه مصروف ⚠️';sx.textContent='مصروفك أعلى من الدخل بـ '+(exp-inc).toLocaleString()+' ج';}
+    else if(totalH<80){st.textContent='اقتراح حضور';sx.textContent='ساعاتك '+totalH.toFixed(0)+' ساعة - باقي '+(176-totalH).toFixed(0)+' للهدف';}
+    else if((tasks.length-tasks.filter(t=>t.done).length)>0){st.textContent='مهام متأخرة';sx.textContent='عندك '+(tasks.length-tasks.filter(t=>t.done).length)+' مهام لسه';}
+    else{st.textContent='ممتاز يا عمر ✨';sx.textContent='الصافي '+net.toLocaleString()+' ج - '+totalH.toFixed(0)+' ساعة';}
+  }
+
+  // chart
+  const canvas=$('miniChart'); if(canvas){const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);const days=Array.from({length:7},(_,i)=>{let d=new Date();d.setDate(d.getDate()-(6-i));return d.getDate();});const vals=days.map(d=>perDay[d]||0);const maxAbs=Math.max(1,...vals.map(v=>Math.abs(v)));ctx.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--primary')||'#16A34A';ctx.lineWidth=2;ctx.beginPath();vals.forEach((v,i)=>{const x=(i/6)*canvas.width;const y=30-(v/maxAbs)*20;if(i===0) ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.stroke();ctx.fillStyle=ctx.strokeStyle;vals.forEach((v,i)=>{const x=(i/6)*canvas.width;const y=30-(v/maxAbs)*20;ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();});}
+  // attendance hero
+  const todayKey=`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+  const todayRec=data[todayKey];
+  if(todayRec&&todayRec.in){if($('att')) $('att').textContent=`حضور: ${todayRec.in} ${todayRec.out?'- '+todayRec.out:''}`; if($('wh')) $('wh').textContent=todayRec.out?'انتهى':'حاضر'; if($('attActions')) $('attActions').style.display='flex';}
  }catch(e){console.warn(e)}
 }
-renderHome(); setInterval(renderHome,2500);
+function inAtt(){const now=new Date();const key=`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;let data=JSON.parse(localStorage.getItem('att_fixed_final')||'{}');if(!data[key]) data[key]={in:'',out:''};data[key].in=now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});localStorage.setItem('att_fixed_final',JSON.stringify(data));renderHome();}
+function outAtt(){const now=new Date();const key=`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;let data=JSON.parse(localStorage.getItem('att_fixed_final')||'{}');if(!data[key]) data[key]={in:'',out:''};data[key].out=now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});localStorage.setItem('att_fixed_final',JSON.stringify(data));renderHome();}
+function editTodayAtt(){const now=new Date();const key=`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;let data=JSON.parse(localStorage.getItem('att_fixed_final')||'{}');let rec=data[key]||{in:'',out:''};let nin=prompt('دخول اليوم:',rec.in||'');if(nin===null) return;let nout=prompt('خروج اليوم:',rec.out||'');if(nout===null) return;data[key]={in:nin,out:nout};localStorage.setItem('att_fixed_final',JSON.stringify(data));renderHome();}
+function delTodayAtt(){if(!confirm('مسح حضور اليوم؟')) return;const now=new Date();const key=`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;let data=JSON.parse(localStorage.getItem('att_fixed_final')||'{}');delete data[key];localStorage.setItem('att_fixed_final',JSON.stringify(data));renderHome();}
+function toggleThemeMenu(){const m=document.getElementById('themeMenu');m.style.display=m.style.display==='none'?'block':'none';if(m.style.display==='block') renderThemeMenu();}
+function renderThemeMenu(){const menu=document.getElementById('themeMenu');if(!menu||!window.THEMES) return;menu.innerHTML=Object.entries(THEMES).map(([k,v])=>`<div onclick="applyTheme('${k}')" style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;cursor:pointer"><span style="width:14px;height:14px;border-radius:50%;background:${v.primary};display:inline-block"></span><span style="font-size:9px;font-weight:800">${k}</span></div>`).join('');}
+function applyTheme(k){if(window.applyThemeFunc) applyThemeFunc(k);else if(window.setTheme) setTheme(k);const m=document.getElementById('themeMenu');if(m) m.style.display='none';}
+renderHome();setInterval(renderHome,3000);
 </script>
 <script src="drive-sync.js"></script>
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
