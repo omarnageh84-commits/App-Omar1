@@ -1,5 +1,17 @@
-const CACHE='app-omar-v13';
-const ASSETS=['./','./index.html?v=13','./home.html?v=13','./daily.html?v=13','./attendance.html?v=13','./tasks.html?v=13','./themes.js?v=13','./drive-sync.js?v=13','./manifest.json?v=13','./icon_192.png?v=13','./icon_512.png?v=13'];
+const CACHE='app-omar-v15-fast';
+const ASSETS=[
+  './',
+  './index.html',
+  './home.html',
+  './daily.html',
+  './attendance.html',
+  './tasks.html',
+  './themes.js',
+  './drive-sync.js',
+  './manifest.json',
+  './icon_192.png',
+  './icon_512.png'
+];
 
 self.addEventListener('install',e=>{
   self.skipWaiting();
@@ -18,7 +30,7 @@ self.addEventListener('activate',e=>{
 
 self.addEventListener('fetch',e=>{
   const url = e.request.url;
-  if(url.includes('script.google.com') || url.includes('script.googleusercontent.com') || url.includes('googleapis.com') || url.includes('drive.google.com')){
+  if(url.includes('script.google.com') || url.includes('script.googleusercontent.com') || url.includes('googleapis.com') || url.includes('drive.google.com') || url.includes('/fonts/')){
     return;
   }
   e.respondWith(
