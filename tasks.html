@@ -29,6 +29,20 @@
 <script src="themes.js?v=13"></script>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
+
+#toastContainer{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:15000;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast-pro{background:var(--card);border:1.5px solid var(--card-border);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.18);min-width:260px;max-width:340px;pointer-events:auto;animation:toastIn .3s ease}
+.toast-pro.success{border-color:#16a34a;background:#f0fdf4}
+.toast-pro.error{border-color:#ef4444;background:#fef2f2}
+.toast-pro-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.toast-pro.success .toast-pro-icon{background:#dcfce7}
+.toast-pro.error .toast-pro-icon{background:#fee2e2}
+.toast-pro-text{flex:1}
+.toast-pro-title{font-size:10px;font-weight:800;color:var(--text)}
+.toast-pro-sub{font-size:8px;color:var(--text-soft);margin-top:1px}
+@keyframes toastIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes toastOut{from{transform:translateY(0);opacity:1}to{transform:translateY(20px);opacity:0}}
+
 :root{--hero:#16a34a;--bg:#f0fdf4;--bg-soft:#dcfce7;--card:#FFFFFF;--card-border:#bbf7d0;--text:#14532d;--text-soft:#15803d}
 *{box-sizing:border-box;margin:0;padding:0;font-family:'IBM Plex Sans Arabic',sans-serif}
 html,body{max-width:430px;margin:0 auto !important;background:var(--bg);min-height:100dvh}
@@ -121,6 +135,7 @@ body{border-left:1px solid var(--card-border);border-right:1px solid var(--card-
 
 <div id="voiceModal"><div style="background:var(--card);width:100%;max-width:340px;border-radius:20px;overflow:hidden;border:1px solid var(--card-border);padding:18px;text-align:center"><div style="font-size:12px;font-weight:800;color:var(--text)">🎙️ تسجيل صوتي</div><div id="voiceTimer" style="font-size:32px;font-weight:800;color:var(--hero);margin:16px 0;font-variant-numeric:tabular-nums">00:00</div><div id="voiceWave" style="display:flex;gap:3px;justify-content:center;align-items:center;height:40px;margin-bottom:16px"><div style="width:4px;height:12px;background:var(--hero);border-radius:99px;animation:wave 1s infinite"></div><div style="width:4px;height:24px;background:var(--hero);border-radius:99px;animation:wave 1s .1s infinite"></div><div style="width:4px;height:18px;background:var(--hero);border-radius:99px;animation:wave 1s .2s infinite"></div><div style="width:4px;height:30px;background:var(--hero);border-radius:99px;animation:wave 1s .3s infinite"></div><div style="width:4px;height:14px;background:var(--hero);border-radius:99px;animation:wave 1s .4s infinite"></div></div><style>@keyframes wave{0%,100%{transform:scaleY(.5)}50%{transform:scaleY(1.2)}}</style><div style="display:flex;gap:8px"><button onclick="closeVoice()" style="flex:1;background:var(--bg-soft);border:1px solid var(--card-border);padding:10px;border-radius:10px;font-weight:700">إلغاء</button><button id="voiceActionBtn" onclick="toggleVoiceRecord()" style="flex:1;background:#ef4444;color:#fff;border:none;padding:10px;border-radius:10px;font-weight:800">● بدء التسجيل</button></div></div></div>
 
+<div id="toastContainer"></div>
 <div id="managerModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;align-items:center;justify-content:center;padding:11px"><div style="background:var(--card);width:100%;max-width:437px;border-radius:16px;overflow:hidden;max-height:85vh;display:flex;flex-direction:column;border:1px solid var(--card-border)"><div style="display:flex;gap:4px;background:var(--bg-soft);margin:9px;padding:4px;border-radius:9px"><button onclick="mTab('cats')" id="mTabCats" style="flex:1;padding:7px;border:none;border-radius:7px;background:var(--card);font-weight:700;color:var(--text);font-size:10.3px">📁 التصنيفات</button><button onclick="mTab('colors')" id="mTabColors" style="flex:1;padding:7px;border:none;border-radius:7px;background:transparent;color:var(--text-soft);font-size:10.3px">🎨 الألوان</button></div><div style="flex:1;overflow:auto;padding:0 11px 11px" class="nu-scroll"><div id="mCats"><div style="display:flex;gap:5px;margin-bottom:11px"><input id="newCatEmoji" placeholder="💊" style="width:41px;text-align:center;border:1px solid var(--card-border);border-radius:8px;padding:7px;background:var(--card);color:var(--text);font-size:11.5px"><input id="newCatName" placeholder="اسم التصنيف" style="flex:1;border:1px solid var(--card-border);border-radius:8px;padding:7px;background:var(--card);color:var(--text);font-size:11.5px"><button onclick="addCategory()" style="background:var(--hero);color:#fff;border:none;padding:7px 11px;border-radius:8px;font-size:11.5px">+</button></div><div id="catList"></div></div><div id="mColors" style="display:none"><div id="excelTheme" class="excel-grid"></div><div id="excelStandard" class="excel-grid" style="margin-top:9px"></div></div></div><div style="padding:9px 11px;border-top:1px solid var(--card-border)"><button onclick="closeManager()" style="width:100%;background:var(--bg-soft);border:1px solid var(--card-border);padding:8px;border-radius:9px;color:var(--text);font-size:10.3px">إغلاق</button></div></div></div>
 
 <div id="modal">
@@ -473,14 +488,44 @@ function delMedia(id){if(!cur||!cur.media)return;cur.media=cur.media.filter(x=>x
 function toggleAllColors(){let box=document.getElementById('allColorsBox');box.style.display=box.style.display==='none'?'block':'none'; if(box.style.display==='block'){renderColorPalette();}}
 function renderColorPalette(){let themeBox=document.getElementById('modalColorsTheme');let stdBox=document.getElementById('modalColorsStandard');if(!themeBox)return;themeBox.innerHTML='';stdBox.innerHTML='';themeColors.flat().forEach(hex=>{let d=document.createElement('div');d.className='color-cell';d.style.background=hex;d.onclick=()=>{if(cur){cur.color=hex;document.getElementById('currentColorPreview').style.background=hex;document.getElementById('modalCover').style.setProperty('--hero-color',hex);ensureInTasks();saveLS();}};themeBox.appendChild(d);});standardColors.forEach(hex=>{let d=document.createElement('div');d.className='color-cell';d.style.background=hex;d.onclick=()=>{if(cur){cur.color=hex;document.getElementById('currentColorPreview').style.background=hex;document.getElementById('modalCover').style.setProperty('--hero-color',hex);ensureInTasks();saveLS();}};stdBox.appendChild(d);});}
 
+
+function showToast(title, sub='', type='success'){
+  let cont=document.getElementById('toastContainer');
+  if(!cont){
+    cont=document.createElement('div');
+    cont.id='toastContainer';
+    document.body.appendChild(cont);
+  }
+  let t=document.createElement('div');
+  t.className='toast-pro '+type;
+  t.innerHTML=`<div class="toast-pro-icon">${type==='success'?'✅':'⚠️'}</div><div class="toast-pro-text"><div class="toast-pro-title">${title}</div>${sub?`<div class="toast-pro-sub">${sub}</div>`:''}</div><button onclick="this.parentElement.remove()" style="background:transparent;border:none;font-size:12px;cursor:pointer;color:var(--text-soft)">✕</button>`;
+  cont.appendChild(t);
+  setTimeout(()=>{
+    t.style.animation='toastOut .3s ease forwards';
+    setTimeout(()=>{ t.remove(); }, 300);
+  }, 3000);
+}
+// Override alert to use toast for professional look
+window._oldAlert = window.alert;
+window.alert = function(msg){
+  // Parse if it's code save message
+  if(typeof msg==='string' && msg.includes('تم حفظ')){
+    showToast(msg, '', 'success');
+  }else if(typeof msg==='string' && msg.toLowerCase().includes('قصير')){
+    showToast('الكود قصير جداً', 'اكتب 3 أحرف على الأقل', 'error');
+  }else{
+    showToast(msg, '', 'success');
+  }
+};
+
 function saveHiddenCode(){
   let inp=document.getElementById('hiddenCodeInput');
   if(!inp) return;
   let v=inp.value.trim();
   if(!v) return;
-  if(v.length<3){ alert('الكود قصير جداً'); return; }
+  if(v.length<3){ showToast('الكود قصير جداً','اكتب 3 أحرف على الأقل','error'); return; }
   localStorage.setItem('omar_hidden_code_v1', v);
-  alert('تم حفظ الكود الجديد: '+v);
+  showToast('تم حفظ الكود الجديد','الكود: '+v+' - استخدم: '+v+' + مسافة + اسم المهمة','success');
   inp.value='';
   render();
 }
