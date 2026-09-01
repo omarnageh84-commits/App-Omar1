@@ -243,7 +243,7 @@ function clearAllFilters(){
 function refreshCurrent(){renderFixedSection();if(curTab==='total')renderTotal();else if(curTab==='debt')renderDebt();else renderSimple(curTab)}
 function switchTab(t){curTab=t;document.querySelectorAll('[id^="p-"]').forEach(e=>e.style.display='none');document.getElementById('p-'+t).style.display='block';document.querySelectorAll('.mtab').forEach(b=>b.classList.remove('active'));document.querySelector(`.mtab[data-t="${t}"]`).classList.add('active');refreshCurrent()}
 function setDebtSub(s){curDebtSub=s;document.getElementById('sdue').style.background=s==='due'?'var(--card)':'transparent';document.getElementById('sdef').style.background=s==='def'?'var(--card)':'transparent';document.getElementById('debt-due').style.display=s==='due'?'block':'none';document.getElementById('debt-def').style.display=s==='def'?'block':'none'}
-function switchCardTab(t){ // Clear amounts when switching tab
+function switchCardTab(t){
   try{ ['a-amount','a-amount-debt','a-amount-ama'].forEach(id=>{let el=document.getElementById(id); if(el && !editingId){ el.value=''; }}); }catch(e){} 
 cardTab=t;document.querySelectorAll('.card-ttab').forEach(b=>b.classList.remove('active'));document.getElementById('ct-'+t)?.classList.add('active');document.getElementById('form-expense').style.display=(t==='expense'||t==='income')?'block':'none';document.getElementById('form-debt').style.display=t==='debt'?'block':'none';document.getElementById('form-amanat').style.display=t==='amanat'?'block':'none';let list=[];if(t==='expense')list=getBands('expense');else if(t==='income')list=getBands('income');else if(t==='debt')list=[...getBands('debt_due'),...getBands('debt_def')];else if(t==='amanat')list=getBands('amanat');const opts=list.map(b=>`<option>${b}</option>`).join('')+'<option value="__new__">+ جديد</option>';if(t==='expense'||t==='income'){document.getElementById('a-item').innerHTML=opts;document.getElementById('a-wallet').innerHTML=wallets.map(w=>`<option>${w}</option>`).join('')}if(t==='debt'){document.getElementById('a-person-debt').innerHTML=opts;document.getElementById('a-wallet-debt').innerHTML=wallets.map(w=>`<option>${w}</option>`).join('')}if(t==='amanat'){document.getElementById('a-person-ama').innerHTML=opts}
   try{ let card=document.querySelector('.card'); if(card && document.getElementById('addModal').classList.contains('open')){ if(t==='expense'){ card.style.transform='translateY(-2vh)'; card.style.marginTop='12vh'; }else{ card.style.transform='translateY(3vh)'; card.style.marginTop='15vh'; } } }catch(e){}
@@ -267,30 +267,19 @@ let defOAll=0,defLAll=0;allMonth.filter(t=>t.type==='debt'&&(t.subType==='debt_d
 const debtDefNetAll=defLAll-defOAll;
 const isActive=includeDeferredInBalance;
 const netThere = incomeMonth - expenseMonth - dueO + dueL + (isActive ? debtDefNetAll : 0);
+// ثابت في كل التبوابات حتى في الإجمالي - نفس الشكل
 const top5=`<div class="kpi-grid-5">
 <div class="stat pos"><small>إجمالي الدخل</small><b>${incomeMonth.toLocaleString()}</b></div>
 <div class="stat neg"><small>إجمالي المصروف</small><b>${expenseMonth.toLocaleString()}</b></div>
-<div class="stat neg"><small>إجمالي المستحقة</small><b>${(dueO - dueL).toLocaleString()}</b></div>
+<div class="stat neg"><small>إجمالي المستحق</small><b>${(dueO - dueL).toLocaleString()}</b></div>
 <div class="stat neu"><small>الصافي هناك</small><b>${netThere.toLocaleString()}</b></div>
 <div class="stat def ${isActive?'active':'inactive'}" onclick="toggleDeferredInclude()"><span style="font-size:5px;background:${isActive?'#dcfce7':'#fee2e2'};color:${isActive?'#16a34a':'#ef4444'};padding:1px 4px;border-radius:10px">${isActive?'✅ مفعلة':'❌ مخفية'}</span><small>المؤجلة ⏳</small><b>${debtDefNetAll.toLocaleString()}</b></div>
 </div>`;
 document.querySelectorAll('[id^="stats-"]').forEach(el=>{
-if(el.id==='stats-debt'){
-let o=0,l=0,od=0,ld=0;
-allMonth.filter(t=>t.type==='debt').forEach(t=>{
-if(t.subType==='debt_due'||t.status==='due'){if(!t.excludeFromBalance){if(t.direction==='عليا')o+=Number(t.amount);else l+=Number(t.amount)}}
-else{if(t.direction==='عليا')od+=Number(t.amount);else ld+=Number(t.amount)}
-});
-el.innerHTML=`<div class="kpi-grid-5">
-<div class="stat neg"><small>عليا (مستحق)</small><b>${o.toLocaleString()}</b></div>
-<div class="stat pos"><small>ليا (مستحق)</small><b>${l.toLocaleString()}</b></div>
-<div class="stat neu"><small>صافي المستحق</small><b>${(l-o).toLocaleString()}</b></div>
-<div class="stat neu"><small>الصافي العام</small><b>${(l-o+(isActive?(ld-od):0)).toLocaleString()}</b></div>
-<div class="stat def ${isActive?'active':'inactive'}" onclick="toggleDeferredInclude()"><span style="font-size:5px;background:${isActive?'#dcfce7':'#fee2e2'};color:${isActive?'#16a34a':'#ef4444'};padding:1px 4px;border-radius:10px">${isActive?'✅ مفعلة':'❌ مخفية'}</span><small>مؤجل</small><b>${(ld-od).toLocaleString()}</b></div>
-</div>`;
-}else{el.innerHTML=top5}
+  el.innerHTML=top5;
 });
 }
+
 function renderSimple(type){
 renderStats(type);
 const q=document.getElementById(type==='expense'?'f-exp-q':type==='income'?'f-inc-q':'f-ama-q')?.value||'';
@@ -463,7 +452,6 @@ function openAdd(){
     if(el){ el.focus(); try{el.select();}catch(e){} }
   },110);
 }
-
 
 
 function closeAdd(){let card=document.querySelector('.card'); if(card){card.style.transform=''; card.style.marginTop='';} document.getElementById('addModal').classList.remove('open');editingId=null}
