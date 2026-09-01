@@ -24,7 +24,7 @@
 </style>
 <meta charset="UTF-8"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>اليومية</title>
-<script src="themes.js?v=18"></script>
+<script src="themes.js?v=14"></script>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
 @font-face{font-family:"Optimistic";font-style:normal;font-weight:400 600;font-display:swap;src:url("/fonts/OptimisticAI_VF_Optimized.woff2") format("woff2")}
@@ -283,10 +283,12 @@ let expenseMonth=monthList.filter(t=>t.type==='expense').reduce((s,x)=>s+Number(
 let fixedSum=getFixedForMonth(curYM).reduce((a,b)=>a+(Number(b.amount)||0),0);
 expenseMonth+=fixedSum;
 let dueO=0,dueL=0;monthList.filter(t=>t.type==='debt'&&(t.subType==='debt_due'||t.status==='due')).forEach(t=>{if(t.direction==='عليا')dueO+=Number(t.amount);else dueL+=Number(t.amount)});
+const debtDueNet=dueL-dueO;
 let defOAll=0,defLAll=0;allMonth.filter(t=>t.type==='debt'&&(t.subType==='debt_def'||t.status==='def')).forEach(t=>{if(t.direction==='عليا')defOAll+=Number(t.amount);else defLAll+=Number(t.amount)});
 const debtDefNetAll=defLAll-defOAll;
 const isActive=includeDeferredInBalance;
 const netThere = incomeMonth - expenseMonth - dueO + dueL + (isActive ? debtDefNetAll : 0);
+// ثابت في كل التبوابات حتى في الإجمالي - نفس الشكل
 const top5=`<div class="kpi-grid-5">
 <div class="stat pos"><small>إجمالي الدخل</small><b>${incomeMonth.toLocaleString()}</b></div>
 <div class="stat neg"><small>إجمالي المصروف</small><b>${expenseMonth.toLocaleString()}</b></div>
@@ -294,7 +296,9 @@ const top5=`<div class="kpi-grid-5">
 <div class="stat neu"><small>الصافي هناك</small><b>${netThere.toLocaleString()}</b></div>
 <div class="stat def ${isActive?'active':'inactive'}" onclick="toggleDeferredInclude()"><span style="font-size:5px;background:${isActive?'#dcfce7':'#fee2e2'};color:${isActive?'#16a34a':'#ef4444'};padding:1px 4px;border-radius:10px">${isActive?'✅ مفعلة':'❌ مخفية'}</span><small>المؤجلة ⏳</small><b>${debtDefNetAll.toLocaleString()}</b></div>
 </div>`;
-document.querySelectorAll('[id^="stats-"]').forEach(el=>{ el.innerHTML=top5; });
+document.querySelectorAll('[id^="stats-"]').forEach(el=>{
+  el.innerHTML=top5;
+});
 }
 
 function renderSimple(type){
@@ -424,4 +428,4 @@ function handleBandAction(action){closeBandMenu();if(action==='edit'){showPrompt
 function addNewRow(section){currentSection=section;const dialog=document.getElementById('customPrompt');dialog.innerHTML=`<div class="dialog-box"><h4>إضافة بند جديد</h4><input id="newBandName" placeholder="اسم البند"><div class="dialog-actions"><button class="btn-cancel" onclick="closePrompt(); restoreDialog()">إلغاء</button><button class="btn-confirm" onclick="confirmNewRow()">إضافة</button></div></div>`;dialog.classList.add('open');setTimeout(()=>document.getElementById('newBandName').focus(),100)}
 function confirmNewRow(){const name=document.getElementById('newBandName').value.trim();if(!name)return;if(masterBands.find(b=>b.name===name&&b.section===currentSection)){toast('البند موجود بالفعل','err');return}masterBands.push({id:Date.now(),name,section:currentSection});persist();closePrompt();restoreDialog();renderTotal()}
 function restoreDialog(){document.getElementById('customPrompt').innerHTML=`<div class="dialog-box" id="dialogInner"><h4 id="promptTitle"></h4><input id="promptInput" type="text"><div class="dialog-actions"><button class="btn-cancel" onclick="closePrompt()">إلغاء</button><button class="btn-confirm" id="promptConfirmBtn" onclick="confirmPrompt()">حسناً</button></div></div>`}
-function showPrompt(title,def,cb){restoreDialog();document.getElementById('promptTitle').textContent=title;const inp=document.getElementById('promptInput');inp.value=def;inp.style.display='block';document.getElementById('promptConfirmBtn').textContent='حسناً';document.getElementById('promptConfirmBtn').className='btn-confirm';promptCallback=cb;document.getElementById('customPrompt').class
+function showPrompt(title,def,cb){restoreDialog();document.getElementById('promptTitle').textContent=title;const inp=document.getElementById('promptInput');inp.value=def;inp.style.display='block';document.getElementById('promptConfirmBtn').textContent='حسناً';document.getElementById('promptConfirmBtn').class
