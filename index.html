@@ -54,7 +54,8 @@ body{display:flex;justify-content:center;align-items:flex-start;background:#0f17
 <script src="drive-sync.js"></script>
 <script>
 const frames=document.querySelectorAll('.page');
-function switchPage(name,btn){
+let pageHistory=['home.html'];
+function switchPage(name,btn,isPop=false){
   frames.forEach(f=>{
     const is=f.dataset.page===name;
     f.classList.toggle('active',is);
@@ -69,11 +70,76 @@ function switchPage(name,btn){
     }
   });
   document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
+  if(btn) btn.classList.add('active'); else {
+    document.querySelectorAll('.nav button').forEach(b=>{
+      if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes(name)) b.classList.add('active');
+    });
+  }
+  if(!isPop && pageHistory[pageHistory.length-1]!==name){
+    pageHistory.push(name);
+    history.pushState({page:name},'', '#'+name);
+  }
   if(navigator.vibrate) navigator.vibrate(10);
 }
+// back handling: modal inside iframe -> close it, else go home
+window.addEventListener('popstate',(e)=>{
+  // check if active iframe has modal open
+  let active = document.querySelector('.page.active');
+  try{
+    if(active && active.contentDocument){
+      let modal = active.contentDocument.getElementById('modal');
+      let delModal = active.contentDocument.getElementById('deleteWarningModal');
+      let camModal = active.contentDocument.getElementById('cameraModal');
+      let voiceModal = active.contentDocument.getElementById('voiceModal');
+      if(modal && modal.style.display==='flex'){
+        active.contentWindow.closeModal(true);
+        history.pushState({page:active.dataset.page},'', '#'+active.dataset.page);
+        return;
+      }
+      if(delModal && delModal.classList.contains('show')){
+        active.contentWindow.closeDeleteWarning();
+        history.pushState({page:active.dataset.page},'', '#'+active.dataset.page);
+        return;
+      }
+      if(camModal && camModal.classList.contains('show')){
+        active.contentWindow.closeCamera();
+        history.pushState({page:active.dataset.page},'', '#'+active.dataset.page);
+        return;
+      }
+      if(voiceModal && voiceModal.classList.contains('show')){
+        active.contentWindow.closeVoice();
+        history.pushState({page:active.dataset.page},'', '#'+active.dataset.page);
+        return;
+      }
+    }
+  }catch(err){}
+  // page back
+  if(e.state && e.state.page){
+    let name=e.state.page;
+    pageHistory = pageHistory.filter(p=>p!==name);
+    pageHistory.push(name);
+    switchPage(name,null,true);
+  }else{
+    let current = document.querySelector('.page.active');
+    if(current && current.dataset.page!=='home.html'){
+      history.pushState({page:'home.html'},'','#home.html');
+      switchPage('home.html',null,true);
+    }
+  }
+});
 applyTheme(localStorage.getItem('omar_theme')||'green');
-if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').then(()=>console.log('✅ PWA Ready - يمكنك تثبيته من كروم'));} window.switchPage=switchPage;
+// init history
+history.replaceState({page:'home.html'},'','#home.html');
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').then(()=>console.log('✅ PWA Ready - يمكنك تثبيته من كروم'));}
+// performance fix: preload tasks.html in background after 1.5s to reduce lag on first open
+setTimeout(()=>{
+  frames.forEach(f=>{
+    if(f.dataset.page==='tasks.html' && f.src.includes('about:blank')){
+      f.src='tasks.html';
+    }
+  });
+},1500);
+window.switchPage=switchPage;
 </script>
 </body>
 </html>

@@ -298,16 +298,30 @@ function insertChecklist(editor){restoreRange(editor);let html=`<div class="chec
 function updateWordCount(){let text=document.getElementById('noteEditor').innerText||'';let words=text.trim()?text.trim().split(/\s+/).length:0;let el=document.getElementById('editorWordCount');if(el)el.innerText=words+' كلمة';}
 
 function saveLS(){try{localStorage.setItem('tasks_v6',JSON.stringify(tasks));localStorage.setItem('cats_v5',JSON.stringify(cats));if(window.syncToABOmar)syncToABOmar();}catch(e){}render();}
+let _renderRAF=null;
 function render(){
-  let board=document.getElementById('board');
-  let filtered=tasks;
-  if(activeTaskTab==='done') filtered=tasks.filter(t=>t.done);
-  else if(activeTaskTab!=='all') filtered=tasks.filter(t=>t.cat===activeTaskTab);
-  document.getElementById('stats').innerText=filtered.length+' مهمة';
-  if(filtered.length===0){board.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-soft)">📭 لا يوجد مهام</div>';return;}
-  board.innerHTML=filtered.map(t=>`<div class="task-outer"><div class="task-card ${t.done?'done':''}" style="border-right:4px solid ${t.color||'#bbf7d0'}" onclick="openTask(${t.id})"><div style="display:flex;gap:8px;align-items:center;flex:1"><input type="checkbox" ${t.done?'checked':''} onclick="event.stopPropagation();toggleDoneQuick(${t.id})" style="width:18px;height:18px"><div style="flex:1"><div style="font-size:11px;font-weight:800">${t.text||'بدون عنوان'}</div><div style="font-size:8px;color:var(--text-soft);margin-top:2px">${t.cat||''} ${t.subtasks?.length? '• '+t.subtasks.filter(s=>s.done).length+'/'+t.subtasks.length:''} ${t.media?.length? '• 📸'+t.media.length:''}</div></div></div></div><button class="ext-del" onclick="quickDelete(${t.id})">🗑</button></div>`).join('');
-  let chipBox=document.getElementById('dynamicCatsChips');
-  if(chipBox) chipBox.innerHTML=cats.map(c=>`<button onclick="filterTasksTab('${c.name}')" id="tt_${c.name}" class="filter-chip ${activeTaskTab===c.name?'active':''}">${c.emoji} ${c.name}</button>`).join('');
+  if(_renderRAF) cancelAnimationFrame(_renderRAF);
+  _renderRAF=requestAnimationFrame(()=>{
+    let board=document.getElementById('board');
+    let filtered=tasks;
+    if(activeTaskTab==='done') filtered=tasks.filter(t=>t.done);
+    else if(activeTaskTab!=='all') filtered=tasks.filter(t=>t.cat===activeTaskTab);
+    let statsEl=document.getElementById('stats');
+    if(statsEl) statsEl.innerText=filtered.length+' مهمة';
+    if(filtered.length===0){board.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-soft)">📭 لا يوجد مهام</div>';return;}
+    // performance: limit initial paint to 60 items, then append rest async
+    let first=filtered.slice(0,60);
+    let rest=filtered.slice(60);
+    board.innerHTML=first.map(t=>`<div class="task-outer"><div class="task-card ${t.done?'done':''}" style="border-right:4px solid ${t.color||'#bbf7d0'}" onclick="openTask(${t.id})"><div style="display:flex;gap:8px;align-items:center;flex:1"><input type="checkbox" ${t.done?'checked':''} onclick="event.stopPropagation();toggleDoneQuick(${t.id})" style="width:18px;height:18px"><div style="flex:1"><div style="font-size:11px;font-weight:800">${t.text||'بدون عنوان'}</div><div style="font-size:8px;color:var(--text-soft);margin-top:2px">${t.cat||''} ${t.subtasks?.length? '• '+t.subtasks.filter(s=>s.done).length+'/'+t.subtasks.length:''} ${t.media?.length? '• 📸'+t.media.length:''}</div></div></div></div><button class="ext-del" onclick="quickDelete(${t.id})">🗑</button></div>`).join('');
+    let chipBox=document.getElementById('dynamicCatsChips');
+    if(chipBox) chipBox.innerHTML=cats.map(c=>`<button onclick="filterTasksTab('${c.name}')" id="tt_${c.name}" class="filter-chip ${activeTaskTab===c.name?'active':''}">${c.emoji} ${c.name}</button>`).join('');
+    if(rest.length>0){
+      setTimeout(()=>{
+        let extra=rest.map(t=>`<div class="task-outer"><div class="task-card ${t.done?'done':''}" style="border-right:4px solid ${t.color||'#bbf7d0'}" onclick="openTask(${t.id})"><div style="display:flex;gap:8px;align-items:center;flex:1"><input type="checkbox" ${t.done?'checked':''} onclick="event.stopPropagation();toggleDoneQuick(${t.id})" style="width:18px;height:18px"><div style="flex:1"><div style="font-size:11px;font-weight:800">${t.text||'بدون عنوان'}</div><div style="font-size:8px;color:var(--text-soft);margin-top:2px">${t.cat||''} ${t.subtasks?.length? '• '+t.subtasks.filter(s=>s.done).length+'/'+t.subtasks.length:''} ${t.media?.length? '• 📸'+t.media.length:''}</div></div></div></div><button class="ext-del" onclick="quickDelete(${t.id})">🗑</button></div>`).join('');
+        board.insertAdjacentHTML('beforeend', extra);
+      },80);
+    }
+  });
 }
 function quickDelete(id){let t=tasks.find(x=>x.id===id);if(!t)return;cur=t;document.getElementById('delTaskPreview').innerText=t.text;document.getElementById('delConfirmCheck').checked=false;document.getElementById('finalDelBtn').disabled=true;document.getElementById('deleteWarningModal').classList.add('show');}
 function toggleDelBtn(){let chk=document.getElementById('delConfirmCheck').checked;let btn=document.getElementById('finalDelBtn');btn.disabled=!chk;btn.style.background=chk?'#ef4444':'#E5E7EB';btn.style.color=chk?'#fff':'#9CA3AF';}
@@ -319,8 +333,26 @@ function doAdd(){let text=document.getElementById('mainInput').value.trim();if(!
 function ensureInTasks(){if(!cur)return;let ex=tasks.find(x=>x.id===cur.id);if(!ex)tasks.unshift(cur);}
 function switchPane(p){document.querySelectorAll('.pro-seg-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.pane').forEach(el=>el.classList.remove('active'));document.getElementById('pane'+p.charAt(0).toUpperCase()+p.slice(1)).classList.add('active');document.getElementById('seg'+p.charAt(0).toUpperCase()+p.slice(1)).classList.add('active');}
 function openNewTaskModal(){cur={id:Date.now(),text:'',cat:cats[0]?.name||'شخصي',color:'#ffffff',done:false,note:'',subtasks:[],innerTabs:[],media:[]};document.getElementById('modalTitle').value='';document.getElementById('noteEditor').innerHTML='';document.getElementById('modalCover').style.setProperty('--hero-color',cur.color);document.getElementById('currentColorPreview').style.background=cur.color;document.getElementById('modalCat').innerHTML=cats.map(c=>`<option value="${c.name}" ${c.name===cur.cat?'selected':''}>${c.emoji} ${c.name}</option>`).join('');renderSubtasks();renderInnerTabs();renderMedia();switchPane('sub');document.getElementById('modal').style.display='flex';}
-function openTask(id){let t=tasks.find(x=>x.id===id);if(!t)return;if(!t.media)t.media=[];cur=t;document.getElementById('modalTitle').value=t.text||'';document.getElementById('modalCover').style.setProperty('--hero-color',t.color||'#16a34a');document.getElementById('currentColorPreview').style.background=t.color||'#fff';document.getElementById('noteEditor').innerHTML=t.note||'';document.getElementById('modalCat').innerHTML=cats.map(c=>`<option value="${c.name}" ${c.name===t.cat?'selected':''}>${c.emoji} ${c.name}</option>`).join('');renderSubtasks();renderInnerTabs();renderMedia();updateWordCount();switchPane('sub');document.getElementById('modal').style.display='flex';}
-function closeModal(){if(cur){cur.text=document.getElementById('modalTitle').value.trim()||cur.text;ensureInTasks();saveLS();}document.getElementById('modal').style.display='none';cur=null;curInnerTabId=null;stopCamera();stopVoice();}
+let modalHistoryPushed=false;
+function pushModalHistory(){ if(!modalHistoryPushed){ try{ history.pushState({modal:true},''); modalHistoryPushed=true; }catch(e){} } }
+function openTask(id){let t=tasks.find(x=>x.id===id);if(!t)return;if(!t.media)t.media=[];cur=t;document.getElementById('modalTitle').value=t.text||'';document.getElementById('modalCover').style.setProperty('--hero-color',t.color||'#16a34a');document.getElementById('currentColorPreview').style.background=t.color||'#fff';document.getElementById('noteEditor').innerHTML=t.note||'';document.getElementById('modalCat').innerHTML=cats.map(c=>`<option value="${c.name}" ${c.name===t.cat?'selected':''}>${c.emoji} ${c.name}</option>`).join('');renderSubtasks();renderInnerTabs();renderMedia();updateWordCount();switchPane('sub');document.getElementById('modal').style.display='flex'; pushModalHistory(); }
+function closeModal(isFromPop=false){
+  if(cur){cur.text=document.getElementById('modalTitle').value.trim()||cur.text;ensureInTasks();saveLS();}
+  document.getElementById('modal').style.display='none';
+  cur=null;curInnerTabId=null;stopCamera();stopVoice();
+  if(!isFromPop && modalHistoryPushed){
+    modalHistoryPushed=false;
+    try{ history.back(); }catch(e){}
+  }else{
+    modalHistoryPushed=false;
+  }
+}
+window.addEventListener('popstate',(e)=>{
+  let m=document.getElementById('modal');
+  if(m && m.style.display==='flex'){
+    closeModal(true);
+  }
+});
 function changeModalCat(){if(cur){cur.cat=document.getElementById('modalCat').value;ensureInTasks();saveLS();}}
 function toggleDoneQuick(id){let t=tasks.find(x=>x.id===id);if(t){t.done=!t.done;saveLS();}}
 function deleteCurrent(){if(!cur)return;quickDelete(cur.id);}
