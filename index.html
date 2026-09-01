@@ -81,9 +81,7 @@ function switchPage(name,btn,isPop=false){
   }
   if(navigator.vibrate) navigator.vibrate(10);
 }
-// back handling: modal inside iframe -> close it, else go home
 window.addEventListener('popstate',(e)=>{
-  // check if active iframe has modal open
   let active = document.querySelector('.page.active');
   try{
     if(active && active.contentDocument){
@@ -113,12 +111,8 @@ window.addEventListener('popstate',(e)=>{
       }
     }
   }catch(err){}
-  // page back
   if(e.state && e.state.page){
-    let name=e.state.page;
-    pageHistory = pageHistory.filter(p=>p!==name);
-    pageHistory.push(name);
-    switchPage(name,null,true);
+    switchPage(e.state.page,null,true);
   }else{
     let current = document.querySelector('.page.active');
     if(current && current.dataset.page!=='home.html'){
@@ -128,10 +122,8 @@ window.addEventListener('popstate',(e)=>{
   }
 });
 applyTheme(localStorage.getItem('omar_theme')||'green');
-// init history
 history.replaceState({page:'home.html'},'','#home.html');
-if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').then(()=>console.log('✅ PWA Ready - يمكنك تثبيته من كروم'));}
-// performance fix: preload tasks.html in background after 1.5s to reduce lag on first open
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').then(()=>console.log('✅ PWA Ready'));}
 setTimeout(()=>{
   frames.forEach(f=>{
     if(f.dataset.page==='tasks.html' && f.src.includes('about:blank')){
