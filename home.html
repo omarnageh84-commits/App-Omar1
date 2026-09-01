@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>الرئيسية</title>
-<script src="themes.js?v=16"></script>
+<script src="themes.js?v=17"></script>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -14,8 +14,10 @@ body{padding-bottom:100px}
 .app{max-width:780px;margin:0 auto;padding:8px}
 .top{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1.5px solid var(--card-border);border-radius:14px;padding:10px 12px;margin-bottom:8px}
 .top b{font-size:13px}
-.top-actions{display:flex;gap:6px;align-items:center}
-.theme-dot{width:22px;height:22px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1.5px var(--card-border);cursor:pointer}
+.top-actions{display:flex;gap:8px;align-items:center}
+.theme-dot{width:24px;height:24px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 2px var(--card-border);cursor:pointer;position:relative}
+.theme-dot.active{box-shadow:0 0 0 2.5px var(--hero);transform:scale(1.1)}
+.theme-dot small{position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);font-size:5px;font-weight:900;color:var(--text-soft);white-space:nowrap}
 .card-box{background:var(--card);border:1.5px solid var(--card-border);border-radius:14px;padding:10px;margin-bottom:10px}
 .card-title{font-size:11px;font-weight:900;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
 .btn{border:none;border-radius:10px;padding:8px 12px;font-weight:900;font-size:10px;cursor:pointer}
@@ -46,19 +48,20 @@ body{padding-bottom:100px}
 <body>
 <div class="app">
   <div class="top">
-    <b>الرئيسية - أبو عمر</b>
+    <div><b>الرئيسية - أبو عمر</b><div id="today" style="font-size:8px;color:var(--text-soft);margin-top:2px"></div></div>
     <div class="top-actions">
-      <small id="today" style="font-size:9px;color:var(--text-soft)"></small>
-      <div style="display:flex;gap:4px" id="themeDots"></div>
+      <div style="display:flex;gap:6px;align-items:flex-end" id="themeDots"></div>
     </div>
   </div>
+
   <div class="compact-stats" id="compactStats"></div>
+
   <div class="grid-2">
     <div class="card-box">
       <div class="card-title">⏱️ حضور / انصراف <span id="attPulse" style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block"></span></div>
       <div style="display:flex;gap:6px">
-        <button class="btn btn-primary" style="flex:1" onclick="quickAttendance('دخول')">دخول ✅</button>
-        <button class="btn btn-soft" style="flex:1" onclick="quickAttendance('خروج')">خروج 🚪</button>
+        <button class="btn btn-primary" style="flex:1" onclick="handleAttendance('دخول')">دخول ✅</button>
+        <button class="btn btn-soft" style="flex:1" onclick="handleAttendance('خروج')">خروج 🚪</button>
       </div>
       <div id="attToday" style="font-size:8px;margin-top:6px;color:var(--text-soft)"></div>
     </div>
@@ -68,13 +71,15 @@ body{padding-bottom:100px}
       <button class="btn btn-soft" style="width:100%;margin-top:6px" onclick="goTasks()">فتح المهام</button>
     </div>
   </div>
+
   <div class="card-box">
-    <div class="card-title"><span>📌 ملاحظات عامة - عشان ما انساش</span><button class="btn btn-primary" onclick="openNoteModal()">+ ملاحظة</button></div>
+    <div class="card-title"><span>📌 ملاحظات عامة</span><button class="btn btn-primary" onclick="openNoteModal()">+ ملاحظة</button></div>
     <div id="notesList"></div>
   </div>
+
   <div class="card-box">
     <div class="card-title">
-      <span>📊 التقارير الاحترافية</span>
+      <span>📊 التقارير</span>
       <select id="chartMonth" onchange="renderCharts()" style="padding:4px 6px;border-radius:8px;border:1px solid var(--card-border);font-size:9px;background:var(--card);color:var(--text)"></select>
     </div>
     <div class="chart-grid">
@@ -84,47 +89,82 @@ body{padding-bottom:100px}
       <div class="chart-card"><b>محافظ <span class="kpi-mini" id="kpiWallet">0</span></b><canvas id="cWallet"></canvas></div>
     </div>
   </div>
-  <div class="card-box" style="border-style:dashed">
-    <div class="card-title"><span>🔄 المزامنة والاستيراد / التصدير</span></div>
+
+  <!-- المزامنة آخر حاجة -->
+  <div class="card-box" style="border-style:dashed;opacity:0.9">
+    <div class="card-title"><span>🔄 البيانات والمزامنة</span></div>
     <div class="sync-box">
       <div style="display:flex;gap:6px;flex-wrap:wrap">
-        <button class="btn btn-soft" onclick="document.getElementById('taxFile').click()">📤 استيراد من الضرائب</button>
-        <button class="btn btn-primary" onclick="exportExcelMultiSheet()">📥 تصدير Excel (يومية+حضور+مهام)</button>
+        <button class="btn btn-soft" onclick="document.getElementById('importFile').click()">📤 استيراد ملف</button>
+        <button class="btn btn-primary" onclick="exportExcelMultiSheet()">📥 تصدير Excel (3 شيت)</button>
       </div>
-      <input type="file" id="taxFile" accept=".csv,.json" style="display:none" onchange="handleTaxImport(event)">
-      <div id="taxStatus" style="font-size:8px;font-weight:800;margin-top:6px;color:var(--hero)"></div>
-      <div style="font-size:7px;color:var(--text-soft);margin-top:6px">التصدير: ملف Excel واحد فيه 3 شيت - شيت اليومية وشيت الحضور وشيت المهام + ملخص</div>
+      <input type="file" id="importFile" accept=".csv,.json,.xlsx" style="display:none" onchange="handleImport(event)">
+      <div id="importStatus" style="font-size:8px;font-weight:800;margin-top:6px;color:var(--hero)"></div>
+      <div style="font-size:7px;color:var(--text-soft);margin-top:6px">التصدير: Excel واحد فيه شيت اليومية + شيت الحضور + شيت المهام + ملخص</div>
       <div style="display:flex;gap:6px;margin-top:8px">
         <button class="btn btn-soft" style="flex:1;font-size:8px" onclick="syncDrive()">☁️ مزامنة Drive</button>
         <button class="btn btn-soft" style="flex:1;font-size:8px" onclick="clearAllDrafts()">🗑️ مسح مسودات</button>
       </div>
     </div>
   </div>
+
 </div>
+
 <button class="fab" onclick="openFab()">+</button>
+
 <div class="modal" id="fabModal"><div class="card-modal">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><b>إضافة سريعة</b><button onclick="closeFab()" style="border:none;background:transparent;font-size:18px">✕</button></div>
   <div class="opt" onclick="goDaily('expense')"><span>💸</span> إضافة مصروف</div>
   <div class="opt" onclick="goDaily('income')"><span>💰</span> إضافة دخل</div>
   <div class="opt" onclick="goDaily('debt')"><span>🤝</span> إضافة دين</div>
   <div class="opt" onclick="goDaily('amanat')"><span>🔒</span> إضافة أمانات</div>
-  <div class="opt" onclick="quickAttendance('دخول')"><span>⏱️</span> حضور / انصراف</div>
+  <div class="opt" onclick="handleAttendance('دخول')"><span>⏱️</span> حضور / انصراف</div>
   <div class="opt" onclick="openTaskModal()"><span>✓</span> مهمة جديدة</div>
   <div class="opt" onclick="openNoteModal()"><span>📌</span> ملاحظة عامة</div>
 </div></div>
+
 <div class="modal" id="noteModal"><div class="card-modal">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b>ملاحظة عامة</b><button onclick="closeNoteModal()" style="border:none;background:transparent">✕</button></div>
   <input id="noteTitle" placeholder="عنوان" style="width:100%;padding:8px;border:1.5px solid var(--card-border);border-radius:8px;font-weight:800;margin-bottom:6px;background:var(--card);color:var(--text)">
   <textarea id="noteBody" placeholder="اكتب عشان ما تنساش..." style="width:100%;height:100px;padding:8px;border:1.5px solid var(--card-border);border-radius:8px;font-size:10px;background:var(--card);color:var(--text)"></textarea>
   <div style="display:flex;gap:6px;margin-top:8px"><button class="btn btn-primary" style="flex:1" onclick="saveNote()">حفظ</button><button class="btn btn-soft" style="flex:1" onclick="closeNoteModal()">إلغاء</button></div>
 </div></div>
+
 <div class="modal" id="taskModal"><div class="card-modal">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b>مهمة جديدة</b><button onclick="closeTaskModal()" style="border:none;background:transparent">✕</button></div>
   <input id="taskTitle" placeholder="عنوان المهمة" style="width:100%;padding:8px;border:1.5px solid var(--card-border);border-radius:8px;font-weight:800;margin-bottom:6px;background:var(--card);color:var(--text)">
   <select id="taskPriority" style="width:100%;padding:8px;border:1.5px solid var(--card-border);border-radius:8px;margin-bottom:6px;background:var(--card);color:var(--text)"><option>عادية</option><option>مهمة</option><option>عاجلة</option></select>
   <div style="display:flex;gap:6px;margin-top:8px"><button class="btn btn-primary" style="flex:1" onclick="saveTask()">حفظ</button><button class="btn btn-soft" style="flex:1" onclick="closeTaskModal()">إلغاء</button></div>
 </div></div>
+
 <script>
+let audioCtx=null;
+function getAudioCtx(){
+  try{
+    if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended') audioCtx.resume();
+    return audioCtx;
+  }catch(e){ return null; }
+}
+function playBeep(ok=true){
+  try{
+    let ctx=getAudioCtx();
+    if(!ctx) return;
+    let o=ctx.createOscillator();
+    let g=ctx.createGain();
+    o.type='sine';
+    o.frequency.value=ok?1200:500;
+    o.connect(g); g.connect(ctx.destination);
+    g.gain.setValueAtTime(0, ctx.currentTime);
+    g.gain.linearRampToValueAtTime(0.4, ctx.currentTime+0.02);
+    g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime+0.35);
+    o.start(ctx.currentTime);
+    o.stop(ctx.currentTime+0.35);
+    if(navigator.vibrate) navigator.vibrate(ok?[30,30,30]:[80,40,80]);
+    console.log('beep', ok);
+  }catch(e){ console.error('beep error', e); }
+}
+
 function safeParse(k,f){try{let v=localStorage.getItem(k);if(!v||v==='undefined'||v==='null')return f;let p=JSON.parse(v);return p==null?f:p;}catch(e){return f;}}
 let transactions=safeParse('omar_tx_v3', []);
 let notes=safeParse('omar_notes_home', []);
@@ -132,26 +172,139 @@ let tasks=safeParse('omar_tasks_v2', []);
 let curYM=new Date().toISOString().slice(0,7);
 let fixedByMonth=safeParse('omar_fixed_by_month', {});
 let includeDeferredInBalance=safeParse('omar_include_def', false);
-function toast(m){let b=document.getElementById('toastBox');if(!b){b=document.createElement('div');b.id='toastBox';b.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:20000;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none';document.body.appendChild(b);}let el=document.createElement('div');el.style.cssText='background:var(--card);border:1.5px solid var(--card-border);border-radius:12px;padding:10px 14px;box-shadow:0 10px 30px rgba(0,0,0,.2);font-size:10px;font-weight:800;pointer-events:auto;';el.textContent=m;b.appendChild(el);setTimeout(()=>{try{el.remove();}catch(e){}},3000);}
-function playBeep(ok=true){try{let ctx=new (window.AudioContext||window.webkitAudioContext)();let o=ctx.createOscillator();let g=ctx.createGain();o.type='sine';o.frequency.value=ok?900:400;o.connect(g);g.connect(ctx.destination);g.gain.setValueAtTime(0.3, ctx.currentTime);o.start();o.stop(ctx.currentTime+0.18);if(navigator.vibrate) navigator.vibrate(ok?[40]:[80,40,80]);}catch(e){}}
-function renderCompactStats(){const allMonth=transactions.filter(t=>t.date&&t.date.startsWith(curYM));const monthList=allMonth.filter(t=>{if(t.excludeFromBalance)return false;const isDef=t.subType==='debt_def'||t.status==='def';if(isDef&&!includeDeferredInBalance)return false;return true});const income=monthList.filter(t=>t.type==='income').reduce((s,x)=>s+Number(x.amount),0);let expense=monthList.filter(t=>t.type==='expense').reduce((s,x)=>s+Number(x.amount),0);try{let fm=fixedByMonth[curYM]; if(fm) expense+=fm.reduce((a,b)=>a+(Number(b.amount)||0),0);}catch(e){}let due=0; monthList.filter(t=>t.type==='debt'&&(t.subType==='debt_due'||t.status==='due')).forEach(t=>{due+=Number(t.amount);});const net=income-expense;document.getElementById('compactStats').innerHTML=`<div class="cstat"><small>دخل</small><b style="color:#16a34a">${income.toLocaleString()}</b></div><div class="cstat"><small>مصروف</small><b style="color:#ef4444">${expense.toLocaleString()}</b></div><div class="cstat"><small>صافي</small><b>${net.toLocaleString()}</b></div><div class="cstat"><small>ديون</small><b>${due.toLocaleString()}</b></div><div class="cstat"><small>مهام</small><b>${tasks.filter(t=>!t.done).length}</b></div>`;}
+
+function toast(m){
+  let b=document.getElementById('toastBox');if(!b){b=document.createElement('div');b.id='toastBox';b.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:20000;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none';document.body.appendChild(b);}
+  let el=document.createElement('div');el.style.cssText='background:var(--card);border:1.5px solid var(--card-border);border-radius:12px;padding:10px 14px;box-shadow:0 10px 30px rgba(0,0,0,.2);font-size:10px;font-weight:800;pointer-events:auto;';el.textContent=m;b.appendChild(el);setTimeout(()=>{try{el.remove();}catch(e){}},3000);
+}
+
+function renderCompactStats(){
+  try{
+    const allMonth=transactions.filter(t=>t.date&&t.date.startsWith(curYM));
+    const monthList=allMonth.filter(t=>{if(t.excludeFromBalance)return false;const isDef=t.subType==='debt_def'||t.status==='def';if(isDef&&!includeDeferredInBalance)return false;return true});
+    const income=monthList.filter(t=>t.type==='income').reduce((s,x)=>s+Number(x.amount),0);
+    let expense=monthList.filter(t=>t.type==='expense').reduce((s,x)=>s+Number(x.amount),0);
+    try{let fm=fixedByMonth[curYM]; if(fm) expense+=fm.reduce((a,b)=>a+(Number(b.amount)||0),0);}catch(e){}
+    let due=0; monthList.filter(t=>t.type==='debt'&&(t.subType==='debt_due'||t.status==='due')).forEach(t=>{due+=Number(t.amount);});
+    const net=income-expense;
+    document.getElementById('compactStats').innerHTML=`<div class="cstat"><small>دخل</small><b style="color:#16a34a">${income.toLocaleString()}</b></div><div class="cstat"><small>مصروف</small><b style="color:#ef4444">${expense.toLocaleString()}</b></div><div class="cstat"><small>صافي</small><b>${net.toLocaleString()}</b></div><div class="cstat"><small>ديون</small><b>${due.toLocaleString()}</b></div><div class="cstat"><small>مهام</small><b>${tasks.filter(t=>!t.done).length}</b></div>`;
+  }catch(e){ console.error(e); }
+}
+
 let chartInstances={};
-function renderCharts(){const ym=document.getElementById('chartMonth').value||curYM;const list=transactions.filter(t=>t.date&&t.date.startsWith(ym));const expMap={}; list.filter(t=>t.type==='expense').forEach(t=>{let k=t.item||'مصروف'; expMap[k]=(expMap[k]||0)+Number(t.amount);});drawPro('cExpense', Object.keys(expMap), Object.values(expMap), 'kpiExp', 'ج');const inc=list.filter(t=>t.type==='income').reduce((a,b)=>a+Number(b.amount),0);const exp=list.filter(t=>t.type==='expense').reduce((a,b)=>a+Number(b.amount),0);drawPro('cIncomeExpense', ['دخل','مصروف'], [inc,exp], 'kpiIncExp', '');let due=list.filter(t=>t.subType==='debt_due'||(t.type==='debt'&&t.status==='due')).reduce((a,b)=>a+Number(b.amount),0);let def=list.filter(t=>t.subType==='debt_def'||(t.type==='debt'&&t.status==='def')).reduce((a,b)=>a+Number(b.amount),0);drawPro('cDebt', ['مستحقة','مؤجلة'], [due,def], 'kpiDebt', '');const wMap={}; list.forEach(t=>{if(t.wallet){wMap[t.wallet]=(wMap[t.wallet]||0)+Number(t.amount);}});drawPro('cWallet', Object.keys(wMap), Object.values(wMap), 'kpiWallet', '');}
-function drawPro(id, labels, data, kpiId, suffix){let ctx=document.getElementById(id); if(!ctx) return;if(chartInstances[id]){ try{chartInstances[id].destroy();}catch(e){} }let total=data.reduce((a,b)=>a+b,0);if(kpiId) document.getElementById(kpiId).textContent= total ? total.toLocaleString()+(suffix||'') : '0';if(!labels.length){ ctx.getContext('2d').clearRect(0,0,ctx.width,ctx.height); return; }chartInstances[id]=new Chart(ctx, {type:'doughnut',data:{labels:labels, datasets:[{data:data, backgroundColor:['#16A34A','#22C55E','#4ADE80','#86EFAC','#BBF7D0','#F59E0B','#EF4444','#3B82F6','#8B5CF6','#EC4899'], borderWidth:0, hoverOffset:6}]},options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, cutout:'62%', animation:{animateRotate:true, duration:800}}});}
-function fillMonths(){let sel=document.getElementById('chartMonth'); let cur=new Date(); sel.innerHTML='';for(let i=0;i<12;i++){let d=new Date(cur.getFullYear(), cur.getMonth()-i,1); let ym=d.toISOString().slice(0,7); let opt=document.createElement('option'); opt.value=ym; opt.textContent=ym; sel.appendChild(opt);}sel.value=curYM;}
-function handleTaxImport(e){let file=e.target.files[0]; if(!file) return;let reader=new FileReader();reader.onload=function(ev){try{let txt=ev.target.result; let json= file.name.endsWith('.json')? JSON.parse(txt) : parseCSV(txt);let imported=0;if(Array.isArray(json)){json.forEach(row=>{let amount=Number(row.amount||row.القيمة||0); if(!amount) return;let type=row.type||'expense';transactions.push({id:Date.now().toString()+Math.random(), type:type, subType:type, item:row.item||'ضرائب', person:row.item||'ضرائب', wallet:'كاش', amount:amount, date:row.date||new Date().toISOString().slice(0,10), note:'استيراد ضرائب'});imported++;});}localStorage.setItem('omar_tx_v3', JSON.stringify(transactions));document.getElementById('taxStatus').textContent=`تم استيراد ${imported} ✅`; toast(`استيراد ${imported} من الضرائب`); renderCompactStats(); renderCharts();}catch(err){ document.getElementById('taxStatus').textContent='خطأ: '+err.message; }};reader.readAsText(file);}
+function renderCharts(){
+  try{
+    const ym=document.getElementById('chartMonth').value||curYM;
+    const list=transactions.filter(t=>t.date&&t.date.startsWith(ym));
+    const expMap={}; list.filter(t=>t.type==='expense').forEach(t=>{let k=t.item||'مصروف'; expMap[k]=(expMap[k]||0)+Number(t.amount);});
+    drawPro('cExpense', Object.keys(expMap), Object.values(expMap), 'kpiExp', 'ج');
+    const inc=list.filter(t=>t.type==='income').reduce((a,b)=>a+Number(b.amount),0);
+    const exp=list.filter(t=>t.type==='expense').reduce((a,b)=>a+Number(b.amount),0);
+    drawPro('cIncomeExpense', ['دخل','مصروف'], [inc,exp], 'kpiIncExp', '');
+    let due=list.filter(t=>t.subType==='debt_due'||(t.type==='debt'&&t.status==='due')).reduce((a,b)=>a+Number(b.amount),0);
+    let def=list.filter(t=>t.subType==='debt_def'||(t.type==='debt'&&t.status==='def')).reduce((a,b)=>a+Number(b.amount),0);
+    drawPro('cDebt', ['مستحقة','مؤجلة'], [due,def], 'kpiDebt', '');
+    const wMap={}; list.forEach(t=>{if(t.wallet){wMap[t.wallet]=(wMap[t.wallet]||0)+Number(t.amount);}});
+    drawPro('cWallet', Object.keys(wMap), Object.values(wMap), 'kpiWallet', '');
+  }catch(e){ console.error('charts', e); }
+}
+function drawPro(id, labels, data, kpiId, suffix){
+  try{
+    let ctx=document.getElementById(id); if(!ctx) return;
+    if(chartInstances[id]){ try{chartInstances[id].destroy();}catch(e){} }
+    let total=data.reduce((a,b)=>a+b,0);
+    if(kpiId){ let el=document.getElementById(kpiId); if(el) el.textContent= total ? total.toLocaleString()+(suffix||'') : '0'; }
+    if(!labels.length || total===0){ let c=ctx.getContext('2d'); c.clearRect(0,0,ctx.width,ctx.height); c.fillStyle='#94a3b8'; c.font='10px Tajawal'; c.textAlign='center'; c.fillText('لا يوجد بيانات', ctx.width/2, ctx.height/2); return; }
+    chartInstances[id]=new Chart(ctx, {type:'doughnut',data:{labels:labels, datasets:[{data:data, backgroundColor:['#16A34A','#22C55E','#4ADE80','#86EFAC','#F59E0B','#EF4444','#3B82F6','#8B5CF6','#EC4899','#14B8A6'], borderWidth:0, hoverOffset:8}]},options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, cutout:'65%', animation:{animateRotate:true, duration:600}}});
+  }catch(e){ console.error('drawPro', e); }
+}
+function fillMonths(){
+  try{
+    let sel=document.getElementById('chartMonth'); let cur=new Date(); sel.innerHTML='';
+    for(let i=0;i<12;i++){let d=new Date(cur.getFullYear(), cur.getMonth()-i,1); let ym=d.toISOString().slice(0,7); let opt=document.createElement('option'); opt.value=ym; opt.textContent=ym; sel.appendChild(opt);}
+    sel.value=curYM;
+  }catch(e){}
+}
+
+function handleImport(e){
+  let file=e.target.files[0]; if(!file) return;
+  let reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      let txt=ev.target.result; let json= file.name.endsWith('.json')? JSON.parse(txt) : parseCSV(txt);
+      let imported=0;
+      if(Array.isArray(json)){
+        json.forEach(row=>{
+          let amount=Number(row.amount||row.القيمة||0); if(!amount) return;
+          let type=row.type||'expense';
+          transactions.push({id:Date.now().toString()+Math.random(), type:type, subType:type, item:row.item||'استيراد', person:row.item||'استيراد', wallet:'كاش', amount:amount, date:row.date||new Date().toISOString().slice(0,10), note:'استيراد ملف'});
+          imported++;
+        });
+      }
+      localStorage.setItem('omar_tx_v3', JSON.stringify(transactions));
+      document.getElementById('importStatus').textContent=`تم استيراد ${imported} ✅`;
+      toast(`استيراد ${imported}`); renderCompactStats(); renderCharts();
+    }catch(err){ document.getElementById('importStatus').textContent='خطأ: '+err.message; }
+  };
+  reader.readAsText(file);
+}
 function parseCSV(txt){ let lines=txt.split('\n').filter(l=>l.trim()); let headers=lines[0].split(',').map(h=>h.trim()); let out=[]; for(let i=1;i<lines.length;i++){ let cols=lines[i].split(','); let obj={}; headers.forEach((h,idx)=>{obj[h]=cols[idx];}); out.push(obj);} return out;}
-function exportExcelMultiSheet(){const wb = XLSX.utils.book_new();let dailyData = transactions.map(t=>({التاريخ:t.date, النوع:t.type, البند:t.item||t.person, المحفظة:t.wallet, القيمة:t.amount, الملاحظة:t.note||''}));let wsDaily = XLSX.utils.json_to_sheet(dailyData);XLSX.utils.book_append_sheet(wb, wsDaily, "اليومية");let atts=safeParse('omar_att_v2', []);let wsAtt = XLSX.utils.json_to_sheet(atts.map(a=>({التاريخ:a.date, النوع:a.type, الوقت:a.time})));XLSX.utils.book_append_sheet(wb, wsAtt, "الحضور");let wsTasks = XLSX.utils.json_to_sheet(tasks.map(t=>({العنوان:t.title, الحالة:t.done?'منجز':'معلق', الاولوية:t.priority||'عادية', التاريخ:t.date})));XLSX.utils.book_append_sheet(wb, wsTasks, "المهام");let summary = [{البند:'إجمالي الدخل', القيمة:transactions.filter(t=>t.type==='income').reduce((a,b)=>a+Number(b.amount),0)}, {البند:'إجمالي المصروف', القيمة:transactions.filter(t=>t.type==='expense').reduce((a,b)=>a+Number(b.amount),0)}];let wsSum = XLSX.utils.json_to_sheet(summary);XLSX.utils.book_append_sheet(wb, wsSum, "الملخص");XLSX.writeFile(wb, `Omar_Export_${curYM}.xlsx`);toast('تم تصدير Excel 3 شيت ✅');document.getElementById('taxStatus').textContent='تم تصدير Excel فيه اليومية + الحضور + المهام';}
-function clearAllDrafts(){ localStorage.removeItem('omar_tax_draft'); document.getElementById('taxStatus').textContent='تم مسح المسودات'; toast('تم المسح'); }
+
+function exportExcelMultiSheet(){
+  try{
+    const wb = XLSX.utils.book_new();
+    let dailyData = transactions.map(t=>({التاريخ:t.date, النوع:t.type, البند:t.item||t.person, المحفظة:t.wallet, القيمة:t.amount, الملاحظة:t.note||''}));
+    let wsDaily = XLSX.utils.json_to_sheet(dailyData);
+    XLSX.utils.book_append_sheet(wb, wsDaily, "اليومية");
+    let atts=safeParse('omar_att_v2', []);
+    let wsAtt = XLSX.utils.json_to_sheet(atts.map(a=>({التاريخ:a.date, النوع:a.type, الوقت:a.time})));
+    XLSX.utils.book_append_sheet(wb, wsAtt, "الحضور");
+    let wsTasks = XLSX.utils.json_to_sheet(tasks.map(t=>({العنوان:t.title, الحالة:t.done?'منجز':'معلق', الاولوية:t.priority||'عادية', التاريخ:t.date})));
+    XLSX.utils.book_append_sheet(wb, wsTasks, "المهام");
+    let summary = [{البند:'إجمالي الدخل', القيمة:transactions.filter(t=>t.type==='income').reduce((a,b)=>a+Number(b.amount),0)}, {البند:'إجمالي المصروف', القيمة:transactions.filter(t=>t.type==='expense').reduce((a,b)=>a+Number(b.amount),0)}];
+    let wsSum = XLSX.utils.json_to_sheet(summary);
+    XLSX.utils.book_append_sheet(wb, wsSum, "الملخص");
+    XLSX.writeFile(wb, `Omar_Export_${curYM}.xlsx`);
+    toast('تم تصدير Excel 3 شيت ✅');
+    document.getElementById('importStatus').textContent='تم تصدير Excel فيه اليومية + الحضور + المهام';
+    playBeep(true);
+  }catch(e){ toast('خطأ تصدير: '+e.message); }
+}
+function clearAllDrafts(){ localStorage.removeItem('omar_tax_draft'); document.getElementById('importStatus').textContent='تم مسح المسودات'; toast('تم المسح'); }
 function syncDrive(){ try{ if(window.syncToABOmar) syncToABOmar(); toast('مزامنة...'); }catch(e){ toast('Drive غير متصل'); } }
-function renderNotes(){let html=''; if(!notes.length) html='<div style="font-size:9px;color:var(--text-soft)">لا يوجد ملاحظات</div>';else notes.slice().reverse().forEach(n=>{ html+=`<div class="note-card"><button class="note-del" onclick="delNote('${n.id}')">✕</button><b style="font-size:10px">${n.title}</b><p style="font-size:9px;margin-top:4px;white-space:pre-wrap">${n.body}</p><small style="font-size:7px;color:var(--text-soft)">${n.date}</small></div>`; });document.getElementById('notesList').innerHTML=html;}
+
+function renderNotes(){
+  try{
+    let html=''; if(!notes.length) html='<div style="font-size:9px;color:var(--text-soft)">لا يوجد ملاحظات</div>';
+    else notes.slice().reverse().forEach(n=>{ html+=`<div class="note-card"><button class="note-del" onclick="delNote('${n.id}')">✕</button><b style="font-size:10px">${n.title}</b><p style="font-size:9px;margin-top:4px;white-space:pre-wrap">${n.body}</p><small style="font-size:7px;color:var(--text-soft)">${n.date}</small></div>`; });
+    document.getElementById('notesList').innerHTML=html;
+  }catch(e){}
+}
 function openNoteModal(){document.getElementById('noteTitle').value='';document.getElementById('noteBody').value='';document.getElementById('noteModal').classList.add('open');}
 function closeNoteModal(){document.getElementById('noteModal').classList.remove('open');}
-function saveNote(){let t=document.getElementById('noteTitle').value.trim(); let b=document.getElementById('noteBody').value.trim();if(!t&&!b){toast('اكتب حاجة');return;}notes.push({id:Date.now().toString(), title:t||'ملاحظة', body:b, date:new Date().toLocaleString('ar-EG')});localStorage.setItem('omar_notes_home', JSON.stringify(notes));closeNoteModal(); renderNotes(); toast('تم حفظ الملاحظة ✅'); playBeep(true);}
+function saveNote(){
+  let t=document.getElementById('noteTitle').value.trim(); let b=document.getElementById('noteBody').value.trim();
+  if(!t&&!b){toast('اكتب حاجة');return;}
+  notes.push({id:Date.now().toString(), title:t||'ملاحظة', body:b, date:new Date().toLocaleString('ar-EG')});
+  localStorage.setItem('omar_notes_home', JSON.stringify(notes));
+  closeNoteModal(); renderNotes(); toast('تم حفظ الملاحظة ✅'); playBeep(true);
+}
 function delNote(id){notes=notes.filter(n=>n.id!==id);localStorage.setItem('omar_notes_home', JSON.stringify(notes));renderNotes();}
-function quickAttendance(type){let atts=safeParse('omar_att_v2', []);atts.push({id:Date.now().toString(), type:type, date:new Date().toISOString().slice(0,10), time:new Date().toLocaleTimeString('ar-EG')});localStorage.setItem('omar_att_v2', JSON.stringify(atts));document.getElementById('attToday').textContent=`آخر ${type} ${new Date().toLocaleTimeString('ar-EG')}`;playBeep(type==='دخول'); toast(`${type} تم ✅ سمع 🔔`); closeFab();let p=document.getElementById('attPulse'); p.style.background=type==='دخول'?'#22c55e':'#f59e0b'; p.style.transform='scale(1.5)'; setTimeout(()=>p.style.transform='scale(1)',300);}
-function renderAtt(){let atts=safeParse('omar_att_v2', []).filter(a=>a.date===new Date().toISOString().slice(0,10)); document.getElementById('attToday').textContent=atts.length?`${atts.length} حركة اليوم - آخر ${atts[atts.length-1].type}`:'لا يوجد حضور اليوم';}
-function renderTasks(){let today=tasks.filter(t=>!t.done).slice(0,5);let html=today.length?today.map(t=>`• ${t.title} <small>(${t.priority||'عادية'})</small>`).join('<br>'):'<span style="color:var(--text-soft)">لا يوجد مهام</span>';document.getElementById('tasksToday').innerHTML=html;}
+
+function handleAttendance(type){
+  playBeep(type==='دخول');
+  try{
+    let atts=safeParse('omar_att_v2', []);
+    atts.push({id:Date.now().toString(), type:type, date:new Date().toISOString().slice(0,10), time:new Date().toLocaleTimeString('ar-EG')});
+    localStorage.setItem('omar_att_v2', JSON.stringify(atts));
+    document.getElementById('attToday').textContent=`آخر ${type} ${new Date().toLocaleTimeString('ar-EG')}`;
+    toast(`${type} تم ✅ سمع 🔔`);
+    closeFab();
+    let p=document.getElementById('attPulse'); if(p){ p.style.background=type==='دخول'?'#22c55e':'#f59e0b'; p.style.transform='scale(1.8)'; setTimeout(()=>p.style.transform='scale(1)',400); }
+  }catch(e){ toast('خطأ حضور: '+e.message); }
+}
+function renderAtt(){try{let atts=safeParse('omar_att_v2', []).filter(a=>a.date===new Date().toISOString().slice(0,10)); let el=document.getElementById('attToday'); if(el) el.textContent=atts.length?`${atts.length} حركة اليوم - آخر ${atts[atts.length-1].type}`:'لا يوجد حضور اليوم';}catch(e){}}
+function renderTasks(){try{let today=tasks.filter(t=>!t.done).slice(0,5);let html=today.length?today.map(t=>`• ${t.title} <small>(${t.priority||'عادية'})</small>`).join('<br>'):'<span style="color:var(--text-soft)">لا يوجد مهام</span>';let el=document.getElementById('tasksToday'); if(el) el.innerHTML=html;}catch(e){}}
 function openTaskModal(){document.getElementById('taskTitle').value='';document.getElementById('taskModal').classList.add('open');}
 function closeTaskModal(){document.getElementById('taskModal').classList.remove('open');}
 function saveTask(){let title=document.getElementById('taskTitle').value.trim(); if(!title){toast('اكتب عنوان');return;}let pri=document.getElementById('taskPriority').value;tasks.push({id:Date.now().toString(), title:title, priority:pri, done:false, date:new Date().toISOString().slice(0,10)});localStorage.setItem('omar_tasks_v2', JSON.stringify(tasks));closeTaskModal(); renderTasks(); toast('مهمة جديدة ✅'); playBeep(true); closeFab();}
@@ -159,8 +312,37 @@ function goTasks(){ try{window.parent.switchPage('tasks.html', window.parent.doc
 function goDaily(tab){closeFab();try{let frame=window.parent.document.querySelector('[data-page="daily.html"]');if(frame){window.parent.switchPage('daily.html', window.parent.document.querySelectorAll('.nav button')[1]);setTimeout(()=>{ try{ frame.contentWindow.switchTab(tab); }catch(e){} },400);}}catch(e){ localStorage.setItem('omar_open_tab', tab); location.href='daily.html'; }}
 function openFab(){document.getElementById('fabModal').classList.add('open');}
 function closeFab(){document.getElementById('fabModal').classList.remove('open');}
-function renderThemes(){let cont=document.getElementById('themeDots'); cont.innerHTML='';const colors={green:'#16A34A', dark:'#0F172A', blue:'#2563EB', purple:'#7C3AED', orange:'#D97706', rose:'#E11D48', teal:'#0D9488'};Object.keys(window.themes||{}).forEach(k=>{let d=document.createElement('div'); d.className='theme-dot'; d.style.background=colors[k]||'#16A34A'; d.title=k;d.onclick=()=>{ applyTheme(k); toast('سيمز: '+k); };cont.appendChild(d);});}
-(function init(){document.getElementById('today').textContent=new Date().toLocaleDateString('ar-EG');renderThemes();fillMonths();renderCompactStats();renderCharts();renderNotes();renderAtt();renderTasks();applyTheme(localStorage.getItem('omar_theme')||'green');})();
+
+function renderThemes(){
+  try{
+    let cont=document.getElementById('themeDots'); if(!cont) return; cont.innerHTML='';
+    const colors={green:'#16A34A', dark:'#0F172A', blue:'#2563EB', purple:'#7C3AED', orange:'#EA580C', rose:'#E11D48', teal:'#0F766E', night:'#0B0F1A'};
+    const names={green:'أخضر', dark:'دارك', blue:'أزرق', purple:'موف', orange:'برتقالي', rose:'وردي', teal:'تيل', night:'ليلي'};
+    const cur=localStorage.getItem('omar_theme')||'green';
+    Object.keys(window.themes||{}).forEach(k=>{
+      let d=document.createElement('div'); d.className='theme-dot'+(cur===k?' active':''); d.style.background=colors[k]||'#16A34A'; d.title=names[k]||k;
+      let sm=document.createElement('small'); sm.textContent=names[k]||k; d.appendChild(sm);
+      d.onclick=()=>{ applyTheme(k); toast('سيمز: '+(names[k]||k)); renderThemes(); playBeep(true); };
+      cont.appendChild(d);
+    });
+  }catch(e){ console.error('themes render', e); }
+}
+
+(function init(){
+  try{
+    document.getElementById('today').textContent=new Date().toLocaleDateString('ar-EG')+' - '+new Date().toISOString().slice(0,7);
+    curYM=new Date().toISOString().slice(0,7);
+    renderThemes();
+    fillMonths();
+    renderCompactStats();
+    renderCharts();
+    renderNotes();
+    renderAtt();
+    renderTasks();
+    applyTheme(localStorage.getItem('omar_theme')||'green');
+    document.body.addEventListener('click', function firstClick(){ getAudioCtx(); document.body.removeEventListener('click', firstClick); }, {once:true});
+  }catch(e){ console.error('init error', e); document.body.innerHTML='<div style="padding:20px;color:red">خطأ تحميل: '+e.message+'</div>'; }
+})();
 </script>
 </body>
 </html>
