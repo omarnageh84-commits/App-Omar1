@@ -22,7 +22,7 @@
   font-family: "Optimistic Mono", ui-monospace, monospace;
 }
 </style>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta charset="UTF-8"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>اليومية</title>
 <script src="themes.js?v=13"></script>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@700;800;900&display=swap" rel="stylesheet">
@@ -208,6 +208,7 @@ let excludeFromBalanceCurrent=false;
 let currentBand=null,currentSection=null,promptCallback=null;
 let curYM = new Date().toISOString().slice(0,7);
 let fixedTemplates=JSON.parse(localStorage.getItem('omar_fixed_templates')||'[{"id":"1","name":"الإيجار","def":5000},{"id":"2","name":"الكهرباء","def":400},{"id":"3","name":"مياه","def":200},{"id":"4","name":"غاز","def":150},{"id":"5","name":"إنترنت","def":300}]');
+if(!fixedTemplates || !fixedTemplates.length){ fixedTemplates=[{"id":"1","name":"الإيجار","def":5000},{"id":"2","name":"الكهرباء","def":400},{"id":"3","name":"مياه","def":200},{"id":"4","name":"غاز","def":150},{"id":"5","name":"إنترنت","def":300}]; }
 let fixedByMonth=JSON.parse(localStorage.getItem('omar_fixed_by_month')||'{}');
 let fixedOpen=true;
 function persistFixed(){localStorage.setItem('omar_fixed_templates',JSON.stringify(fixedTemplates));localStorage.setItem('omar_fixed_by_month',JSON.stringify(fixedByMonth));try{if(window.syncToABOmar)syncToABOmar()}catch(e){}}
@@ -337,33 +338,6 @@ h+=`<div class="tsec"><div class="thead"><b style="font-size:10.2px">${person}</
 document.getElementById('debt-due').innerHTML=build(due);document.getElementById('debt-def').innerHTML=build(def);
 }
 
-let deferredIncluded = localStorage.getItem('omar_def_inc') !== '0'; // default true
-function toggleDeferredInclude(){
-  deferredIncluded = !deferredIncluded;
-  localStorage.setItem('omar_def_inc', deferredIncluded ? '1' : '0');
-  renderTotal();
-  // also update all tabs
-  refreshCurrent();
-}
-function getTotalsForMonth(){
-  // Calculate based on current viewed month (viewDate)
-  let month = viewDate.getMonth();
-  let year = viewDate.getFullYear();
-  let filtered = transactions.filter(t=>{
-    let d=new Date(t.date);
-    return d.getMonth()===month && d.getFullYear()===year;
-  });
-  let income = filtered.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
-  let expense = filtered.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
-  let debtDue = filtered.filter(t=>t.type==='debt' && t.status==='due').reduce((s,t)=>s+t.amount,0);
-  let debtDef = filtered.filter(t=>t.type==='debt' && t.status==='def').reduce((s,t)=>s+t.amount,0);
-  // For totals view, include all months? Use all transactions for total cards
-  let allIncome = transactions.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
-  let allExpense = transactions.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
-  let allDue = transactions.filter(t=>t.type==='debt' && t.status==='due').reduce((s,t)=>s+t.amount,0);
-  let allDef = transactions.filter(t=>t.type==='debt' && t.status==='def').reduce((s,t)=>s+t.amount,0);
-  return {income: allIncome, expense: allExpense, due: allDue, def: allDef, net: allIncome - allExpense - allDue - (deferredIncluded ? allDef : 0)};
-}
 
 function renderTotal(){
 
@@ -435,4 +409,94 @@ function addNewRow(section){currentSection=section;const dialog=document.getElem
 function confirmNewRow(){const name=document.getElementById('newBandName').value.trim();if(!name)return;if(masterBands.find(b=>b.name===name&&b.section===currentSection)){toast('البند موجود بالفعل','err');return}masterBands.push({id:Date.now(),name,section:currentSection});persist();closePrompt();restoreDialog();renderTotal()}
 function restoreDialog(){document.getElementById('customPrompt').innerHTML=`<div class="dialog-box" id="dialogInner"><h4 id="promptTitle"></h4><input id="promptInput" type="text"><div class="dialog-actions"><button class="btn-cancel" onclick="closePrompt()">إلغاء</button><button class="btn-confirm" id="promptConfirmBtn" onclick="confirmPrompt()">حسناً</button></div></div>`}
 function showPrompt(title,def,cb){restoreDialog();document.getElementById('promptTitle').textContent=title;const inp=document.getElementById('promptInput');inp.value=def;inp.style.display='block';document.getElementById('promptConfirmBtn').textContent='حسناً';document.getElementById('promptConfirmBtn').className='btn-confirm';promptCallback=cb;document.getElementById('customPrompt').classList.add('open');setTimeout(()=>{inp.focus();inp.select()},100)}
-function showConfirm(title,cb,isDanger=false){restoreDialog();document.getElementById('promptTitle').textContent=title;document.getElementById('promptInput').style.display='none';const btn=document.getElementById('promptConfirmBtn');btn.textContent='مسح';btn.className=isDanger?'btn-danger':'btn-confirm';promptCallback=()=>{restoreDialog();cb()};document.getElementById('customPrompt').class
+function showConfirm(title,cb,isDanger=false){restoreDialog();document.getElementById('promptTitle').textContent=title;document.getElementById('promptInput').style.display='none';const btn=document.getElementById('promptConfirmBtn');btn.textContent='مسح';btn.className=isDanger?'btn-danger':'btn-confirm';promptCallback=()=>{restoreDialog();cb()};document.getElementById('customPrompt').classList.add('open')}
+function closePrompt(){document.getElementById('customPrompt').classList.remove('open');promptCallback=null}
+function confirmPrompt(){const inp=document.getElementById('promptInput');if(promptCallback)promptCallback(inp.value||'');closePrompt()}
+function confirmDeleteDaily(id){showConfirm('مسح الحركة دي؟',()=>{transactions=transactions.filter(t=>t.id!==id);persist();if(curTab==='debt')renderDebt();else if(curTab==='total')renderTotal();else renderSimple(curTab);renderTotal()},true)}
+function deleteTx(){if(!editingId)return;showConfirm('مسح الحركة نهائيا؟',()=>{transactions=transactions.filter(t=>t.id!==editingId);persist();closeAdd();if(curTab==='debt')renderDebt();else if(curTab==='total')renderTotal();else renderSimple(curTab);renderTotal()},true)}
+function openAdd(){editingId=null;excludeFromBalanceCurrent=false;try{updateExcludeBtn()}catch(e){}cardTab=curTab==='total'?'expense':curTab;switchCardTab(cardTab);document.getElementById('btnDelete').style.display='none';const todayISO=new Date().toISOString().slice(0,10);const setIfExists=(id,val)=>{const el=document.getElementById(id);if(el){el.value=val}};setIfExists('a-date',todayISO);setIfExists('a-date-ama',todayISO);document.getElementById('addModal').classList.add('open')}
+function openEdit(id){const t=transactions.find(x=>x.id===id);if(!t)return;editingId=id;excludeFromBalanceCurrent=!!t.excludeFromBalance;cardTab=t.type==='debt'?'debt':t.type;switchCardTab(cardTab);if(cardTab==='expense'||cardTab==='income'){document.getElementById('a-wallet').value=t.wallet;document.getElementById('a-item').value=t.item;document.getElementById('a-amount').value=t.amount;document.getElementById('a-date').value=t.date;document.getElementById('a-note').value=t.note||''}else if(cardTab==='debt'){document.getElementById('a-wallet-debt').value=t.wallet;document.getElementById('a-person-debt').value=t.person||t.item;document.getElementById('a-amount-debt').value=t.amount;document.getElementById('a-status').value=t.status||'due';document.getElementById('a-direction').value=t.direction||'عليا';document.getElementById('a-date').value=t.date;document.getElementById('a-note-debt').value=t.note||''}else if(cardTab==='amanat'){document.getElementById('a-person-ama').value=t.person||t.item;document.getElementById('a-amount-ama').value=t.amount;document.getElementById('a-date-ama').value=t.date;document.getElementById('a-note-ama').value=t.note||''}document.getElementById('btnDelete').style.display='block';document.getElementById('addModal').classList.add('open')}
+function closeAdd(){document.getElementById('addModal').classList.remove('open');editingId=null}
+function saveTx(){
+let type=cardTab;let item,person,wallet,amount,date,note,direction,status;
+if(type==='expense'||type==='income'){
+  item=document.getElementById('a-item').value;
+  wallet=document.getElementById('a-wallet').value;
+  amount=document.getElementById('a-amount').value;
+  date=document.getElementById('a-date').value;
+  note=document.getElementById('a-note').value;
+  if(item==='__new__'){
+    // افتح ديالوج لإضافة بند جديد واحفظه
+    showPrompt('اسم البند الجديد (مثال: مرتب)', '', (newName)=>{
+      if(!newName) return;
+      newName=newName.trim();
+      if(!newName) return;
+      let sec=type==='income'?'income':'expense';
+      if(masterBands.find(b=>b.name===newName && b.section===sec)){ toast('البند موجود بالفعل','err'); return; }
+      masterBands.push({id:Date.now(),name:newName,section:sec});
+      document.getElementById('a-item').innerHTML=getBands(sec).map(b=>`<option>${b}</option>`).join('')+'<option value="__new__">+ جديد</option>';
+      document.getElementById('a-item').value=newName;
+      persist();
+      // بعد الإضافة، كمل الحفظ
+      setTimeout(()=>saveTx(),200);
+    });
+    return;
+  }
+  person=item;
+}else if(type==='debt'){
+  item=document.getElementById('a-person-debt').value;
+  person=item;
+  wallet=document.getElementById('a-wallet-debt').value;
+  amount=document.getElementById('a-amount-debt').value;
+  date=document.getElementById('a-date').value;
+  note=document.getElementById('a-note-debt').value;
+  direction=document.getElementById('a-direction').value;
+  status=document.getElementById('a-status').value;
+  if(item==='__new__'){
+    showPrompt('اسم الشخص الجديد', '', (newName)=>{
+      if(!newName) return;
+      newName=newName.trim();
+      if(!newName) return;
+      let sec=status==='due'?'debt_due':'debt_def';
+      if(masterBands.find(b=>b.name===newName && b.section===sec)){ toast('موجود بالفعل','err'); return; }
+      masterBands.push({id:Date.now(),name:newName,section:sec});
+      let all=[...getBands('debt_due'),...getBands('debt_def')];
+      document.getElementById('a-person-debt').innerHTML=all.map(b=>`<option>${b}</option>`).join('')+'<option value="__new__">+ جديد</option>';
+      document.getElementById('a-person-debt').value=newName;
+      persist();
+      setTimeout(()=>saveTx(),200);
+    });
+    return;
+  }
+}else if(type==='amanat'){
+  item=document.getElementById('a-person-ama').value;
+  person=item;
+  wallet='الأمانات';
+  amount=document.getElementById('a-amount-ama').value;
+  date=document.getElementById('a-date-ama').value;
+  note=document.getElementById('a-note-ama').value;
+  if(item==='__new__'){
+    showPrompt('اسم الشخص الجديد', '', (newName)=>{
+      if(!newName) return;
+      newName=newName.trim();
+      if(!newName) return;
+      if(masterBands.find(b=>b.name===newName && b.section==='amanat')){ toast('موجود','err'); return; }
+      masterBands.push({id:Date.now(),name:newName,section:'amanat'});
+      document.getElementById('a-person-ama').innerHTML=getBands('amanat').map(b=>`<option>${b}</option>`).join('')+'<option value="__new__">+ جديد</option>';
+      document.getElementById('a-person-ama').value=newName;
+      persist();
+      setTimeout(()=>saveTx(),200);
+    });
+    return;
+  }
+}
+if(!amount||Number(amount)===0){toast('اكتب القيمة أولاً','err');return}
+const payload={id:editingId||Date.now().toString(),type:type,subType:type==='debt'?(status==='due'?'debt_due':'debt_def'):type,item,person,wallet,amount:Number(amount)||0,date:date||new Date().toISOString().slice(0,10),note,direction:direction||'عليا',status:status||'',excludeFromBalance:excludeFromBalanceCurrent};
+if(editingId){const idx=transactions.findIndex(t=>t.id===editingId);if(idx>=0)transactions[idx]={...transactions[idx],...payload}}else transactions.push(payload);
+persist();closeAdd();refreshCurrent();renderTotal();
+toast('تم الحفظ ✅','ok');
+}
+(function init(){ try{ document.getElementById('today').textContent=new Date().toLocaleDateString('ar-EG'); }catch(e){} try{ ensureMaster(); }catch(e){} try{ if(!transactions || transactions.length===0){transactions=[{id:'1',type:'expense',item:'الإيجار',person:'الإيجار',amount:1000,date:'2026-08-15',wallet:'كاش'}]; persist(); } }catch(e){} try{ updateMonthLabels(); }catch(e){ console.error(e); } try{ applyMonthToInputs(); }catch(e){} try{ switchTab('expense'); }catch(e){ console.error('switchTab failed', e); try{ renderFixedSection(); renderStats('expense'); renderSimple('expense'); }catch(e2){} } })();
+</script>
+<script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
+</html>
