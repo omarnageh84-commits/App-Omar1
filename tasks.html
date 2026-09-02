@@ -16,15 +16,19 @@ body{display:flex;flex-direction:column}
 .top-bar{background:var(--card);border-bottom:1.5px solid var(--card-border);padding:10px 12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .search-input{flex:1;border:1.5px solid var(--card-border);background:var(--bg-soft);border-radius:10px;padding:9px 12px;font-size:12px;font-weight:700;color:var(--text);outline:none;min-width:140px}
 .filter-row{display:flex;gap:6px;overflow:auto;padding:8px 10px;background:var(--card);border-bottom:1px solid var(--card-border);scrollbar-width:none}
-.filter-row::-webkit-scrollbar{display:none}
 .filter-chip{padding:6px 12px;border-radius:99px;border:1.5px solid var(--card-border);background:var(--card);font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap;color:var(--text-soft);transition:.2s;flex-shrink:0}
 .filter-chip.active{background:var(--hero);color:#fff;border-color:var(--hero)}
+.filter-chip.hidden-tab{background:linear-gradient(135deg,var(--hero),#000);color:#fff;border-color:var(--hero);display:none}
+.filter-chip.hidden-tab.show{display:inline-flex}
 #board{flex:1;overflow:auto;padding:8px 8px 90px 8px;display:flex;flex-direction:column;gap:8px;background:var(--bg)}
 .task-outer{display:flex;gap:6px;align-items:stretch}
-.task-card{flex:1;background:var(--card);border:1.5px solid var(--card-border);border-radius:14px;padding:12px 12px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;position:relative;overflow:hidden;transition:.2s}
+.task-card{flex:1;background:var(--card);border:1.5px solid var(--card-border);border-radius:14px;padding:0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;position:relative;overflow:hidden;transition:.2s;min-height:62px}
 .task-card:active{transform:scale(.98)}
-.task-progress-full{position:absolute;top:0;right:0;bottom:0;pointer-events:none;transition:width.35s ease;z-index:0;opacity:.12}
-.task-card-content{position:relative;z-index:1;display:flex;gap:10px;align-items:center;width:100%}
+.task-progress-bg{position:absolute;top:0;right:0;bottom:0;pointer-events:none;transition:width .4s ease, background .3s;z-index:0}
+.task-progress-bg.low{opacity:.18}
+.task-progress-bg.mid{opacity:.35}
+.task-progress-bg.high{opacity:.55}
+.task-card-content{position:relative;z-index:1;display:flex;gap:10px;align-items:center;width:100%;padding:12px}
 .task-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:var(--bg-soft);border:1px solid var(--card-border)}
 .task-info{flex:1;min-width:0}
 .task-info b{display:block;font-size:12px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -41,31 +45,67 @@ body{display:flex;flex-direction:column}
 .pro-close{width:36px;height:36px;border-radius:10px;background:var(--bg-soft);border:1.5px solid var(--card-border);color:var(--text);font-size:16px;cursor:pointer;flex-shrink:0}
 .pro-meta{background:var(--card);padding:10px 12px;display:flex;gap:8px;border-bottom:1px solid var(--card-border);align-items:center;flex-wrap:wrap}
 .pro-select{flex:1;min-width:110px;border:1.5px solid var(--card-border);background:var(--bg-soft);border-radius:10px;padding:9px 10px;font-size:11px;font-weight:700;color:var(--text);outline:none}
-.pro-segment{display:flex;gap:4px;background:var(--bg-soft);padding:5px;border-radius:12px;margin:10px 12px;border:1.5px solid var(--card-border);overflow:auto}
-.pro-seg-btn{flex:1;padding:9px 6px;border:none;border-radius:9px;background:transparent;font-size:10px;font-weight:800;color:var(--text-soft);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap}
+.pro-segment{display:flex;gap:4px;background:var(--bg-soft);padding:5px;border-radius:12px;margin:10px 12px;border:1.5px solid var(--card-border);overflow:auto;scrollbar-width:none}
+.pro-segment::-webkit-scrollbar{display:none}
+.pro-seg-btn{flex:1;padding:9px 6px;border:none;border-radius:9px;background:transparent;font-size:9.5px;font-weight:800;color:var(--text-soft);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap;min-width:70px}
 .pro-seg-btn.active{background:var(--card);color:var(--text);box-shadow:0 2px 6px rgba(0,0,0,.08);border:1.5px solid var(--card-border)}
 .pane{display:none;flex:1;flex-direction:column;padding:12px;overflow:auto;gap:10px;background:var(--bg)}
 .pane.active{display:flex}
 .card{background:var(--card);border:1.5px solid var(--card-border);border-radius:14px;padding:12px}
 .input-pro{width:100%;border:1.5px solid var(--card-border);border-radius:10px;padding:10px;background:var(--bg-soft);color:var(--text);font-size:12px;font-weight:600;outline:none}
 #toastContainer{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:15000;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
-.toast-pro{background:var(--card);border:1.5px solid var(--card-border);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.18);min-width:260px;max-width:340px;pointer-events:auto;animation:toastIn.3s ease}
+.toast-pro{background:var(--card);border:1.5px solid var(--card-border);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.18);min-width:260px;max-width:340px;pointer-events:auto;animation:toastIn .3s ease}
 .toast-pro.success{border-color:#16a34a;background:#f0fdf4}
 .toast-pro.error{border-color:#ef4444;background:#fef2f2}
 .toast-pro-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
 @keyframes toastIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+/* Rich notes toolbar */
+.rich-toolbar{display:flex;gap:4px;flex-wrap:wrap;background:var(--bg-soft);border:1.5px solid var(--card-border);border-radius:10px 10px 0 0;padding:6px}
+.rich-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--card-border);background:var(--card);color:var(--text);font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.rich-btn.active{background:var(--hero);color:#fff;border-color:var(--hero)}
+.rich-editor{min-height:120px;border:1.5px solid var(--card-border);border-top:none;border-radius:0 0 10px 10px;padding:10px;background:var(--card);color:var(--text);font-size:12px;outline:none;overflow:auto}
+.rich-editor:empty:before{content:attr(placeholder);color:var(--text-soft);font-size:11px}
+/* Media */
+.media-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.media-item{position:relative;border-radius:10px;overflow:hidden;border:1.5px solid var(--card-border);background:var(--bg-soft)}
+.media-item img{width:100%;height:100px;object-fit:cover;display:block}
+.media-item audio, .media-item video{width:100%}
+.media-del{position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:rgba(239,68,68,.9);color:#fff;border:none;cursor:pointer;font-size:12px}
+/* Table */
+.table-wrap{overflow:auto;border:1.5px solid var(--card-border);border-radius:12px;background:var(--card)}
+.excel-table{width:100%;border-collapse:collapse;min-width:400px}
+.excel-table th{background:var(--bg-soft);padding:8px;border:1px solid var(--card-border);font-size:10px;font-weight:800;color:var(--text);position:sticky;top:0}
+.excel-table td{border:1px solid var(--card-border);padding:0}
+.excel-table td input{width:100%;border:none;padding:8px 6px;background:transparent;color:var(--text);font-size:11px;font-weight:600;outline:none;text-align:center}
+.excel-table td input:focus{background:var(--bg-soft)}
+.table-actions{display:flex;gap:6px;flex-wrap:wrap}
+.table-btn{padding:8px 12px;border-radius:9px;border:1.5px solid var(--card-border);background:var(--card);font-size:10px;font-weight:800;color:var(--text);cursor:pointer}
+.table-btn.primary{background:var(--hero);color:#fff;border-color:var(--hero)}
+/* Pro delete modal */
+#proDeleteModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:20000;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(10px)}
+#proDeleteModal.show{display:flex}
+.pro-delete-card{background:var(--card);width:100%;max-width:360px;border-radius:20px;padding:20px;border:1.5px solid var(--card-border);box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center;animation:popIn .3s ease}
+@keyframes popIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.pro-delete-icon{width:64px;height:64px;border-radius:50%;background:#FEE2E2;color:#ef4444;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 12px}
+.pro-delete-title{font-size:15px;font-weight:900;color:var(--text);margin-bottom:6px}
+.pro-delete-sub{font-size:11px;color:var(--text-soft);margin-bottom:16px;line-height:1.5}
+.pro-delete-actions{display:flex;gap:8px}
+.pro-delete-actions button{flex:1;padding:12px;border-radius:12px;border:none;font-weight:800;font-size:12px;cursor:pointer}
+.btn-cancel{background:var(--bg-soft);color:var(--text);border:1.5px solid var(--card-border)!important}
+.btn-confirm{background:#ef4444;color:#fff}
 </style>
 </head>
 <body>
 <div id="app">
   <div class="top-bar">
-    <input id="search" class="search-input" placeholder="🔍 اكتب مهمة جديدة واضغط Enter..." onkeydown="if(event.key==='Enter') quickAdd(this.value)">
-    <button onclick="openManager()" style="border:1.5px solid var(--card-border);background:var(--card);border-radius:10px;padding:8px 12px;font-size:11px;font-weight:800;color:var(--text)">⚙</button>
+    <input id="search" class="search-input" placeholder="🔍 اكتب مهمة جديدة واضغط Enter... (اكتب الكود المخفي + مسافة)" oninput="handleSearchInput(this.value)" onkeydown="if(event.key==='Enter') quickAdd(this.value)">
+    <button onclick="openManager()" style="border:1.5px solid var(--card-border);background:var(--card);border-radius:10px;padding:8px 12px;font-size:11px;font-weight:800;color:var(--text)">⚙️</button>
   </div>
   <div class="filter-row nu-scroll" id="filterRow"></div>
   <div id="board" class="nu-scroll"></div>
   <button id="fab" onclick="openModal()">+</button>
 </div>
+
 <div id="modal">
   <div class="pro-header">
     <input id="mTitle" class="pro-title-input" placeholder="عنوان المهمة...">
@@ -81,22 +121,70 @@ body{display:flex;flex-direction:column}
     <input id="mColor" type="color" value="#16A34A" style="width:44px;height:38px;border-radius:10px;border:1.5px solid var(--card-border);padding:2px;background:var(--card)">
   </div>
   <div class="pro-segment">
-    <button class="pro-seg-btn active" onclick="switchPane('details',this)">📝 تفاصيل</button>
-    <button class="pro-seg-btn" onclick="switchPane('sub',this)">📋 فرعية</button>
-    <button class="pro-seg-btn" onclick="switchPane('notes',this)">📌 ملاحظات</button>
+    <button class="pro-seg-btn active" onclick="switchPane('sub',this)">📋 فرعية</button>
+    <button class="pro-seg-btn" onclick="switchPane('details',this)">📝 تفاصيل</button>
+    <button class="pro-seg-btn" onclick="switchPane('notes',this)">📌 ملاحظات Rich</button>
+    <button class="pro-seg-btn" onclick="switchPane('media',this)">🎬 وسائط</button>
+    <button class="pro-seg-btn" onclick="switchPane('table',this)">📊 جدول</button>
   </div>
-  <div id="pane-details" class="pane active">
+  <div id="pane-sub" class="pane active">
+    <div id="subList" style="display:flex;flex-direction:column;gap:6px"></div>
+    <div style="display:flex;gap:6px"><input id="newSub" class="input-pro" placeholder="مهمة فرعية جديدة..." style="flex:1"><button onclick="addSub()" style="background:var(--hero);color:#fff;border:none;border-radius:10px;padding:10px 14px;font-weight:800">+</button></div>
+    <div style="margin-top:8px;display:flex;gap:6px;align-items:center;background:var(--bg-soft);border:1.5px dashed var(--card-border);border-radius:10px;padding:8px"><div style="flex:1"><div style="font-size:10px;font-weight:800">التقدم</div><div style="height:8px;background:var(--card-border);border-radius:99px;overflow:hidden;margin-top:4px"><div id="subProgressBar" style="height:100%;width:0%;background:var(--hero);transition:.4s"></div></div></div><div id="subProgressText" style="font-size:11px;font-weight:900;color:var(--hero)">0%</div></div>
+  </div>
+  <div id="pane-details" class="pane">
     <div class="card"><label style="font-size:10px;font-weight:800;display:block;margin-bottom:6px">الوصف</label><textarea id="mDesc" class="input-pro" rows="3" placeholder="تفاصيل المهمة..."></textarea></div>
     <div class="card"><label style="font-size:10px;font-weight:800;display:block;margin-bottom:6px">تاريخ الاستحقاق</label><input id="mDate" type="date" class="input-pro"></div>
     <button onclick="saveTask()" style="background:var(--hero);color:#fff;border:none;border-radius:12px;padding:12px;font-weight:900;font-size:13px;cursor:pointer">💾 حفظ المهمة</button>
-    <button id="btnDelTask" onclick="deleteCurrent()" style="display:none;background:#FFF1F2;color:#ef4444;border:1.5px solid #FECDD3;border-radius:12px;padding:10px;font-weight:800">🗑 حذف المهمة</button>
-  </div>
-  <div id="pane-sub" class="pane">
-    <div id="subList" style="display:flex;flex-direction:column;gap:6px"></div>
-    <div style="display:flex;gap:6px"><input id="newSub" class="input-pro" placeholder="مهمة فرعية جديدة..." style="flex:1"><button onclick="addSub()" style="background:var(--hero);color:#fff;border:none;border-radius:10px;padding:10px 14px;font-weight:800">+</button></div>
+    <button id="btnDelTask" onclick="openProDelete()" style="display:none;background:#FFF1F2;color:#ef4444;border:1.5px solid #FECDD3;border-radius:12px;padding:10px;font-weight:800">🗑️ حذف المهمة</button>
   </div>
   <div id="pane-notes" class="pane">
-    <textarea id="mNotes" class="input-pro" rows="6" placeholder="ملاحظات داخلية..."></textarea>
+    <div class="rich-toolbar">
+      <button class="rich-btn" onclick="formatDoc('bold')" title="عريض"><b>B</b></button>
+      <button class="rich-btn" onclick="formatDoc('italic')" title="مائل"><i>I</i></button>
+      <button class="rich-btn" onclick="formatDoc('insertUnorderedList')" title="تنقيط">•</button>
+      <button class="rich-btn" onclick="formatDoc('insertOrderedList')" title="ترقيم">1.</button>
+      <button class="rich-btn" onclick="changeFontSize(1)" title="تكبير">A+</button>
+      <button class="rich-btn" onclick="changeFontSize(-1)" title="تصغير">A-</button>
+      <input type="color" id="textColor" onchange="formatDoc('foreColor', this.value)" style="width:32px;height:32px;border-radius:8px;border:1.5px solid var(--card-border);padding:2px">
+      <button class="rich-btn" onclick="formatDoc('hiliteColor','yellow')" title="تظليل">🖍️</button>
+    </div>
+    <div id="richEditor" class="rich-editor" contenteditable="true" placeholder="اكتب ملاحظاتك هنا... تقدر تذاكر عليها، ترقم، تنقط، تكبر الخط وتغير لونه"></div>
+  </div>
+  <div id="pane-media" class="pane">
+    <div class="table-actions" style="margin-bottom:10px">
+      <label class="table-btn primary" style="cursor:pointer">📷 صور<input type="file" id="imgInput" accept="image/*" multiple style="display:none" onchange="handleImages(this.files)"></label>
+      <button class="table-btn" onclick="toggleCamera()">📹 كاميرا</button>
+      <button class="table-btn" id="recBtn" onclick="toggleRec()">🎤 تسجيل صوت</button>
+    </div>
+    <div id="cameraBox" style="display:none;background:#000;border-radius:12px;overflow:hidden;position:relative;margin-bottom:10px">
+      <video id="camVideo" autoplay playsinline style="width:100%;height:200px;object-fit:cover"></video>
+      <div style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:8px">
+        <button onclick="capturePhoto()" style="width:56px;height:56px;border-radius:50%;background:#fff;border:4px solid var(--hero);font-size:20px">📸</button>
+        <button onclick="closeCamera()" style="background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:36px;height:36px">✕</button>
+      </div>
+    </div>
+    <div id="recStatus" style="display:none;background:#FEE2E2;border:1.5px solid #FECDD3;border-radius:10px;padding:10px;text-align:center;margin-bottom:10px">
+      <div style="display:flex;align-items:center;justify-content:center;gap:8px"><div style="width:10px;height:10px;background:#ef4444;border-radius:50%;animation:blink 1s infinite"></div><span id="recTimer">00:00</span></div>
+      <div style="font-size:9px;color:#ef4444;margin-top:4px">جاري التسجيل...</div>
+    </div>
+    <div id="mediaGrid" class="media-grid"></div>
+  </div>
+  <div id="pane-table" class="pane">
+    <div class="table-actions">
+      <button class="table-btn primary" onclick="addCol()">➕ عمود</button>
+      <button class="table-btn primary" onclick="addRow()">➕ صف</button>
+      <button class="table-btn" onclick="calcSum()">🧮 جمع تلقائي</button>
+      <button class="table-btn" onclick="clearTable()">🗑️ مسح</button>
+    </div>
+    <div class="table-wrap" style="margin-top:10px">
+      <table class="excel-table" id="excelTable">
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody"></tbody>
+        <tfoot id="tableFoot" style="background:var(--bg-soft)"></tfoot>
+      </table>
+    </div>
+    <div style="font-size:9px;color:var(--text-soft);margin-top:8px;line-height:1.5">💡 تقدر تكتب أرقام في الخانات وتدوس جمع تلقائي، أو تكتب في خانة مثلا <b>كتافست</b> وسعرها، والجدول يحسبلك المجموع. تقدر تضيف أعمدة براحتك.</div>
   </div>
 </div>
 
@@ -105,22 +193,48 @@ body{display:flex;flex-direction:column}
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><b style="font-size:13px">إدارة الفئات</b><button onclick="closeManager()" style="border:none;background:var(--bg-soft);width:30px;height:30px;border-radius:8px">✕</button></div>
     <div style="display:flex;gap:6px;margin-bottom:10px"><input id="newCatEmoji" placeholder="📌" style="width:50px" class="input-pro"><input id="newCatName" placeholder="اسم الفئة" class="input-pro" style="flex:1"><button onclick="addCategory()" style="background:var(--hero);color:#fff;border:none;border-radius:10px;padding:9px 14px;font-weight:800">+</button></div>
     <div id="catList" style="max-height:300px;overflow:auto;display:flex;flex-direction:column;gap:6px"></div>
+    <div style="margin-top:14px;padding-top:12px;border-top:1.5px solid var(--card-border)">
+      <div style="font-size:11px;font-weight:800;margin-bottom:8px">🔐 الكود المخفي</div>
+      <div style="display:flex;gap:6px"><input id="hiddenCodeInput" class="input-pro" placeholder="مثلا 27943" style="flex:1"><button onclick="saveHiddenCode()" style="background:var(--hero);color:#fff;border:none;border-radius:10px;padding:8px 12px;font-size:10px;font-weight:800">حفظ</button></div>
+      <div style="font-size:8px;color:var(--text-soft);margin-top:6px">اكتب الكود في البحث + مسافة + اسم المهمة عشان تضاف مخفية. التبويب المخفي هيظهر لما تكتب الكود في البحث.</div>
+    </div>
+  </div>
+</div>
+
+<div id="proDeleteModal">
+  <div class="pro-delete-card">
+    <div class="pro-delete-icon">🗑️</div>
+    <div class="pro-delete-title">متأكد عايز تمسح المهمة دي؟</div>
+    <div class="pro-delete-sub">العملية دي نهائية ومش هتقدر ترجعها تاني.<br>كل المهام الفرعية والملاحظات والوسائط هتتمسح.</div>
+    <div class="pro-delete-actions">
+      <button class="btn-cancel" onclick="closeProDelete()">إلغاء</button>
+      <button class="btn-confirm" onclick="confirmProDelete()">مسح نهائي</button>
+    </div>
   </div>
 </div>
 
 <div id="toastContainer"></div>
+<style>@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}</style>
 <script>
 let cats = JSON.parse(localStorage.getItem('omar_cats_v1')||'[{"id":1,"emoji":"📌","name":"عام"},{"id":2,"emoji":"🏠","name":"البيت"},{"id":3,"emoji":"💼","name":"الشغل"}]');
 let tasks = JSON.parse(localStorage.getItem('omar_tasks_v1')||'[]');
 let curFilter='الكل';
 let editingId=null;
 let curSubs=[];
+let curMedia={images:[], audios:[], videos:[]};
+let curTable={cols:['الصنف','العدد','السعر'], rows:[['','',''],['','',''],['','','']]};
+let mediaStream=null;
+let mediaRecorder=null;
+let recChunks=[];
+let recTimerInt=null;
+let recSec=0;
+let hiddenVisible=false;
 
 function showToast(title, sub='', type='success'){
   let c=document.getElementById('toastContainer');
   let t=document.createElement('div'); t.className='toast-pro '+type;
-  t.innerHTML=`<div class="toast-pro-icon">${type==='success'?'✅':'⚠'}</div><div class="toast-pro-text"><div class="toast-pro-title">${title}</div>${sub?`<div class="toast-pro-sub">${sub}</div>`:''}</div>`;
-  c.appendChild(t); setTimeout(()=>{t.style.animation='toastOut.3s ease forwards'; setTimeout(()=>t.remove(),300)},2600);
+  t.innerHTML=`<div class="toast-pro-icon">${type==='success'?'✅':'⚠️'}</div><div class="toast-pro-text"><div class="toast-pro-title">${title}</div>${sub?`<div class="toast-pro-sub">${sub}</div>`:''}</div>`;
+  c.appendChild(t); setTimeout(()=>{t.style.opacity='0'; setTimeout(()=>t.remove(),300)},2600);
 }
 function saveLS(){
   localStorage.setItem('omar_cats_v1', JSON.stringify(cats));
@@ -128,52 +242,69 @@ function saveLS(){
   try{ if(window.parent && window.parent!==window && window.parent.backupToDrive) window.parent.backupToDrive(); }catch(e){}
 }
 function getProgress(t){
-  if(!t.subs ||!t.subs.length) return t.done?100:0;
+  if(!t.subs || !t.subs.length) return t.done?100:0;
   let done=t.subs.filter(s=>s.done).length;
   return Math.round(done/t.subs.length*100);
 }
+function handleSearchInput(v){
+  let code=localStorage.getItem('omar_hidden_code_v1')||'27943';
+  if(v.trim()===code || v.trim()==='27943'){
+    hiddenVisible=true; renderFilters();
+    showToast('تم فتح التبويب المخفي','🔓');
+  }
+}
 function renderFilters(){
   let row=document.getElementById('filterRow');
-  let all=['الكل',...cats.map(c=>c.name),'منتهي'];
-  row.innerHTML=all.map(n=>`<button class="filter-chip ${curFilter===n?'active':''}" onclick="setFilter('${n}')">${n==='الكل'?'🔥 الكل':n==='منتهي'?'✅ منتهي':(cats.find(c=>c.name===n)?.emoji||'📌')+' '+n}</button>`).join('');
+  let code=localStorage.getItem('omar_hidden_code_v1')||'27943';
+  let hiddenName='مخفي';
+  let all=['الكل',...cats.map(c=>c.name)];
+  let html=all.map(n=>`<button class="filter-chip ${curFilter===n?'active':''}" onclick="setFilter('${n}')">${n==='الكل'?'🔥 الكل':(cats.find(c=>c.name===n)?.emoji||'📌')+' '+n}</button>`).join('');
+  html+=`<button class="filter-chip hidden-tab ${hiddenVisible?'show':''} ${curFilter===hiddenName?'active':''}" onclick="setFilter('${hiddenName}')">🔒 ${hiddenName}</button>`;
+  html+=`<button class="filter-chip ${curFilter==='منتهي'?'active':''}" onclick="setFilter('منتهي')">✅ منتهي</button>`;
+  row.innerHTML=html;
   let sel=document.getElementById('mCat');
-  if(sel) sel.innerHTML=cats.map(c=>`<option value="${c.name}">${c.emoji} ${c.name}</option>`).join('');
+  if(sel) sel.innerHTML=cats.map(c=>`<option value="${c.name}">${c.emoji} ${c.name}</option>`).join('') + `<option value="${hiddenName}">🔒 ${hiddenName}</option>`;
 }
 function setFilter(n){curFilter=n; render();}
 function render(){
   renderFilters();
   let board=document.getElementById('board');
   let q=(document.getElementById('search')?.value||'').trim();
+  let code=localStorage.getItem('omar_hidden_code_v1')||'27943';
+  // لو كتب الكود افتح المخفي
+  if(q===code || q==='27943'){ curFilter='مخفي'; q=''; document.getElementById('search').value=''; hiddenVisible=true; renderFilters(); }
   let list=[...tasks];
   if(curFilter!=='الكل'){
     if(curFilter==='منتهي') list=list.filter(t=>t.done);
     else list=list.filter(t=>t.cat===curFilter);
   }
-  if(q &&!q.startsWith('27943') &&!q.startsWith(localStorage.getItem('omar_hidden_code_v1')||'___')){
-    if(q && q.length>1) list=list.filter(t=> (t.text||'').includes(q) || (t.desc||'').includes(q));
+  if(q && q.length>0 && !q.startsWith(code) && q!=='27943'){
+    list=list.filter(t=> (t.text||'').includes(q) || (t.desc||'').includes(q) || (t.notes||'').includes(q));
   }
   let order={'مهم':0,'متوسط':1,'عادي':2};
   list.sort((a,b)=> (order[a.priority]||2)-(order[b.priority]||2));
   if(!list.length){
-    board.innerHTML=`<div style="text-align:center;padding:40px 10px;color:var(--text-soft)"><div style="font-size:40px">📭</div><div style="font-size:12px;font-weight:800;margin-top:8px">مفيش مهام هنا</div><div style="font-size:9px;margin-top:4px">دوس + عشان تضيف</div></div>`;
+    board.innerHTML=`<div style="text-align:center;padding:40px 10px;color:var(--text-soft)"><div style="font-size:40px">📭</div><div style="font-size:12px;font-weight:800;margin-top:8px">مفيش مهام هنا</div><div style="font-size:9px;margin-top:4px">دوس + عشان تضيف${curFilter==='مخفي'?' - مهام مخفية':''}</div></div>`;
     return;
   }
   board.innerHTML=list.map(t=>{
     let prog=getProgress(t);
     let catObj=cats.find(c=>c.name===t.cat);
-    let emoji=catObj?catObj.emoji:'📌';
+    let emoji=catObj?catObj.emoji:(t.cat==='مخفي'?'🔒':'📌');
     let priColor=t.priority==='مهم'?'#ef4444':t.priority==='متوسط'?'#f59e0b':'var(--card-border)';
     let bg=t.color||'var(--hero)';
+    let progClass=prog<30?'low':prog<70?'mid':'high';
+    let progBg = prog===0? 'transparent' : bg;
     return `<div class="task-outer">
       <div class="task-card" style="border-right:4px solid ${priColor}" onclick="editTask('${t.id}')">
-        <div class="task-progress-full" style="width:${prog}%;background:${bg}"></div>
+        <div class="task-progress-bg ${progClass}" style="width:${prog}%;background:${progBg}"></div>
         <div class="task-card-content">
           <div class="task-icon" style="background:${bg}18;border-color:${bg}40">${emoji}</div>
-          <div class="task-info"><b style="${t.done?'text-decoration:line-through;opacity:.6':''}">${t.text||'بدون عنوان'}</b><small>${t.cat||'عام'} • ${t.priority||'عادي'} ${t.subs?.length?`• ${t.subs.filter(s=>s.done).length}/${t.subs.length}`:''} ${prog?`• ${prog}%`:''}</small></div>
+          <div class="task-info"><b style="${t.done?'text-decoration:line-through;opacity:.6':''}">${t.text||'بدون عنوان'}</b><small>${t.cat||'عام'} • ${t.priority||'عادي'} ${t.subs?.length?`• ${t.subs.filter(s=>s.done).length}/${t.subs.length}`:''} ${prog?`• ${prog}%`:''} ${t.table?.rows?.length?`• 📊 جدول`:''} ${t.media?.images?.length?`• 🎬 ${t.media.images.length+t.media.audios.length} وسائط`:''}</small></div>
           <div class="task-check ${t.done?'done':''}" onclick="event.stopPropagation();toggleDone('${t.id}')">${t.done?'✓':''}</div>
         </div>
       </div>
-      <button class="ext-del" onclick="confirmDel('${t.id}')">✕</button>
+      <button class="ext-del" onclick="openProDelete('${t.id}')">✕</button>
     </div>`;
   }).join('');
 }
@@ -187,47 +318,54 @@ function toggleDone(id){
 function quickAdd(v){
   if(!v.trim()) return;
   let code=localStorage.getItem('omar_hidden_code_v1')||'27943';
-  if(v.startsWith(code+' ')||v.startsWith('27943 ')){
-    let txt=v.split(' ').slice(1).join(' ');
-    tasks.unshift({id:Date.now().toString(),text:txt,cat:cats[0]?.name||'عام',priority:'مهم',desc:'',notes:'',subs:[],color:'#ef4444',done:false,date:new Date().toISOString()});
-    saveLS(); render(); showToast('مهمة مخفية مضافة','🔴 مهم');
-    document.getElementById('search').value=''; return;
-  }
-  tasks.unshift({id:Date.now().toString(),text:v.trim(),cat:cats[0]?.name||'عام',priority:'عادي',desc:'',notes:'',subs:[],color:'var(--hero)',done:false,date:new Date().toISOString()});
-  saveLS(); render(); document.getElementById('search').value=''; showToast('تمت الإضافة');
+  let isHidden = v.startsWith(code+' ')||v.startsWith('27943 ');
+  let txt = isHidden ? v.split(' ').slice(1).join(' ') : v.trim();
+  if(!txt) return;
+  tasks.unshift({id:Date.now().toString(),text:txt,cat:isHidden?'مخفي':(cats[0]?.name||'عام'),priority:isHidden?'مهم':'عادي',desc:'',notes:'',notesHTML:'',subs:[],media:{images:[],audios:[],videos:[]},table:{cols:['الصنف','العدد','السعر'],rows:[['','',''],['','','']]},color:isHidden?'#ef4444':'var(--hero)',done:false,date:new Date().toISOString()});
+  saveLS(); render(); document.getElementById('search').value=''; showToast(isHidden?'مهمة مخفية مضافة':'تمت الإضافة','🔴 '+(isHidden?'مخفي':''));
 }
 function openModal(){
-  editingId=null; curSubs=[];
+  editingId=null; curSubs=[]; curMedia={images:[],audios:[],videos:[]}; curTable={cols:['الصنف','العدد','السعر'],rows:[['','',''],['','','']]};
   document.getElementById('mTitle').value='';
   document.getElementById('mDesc').value='';
-  document.getElementById('mNotes').value='';
+  document.getElementById('richEditor').innerHTML='';
   document.getElementById('mDate').value=new Date().toISOString().slice(0,10);
   document.getElementById('mCat').value=cats[0]?.name||'عام';
   document.getElementById('mPri').value='عادي';
   document.getElementById('mColor').value='#16A34A';
   document.getElementById('btnDelTask').style.display='none';
   document.getElementById('subList').innerHTML='';
+  renderSubs(); renderMedia(); renderTable();
   document.getElementById('modal').classList.add('show');
-  switchPane('details', document.querySelector('.pro-seg-btn'));
+  switchPane('sub', document.querySelector('.pro-seg-btn'));
 }
-function closeModal(){document.getElementById('modal').classList.remove('show'); editingId=null;}
+function closeModal(){document.getElementById('modal').classList.remove('show'); editingId=null; closeCamera(); stopRec();}
 function editTask(id){
   let t=tasks.find(x=>x.id===id); if(!t) return;
-  editingId=id; curSubs=[...(t.subs||[])];
+  editingId=id; curSubs=[...(t.subs||[])]; curMedia=t.media||{images:[],audios:[],videos:[]}; curTable=t.table||{cols:['الصنف','العدد','السعر'],rows:[['','','']]};
   document.getElementById('mTitle').value=t.text||'';
   document.getElementById('mDesc').value=t.desc||'';
-  document.getElementById('mNotes').value=t.notes||'';
+  document.getElementById('richEditor').innerHTML=t.notesHTML||t.notes||'';
   document.getElementById('mDate').value=t.date?.slice(0,10)||'';
   document.getElementById('mCat').value=t.cat||cats[0].name;
   document.getElementById('mPri').value=t.priority||'عادي';
   document.getElementById('mColor').value=t.color && t.color.startsWith('#')?t.color:'#16A34A';
   document.getElementById('btnDelTask').style.display='block';
-  renderSubs(); document.getElementById('modal').classList.add('show');
+  renderSubs(); renderMedia(); renderTable(); document.getElementById('modal').classList.add('show'); switchPane('sub', document.querySelectorAll('.pro-seg-btn')[0]);
 }
 function renderSubs(){
   let el=document.getElementById('subList');
-  if(!curSubs.length){el.innerHTML='<div style="text-align:center;color:var(--text-soft);font-size:10px;padding:10px">لا يوجد مهام فرعية</div>'; return;}
-  el.innerHTML=curSubs.map((s,i)=>`<div style="display:flex;gap:6px;align-items:center;background:var(--bg-soft);border:1.5px solid var(--card-border);border-radius:10px;padding:8px"><input type="checkbox" ${s.done?'checked':''} onchange="curSubs[${i}].done=this.checked"><input value="${s.text||''}" oninput="curSubs[${i}].text=this.value" class="input-pro" style="flex:1;padding:6px;font-size:11px"><button onclick="curSubs.splice(${i},1);renderSubs()" style="border:none;background:#FFF1F2;color:#ef4444;width:28px;height:28px;border-radius:7px">✕</button></div>`).join('');
+  if(!curSubs.length){el.innerHTML='<div style="text-align:center;color:var(--text-soft);font-size:10px;padding:10px">لا يوجد مهام فرعية</div>';}
+  else{
+    el.innerHTML=curSubs.map((s,i)=>`<div style="display:flex;gap:6px;align-items:center;background:var(--bg-soft);border:1.5px solid var(--card-border);border-radius:10px;padding:8px"><input type="checkbox" ${s.done?'checked':''} onchange="curSubs[${i}].done=this.checked;updateSubProgress()"><input value="${s.text||''}" oninput="curSubs[${i}].text=this.value" class="input-pro" style="flex:1;padding:6px;font-size:11px"><button onclick="curSubs.splice(${i},1);renderSubs();updateSubProgress()" style="border:none;background:#FFF1F2;color:#ef4444;width:28px;height:28px;border-radius:7px">✕</button></div>`).join('');
+  }
+  updateSubProgress();
+}
+function updateSubProgress(){
+  let total=curSubs.length; let done=curSubs.filter(s=>s.done).length;
+  let pct=total?Math.round(done/total*100):0;
+  let bar=document.getElementById('subProgressBar'); let txt=document.getElementById('subProgressText');
+  if(bar) bar.style.width=pct+'%'; if(txt) txt.textContent=pct+'%';
 }
 function addSub(){
   let inp=document.getElementById('newSub');
@@ -240,6 +378,100 @@ function switchPane(name,btn){
   document.getElementById('pane-'+name).classList.add('active');
   if(btn){ document.querySelectorAll('.pro-seg-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
 }
+// Rich editor
+function formatDoc(cmd, val=null){ document.execCommand(cmd, false, val); document.getElementById('richEditor').focus(); }
+function changeFontSize(dir){
+  let sel=window.getSelection(); if(!sel.rangeCount) return;
+  let cur=parseInt(window.getComputedStyle(sel.anchorNode.parentElement).fontSize)||12;
+  let next=Math.max(10, Math.min(24, cur+dir*2));
+  formatDoc('fontSize','7');
+  let fonts=document.getElementById('richEditor').querySelectorAll('font[size="7"]');
+  fonts.forEach(f=>{ f.removeAttribute('size'); f.style.fontSize=next+'px'; });
+}
+// Media
+function handleImages(files){
+  for(let f of files){
+    let r=new FileReader(); r.onload=e=>{ curMedia.images.push(e.target.result); renderMedia(); }; r.readAsDataURL(f);
+  }
+}
+function renderMedia(){
+  let grid=document.getElementById('mediaGrid');
+  if(!grid) return;
+  let items=[];
+  curMedia.images.forEach((src,i)=> items.push(`<div class="media-item"><img src="${src}"><button class="media-del" onclick="curMedia.images.splice(${i},1);renderMedia()">✕</button></div>`));
+  curMedia.audios.forEach((src,i)=> items.push(`<div class="media-item" style="padding:8px"><audio controls src="${src}"></audio><button class="media-del" onclick="curMedia.audios.splice(${i},1);renderMedia()">✕</button></div>`));
+  curMedia.videos.forEach((src,i)=> items.push(`<div class="media-item"><video controls src="${src}" style="height:140px"></video><button class="media-del" onclick="curMedia.videos.splice(${i},1);renderMedia()">✕</button></div>`));
+  if(!items.length) grid.innerHTML='<div style="text-align:center;color:var(--text-soft);font-size:10px;padding:20px">لا يوجد وسائط - ضيف صور، صوت، أو كاميرا</div>';
+  else grid.innerHTML=items.join('');
+}
+async function toggleCamera(){
+  let box=document.getElementById('cameraBox');
+  if(box.style.display==='none' || !box.style.display){
+    try{
+      mediaStream=await navigator.mediaDevices.getUserMedia({video:true});
+      document.getElementById('camVideo').srcObject=mediaStream;
+      box.style.display='block';
+    }catch(e){ showToast('الكاميرا مش شغالة','افتح الصلاحيات','error'); }
+  }else closeCamera();
+}
+function closeCamera(){
+  let box=document.getElementById('cameraBox');
+  box.style.display='none';
+  if(mediaStream){ mediaStream.getTracks().forEach(t=>t.stop()); mediaStream=null; }
+}
+function capturePhoto(){
+  let video=document.getElementById('camVideo');
+  let canvas=document.createElement('canvas'); canvas.width=video.videoWidth; canvas.height=video.videoHeight;
+  canvas.getContext('2d').drawImage(video,0,0);
+  curMedia.images.push(canvas.toDataURL('image/jpeg',0.8));
+  renderMedia(); closeCamera(); showToast('تم التقاط الصورة');
+}
+async function toggleRec(){
+  let btn=document.getElementById('recBtn');
+  if(mediaRecorder && mediaRecorder.state==='recording'){
+    mediaRecorder.stop(); return;
+  }
+  try{
+    let stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    mediaRecorder=new MediaRecorder(stream); recChunks=[]; recSec=0;
+    document.getElementById('recStatus').style.display='block';
+    btn.textContent='⏹️ إيقاف'; btn.style.background='#ef4444'; btn.style.color='#fff';
+    recTimerInt=setInterval(()=>{ recSec++; let m=String(Math.floor(recSec/60)).padStart(2,'0'); let s=String(recSec%60).padStart(2,'0'); document.getElementById('recTimer').textContent=m+':'+s; },1000);
+    mediaRecorder.ondataavailable=e=>{ if(e.data.size>0) recChunks.push(e.data); };
+    mediaRecorder.onstop=()=>{
+      clearInterval(recTimerInt); document.getElementById('recStatus').style.display='none'; btn.textContent='🎤 تسجيل صوت'; btn.style.background=''; btn.style.color='';
+      let blob=new Blob(recChunks,{type:'audio/webm'}); let url=URL.createObjectURL(blob);
+      // convert to dataurl for storage
+      let reader=new FileReader(); reader.onload=e=>{ curMedia.audios.push(e.target.result); renderMedia(); }; reader.readAsDataURL(blob);
+      stream.getTracks().forEach(t=>t.stop());
+    };
+    mediaRecorder.start();
+  }catch(e){ showToast('الميكروفون مش شغال','افتح الصلاحيات','error'); }
+}
+function stopRec(){ if(mediaRecorder && mediaRecorder.state==='recording') mediaRecorder.stop(); }
+// Table
+function renderTable(){
+  let head=document.getElementById('tableHead'); let body=document.getElementById('tableBody'); let foot=document.getElementById('tableFoot');
+  if(!head) return;
+  head.innerHTML='<tr>'+curTable.cols.map((c,i)=>`<th>${c} <span onclick="delCol(${i})" style="cursor:pointer;color:#ef4444">✕</span></th>`).join('')+'</tr>';
+  body.innerHTML=curTable.rows.map((r,ri)=>'<tr>'+r.map((cell,ci)=>`<td><input value="${cell||''}" oninput="curTable.rows[${ri}][${ci}]=this.value;calcFoot()" placeholder="-"></td>`).join('')+`<td style="border:none;background:transparent"><button onclick="curTable.rows.splice(${ri},1);renderTable()" style="border:none;background:#FEE2E2;width:28px;height:28px;border-radius:6px;color:#ef4444">✕</button></td></tr>`).join('');
+  calcFoot();
+}
+function calcFoot(){
+  let foot=document.getElementById('tableFoot');
+  if(!foot) return;
+  let sums=curTable.cols.map((_,ci)=>{
+    let sum=0; let hasNum=false;
+    curTable.rows.forEach(r=>{ let v=parseFloat((r[ci]||'').toString().replace(/[^0-9.-]/g,'')); if(!isNaN(v)){ sum+=v; hasNum=true; } });
+    return hasNum? sum.toFixed(2).replace('.00','') : '';
+  });
+  foot.innerHTML='<tr>'+sums.map(s=>`<td style="padding:8px;text-align:center;font-weight:900;font-size:11px;color:var(--hero)">${s||''}</td>`).join('')+'<td style="border:none"></td></tr>';
+}
+function addCol(){ let name=prompt('اسم العمود الجديد:','جديد'); if(!name) return; curTable.cols.push(name); curTable.rows.forEach(r=>r.push('')); renderTable(); }
+function delCol(i){ curTable.cols.splice(i,1); curTable.rows.forEach(r=>r.splice(i,1)); renderTable(); }
+function addRow(){ curTable.rows.push(new Array(curTable.cols.length).fill('')); renderTable(); }
+function calcSum(){ calcFoot(); showToast('تم حساب المجموع'); }
+function clearTable(){ if(confirm('مسح الجدول؟')){ curTable.rows=[new Array(curTable.cols.length).fill('')]; renderTable(); } }
 function saveTask(){
   let title=document.getElementById('mTitle').value.trim();
   if(!title){ showToast('اكتب العنوان','العنوان مطلوب','error'); return;}
@@ -250,7 +482,10 @@ function saveTask(){
     priority:document.getElementById('mPri').value,
     color:document.getElementById('mColor').value,
     desc:document.getElementById('mDesc').value,
-    notes:document.getElementById('mNotes').value,
+    notes:document.getElementById('richEditor').innerText||'',
+    notesHTML:document.getElementById('richEditor').innerHTML||'',
+    media:JSON.parse(JSON.stringify(curMedia)),
+    table:JSON.parse(JSON.stringify(curTable)),
     date:document.getElementById('mDate').value,
     subs:curSubs,
     done: editingId? (tasks.find(t=>t.id===editingId)?.done||false) : false
@@ -261,24 +496,30 @@ function saveTask(){
   }else tasks.unshift(payload);
   saveLS(); render(); closeModal(); showToast('تم الحفظ ✅');
 }
-function confirmDel(id){ if(confirm('مسح المهمة دي؟')){ tasks=tasks.filter(t=>t.id!==id); saveLS(); render(); showToast('تم الحذف'); } }
-function deleteCurrent(){ if(!editingId) return; if(confirm('مسح نهائي؟')){ tasks=tasks.filter(t=>t.id!==editingId); saveLS(); render(); closeModal(); showToast('تم الحذف'); } }
+// Pro delete
+let pendingDelId=null;
+function openProDelete(id=null){
+  if(id) pendingDelId=id;
+  else if(editingId) pendingDelId=editingId;
+  else return;
+  document.getElementById('proDeleteModal').classList.add('show');
+}
+function closeProDelete(){ document.getElementById('proDeleteModal').classList.remove('show'); pendingDelId=null; }
+function confirmProDelete(){
+  if(!pendingDelId) return;
+  tasks=tasks.filter(t=>t.id!==pendingDelId);
+  saveLS(); render(); closeProDelete(); closeModal(); showToast('تم الحذف نهائياً','🗑️');
+}
+function deleteCurrent(){ openProDelete(); }
+function confirmDel(id){ openProDelete(id); }
 function openManager(){document.getElementById('managerModal').style.display='flex'; renderManagerLists();}
 function closeManager(){document.getElementById('managerModal').style.display='none';}
 function addCategory(){let n=document.getElementById('newCatName').value.trim(),e=document.getElementById('newCatEmoji').value.trim()||'📌';if(!n)return;cats.push({id:Date.now(),emoji:e,name:n});document.getElementById('newCatName').value='';renderManagerLists();render();saveLS();}
 function delCat(id){cats=cats.filter(c=>c.id!==id);renderManagerLists();render();saveLS();}
-function renderManagerLists(){
-  let catSel=document.getElementById('mCat');
-  if(catSel) catSel.innerHTML=cats.map(c=>`<option value="${c.name}">${c.emoji} ${c.name}</option>`).join('');
-  let catList=document.getElementById('catList');
-  if(catList) catList.innerHTML=cats.map(c=>`<div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg-soft);padding:8px 10px;border-radius:10px;border:1.5px solid var(--card-border)"><div style="font-size:11px"> ${c.emoji} <b>${c.name}</b></div><button onclick="delCat(${c.id})" style="border:none;background:#FEE2E2;width:26px;height:26px;border-radius:7px;color:#ef4444">✕</button></div>`).join('');
-}
-try{
-  let cur=localStorage.getItem('omar_theme')||'green';
-  if(window.applyTheme) applyTheme(cur,false);
-}catch(e){}
-render();
+function renderManagerLists(){let catSel=document.getElementById('mCat');if(catSel)catSel.innerHTML=cats.map(c=>`<option value="${c.name}">${c.emoji} ${c.name}</option>`).join('')+`<option value="مخفي">🔒 مخفي</option>`;let catList=document.getElementById('catList');if(catList)catList.innerHTML=cats.map(c=>`<div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg-soft);padding:7px 9px;border-radius:8px;margin-bottom:5px;border:1px solid var(--card-border)"><div style="color:var(--text);font-size:10.3px">${c.emoji} <b>${c.name}</b></div><button onclick="delCat(${c.id})" style="border:none;background:#FEE2E2;width:25px;height:25px;border-radius:6px;color:#ef4444">✕</button></div>`).join('');}
+function saveHiddenCode(){let inp=document.getElementById('hiddenCodeInput'); if(!inp) return; let v=inp.value.trim(); if(!v) return; localStorage.setItem('omar_hidden_code_v1', v); showToast('تم حفظ الكود','الكود: '+v,'success'); inp.value='';}
+try{applyTheme(localStorage.getItem('omar_theme')||'green',false);}catch(e){}
+renderManagerLists();render();
 </script>
 </body>
 </html>
-كده قصدك ؟
