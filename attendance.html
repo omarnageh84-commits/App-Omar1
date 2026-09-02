@@ -41,7 +41,7 @@ body{padding:0 6px 6px 6px;min-height:100dvh}
 .clear-btn{border:none;background:#FFF1F2;color:#ef4444;width:22px;height:22px;border-radius:7px;font-size:11px;cursor:pointer;border:1px solid #FECDD3;display:flex;align-items:center;justify-content:center}
 #days{max-height:none!important;overflow:visible!important}
 #mainWrap{max-width:600px;margin:0 auto;width:100%}
-#spacer{height:235px;transition:.2s}
+#spacer{height:195px;transition:.2s}
 #spacer.hidden{height:44px}
 #proModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;align-items:center;justify-content:center;padding:14px;backdrop-filter:blur(6px)}
 #proModal.show{display:flex}
@@ -61,10 +61,7 @@ body{padding:0 6px 6px 6px;min-height:100dvh}
 <div class="stat"><small>الصافي</small><b id="outSafi" class="en">0</b></div>
 <div class="stat"><small>الديون</small><input id="v4" type="tel" class="en" value="0" onfocus="unFmt(this)" onblur="fmtField(this);calcTotals()" oninput="calcTotals()" style="width:100%;border:none;background:transparent;text-align:center;outline:none"></div>
 <div class="stat"><small>المطلوب</small><input id="v3" type="tel" class="en" value="15,000" onfocus="unFmt(this)" onblur="fmtField(this);calcTotals()" oninput="calcTotals()" style="width:100%;border:none;background:transparent;text-align:center;outline:none"></div>
-</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:6px 0">
-<div class="card" style="display:flex;justify-content:space-between;align-items:center;background:var(--hero);color:#fff;border-color:var(--hero);padding:8px 9px"><span style="font-size:8.3px;font-weight:700">المطلوب يومياً</span><span id="outDaily" class="en" style="font-weight:900;font-size:9.7px;background:rgba(255,255,255,.25);padding:3px 7px;border-radius:999px">0</span></div>
-<button onclick="openCloseModal()" id="closeBtn" style="background:var(--hero);color:#fff;border:none;border-radius:8px;padding:8px;font-size:9.7px;font-weight:900">🔒 قفل الشهر وقبضت ✅</button>
+<div class="stat"><small>المطلوب يومياً</small><b id="outDaily" class="en">0</b></div>
 </div>
 <div id="closedList" style="margin:6px 0;display:flex;gap:4px;flex-wrap:wrap"></div>
 </div>
