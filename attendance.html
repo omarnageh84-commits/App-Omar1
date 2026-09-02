@@ -35,8 +35,8 @@ body{padding:0 6px 6px 6px;min-height:100dvh}
 .time-box.half{background:var(--bg-soft)!important;border-color:var(--hero)!important;color:var(--hero)!important}
 .note-box{width:95%;border:1px dashed var(--card-border);border-radius:7px;padding:5px 3px;font-size:8.3px;background:var(--bg);color:var(--text);outline:none;text-align:center}
 .table-wrap{background:var(--card);border:1px solid var(--card-border);border-radius:9px;overflow:hidden;width:100%}
-.table-head{display:grid;grid-template-columns:1.2fr .8fr .8fr .6fr 1fr .35fr .35fr;background:var(--bg-soft);font-size:7.8px;font-weight:800;padding:7px 3px;text-align:center;color:var(--text-soft);border-bottom:1px solid var(--card-border);position:sticky;top:0;z-index:2}
-.row-item{display:grid;grid-template-columns:1.2fr .8fr .8fr .6fr 1fr .35fr .35fr;gap:3px;align-items:center;padding:6px 2px;border-bottom:1px solid var(--bg-soft);background:var(--card)}
+.table-head{display:grid;grid-template-columns:0.9fr 0.62fr 0.62fr 0.48fr 0.58fr 0.9fr 0.3fr 0.3fr;gap:1px;background:var(--bg-soft);font-size:7.8px;font-weight:800;padding:7px 3px;text-align:center;color:var(--text-soft);border-bottom:1px solid var(--card-border);position:sticky;top:0;z-index:2}
+.row-item{display:grid;grid-template-columns:0.9fr 0.62fr 0.62fr 0.48fr 0.58fr 0.9fr 0.3fr 0.3fr;gap:1px;align-items:center;padding:6px 2px;border-bottom:1px solid var(--bg-soft);background:var(--card)}
 .row-item.done{border-right:3px solid var(--hero)}
 .clear-btn{border:none;background:#FFF1F2;color:#ef4444;width:22px;height:22px;border-radius:7px;font-size:11px;cursor:pointer;border:1px solid #FECDD3;display:flex;align-items:center;justify-content:center}
 #days{max-height:none!important;overflow:visible!important}
@@ -56,30 +56,30 @@ body{padding:0 6px 6px 6px;min-height:100dvh}
 <div class="stats">
 <div class="stat"><small>سعر الساعة</small><b id="outPrice" class="en">0</b></div>
 <div class="stat"><small>الساعة</small><input id="v1" type="tel" class="en" value="1,200" onfocus="unFmt(this)" onblur="fmtField(this);calcTotals()" oninput="calcTotals()" style="width:100%;border:none;background:transparent;text-align:center;outline:none"></div>
-<div class="stat"><small>كم يوم</small><input id="v2" type="tel" class="en" value="26" oninput="calcTotals()" style="width:100%;border:none;background:transparent;text-align:center;outline:none"></div>
+<div class="stat"><small>كم يوم</small><input id="v2" type="tel" class="en" value="26" onfocus="this.select()" oninput="calcTotals()" style="width:100%;border:none;background:transparent;text-align:center;outline:none"></div>
 <div class="stat"><small>عدد الساعات</small><b id="outTotal" class="en">0</b></div>
 <div class="stat"><small>الصافي</small><b id="outSafi" class="en">0</b></div>
 <div class="stat"><small>الديون</small><input id="v4" type="tel" class="en" value="0" onfocus="unFmt(this)" onblur="fmtField(this);calcTotals()" oninput="calcTotals()" style="width:100%;border:none;background:transparent;text-align:center;outline:none"></div>
 <div class="stat"><small>المطلوب</small><input id="v3" type="tel" class="en" value="15,000" onfocus="unFmt(this)" onblur="fmtField(this);calcTotals()" oninput="calcTotals()" style="width:100%;border:none;background:transparent;text-align:center;outline:none"></div>
 <div class="stat"><small>المطلوب يومياً</small><b id="outDaily" class="en">0</b></div>
 </div>
-<!-- أزرار حضور وانصراف - صغيرة بنفس شكل الخانات -->
+<!-- أزرار صغيرة بنفس شكل الخانات -->
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:4px 0 2px 0">
-<button onclick="quickPunch('in')" style="border-radius:9px;padding:7px 3px;border:1px solid var(--hero);text-align:center;background:var(--hero);color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;transition:.15s">
-<small style="font-size:7.8px;font-weight:800;opacity:.95;display:block;letter-spacing:.2px">🟢 حضور الآن</small><b class="en" id="inBtnTime" style="font-size:10.7px;font-weight:900">--:--</b>
+<button onclick="quickPunch('in')" style="border-radius:9px;padding:6px 3px;border:1px solid var(--hero);text-align:center;background:var(--hero);color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px">
+<small style="font-size:7.8px;font-weight:800">🟢 حضور الآن</small><b class="en" id="inBtnTime" style="font-size:10.7px;font-weight:900">--:--</b>
 </button>
-<button onclick="quickPunch('out')" style="border-radius:9px;padding:7px 3px;border:1px solid #ef4444;text-align:center;background:#fff1f2;color:#ef4444;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;transition:.15s">
-<small style="font-size:7.8px;font-weight:800;display:block;letter-spacing:.2px">🔴 انصراف الآن</small><b class="en" id="outBtnTime" style="font-size:10.7px;font-weight:900">--:--</b>
+<button onclick="quickPunch('out')" style="border-radius:9px;padding:6px 3px;border:1px solid #ef4444;text-align:center;background:#FFF1F2;color:#ef4444;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px">
+<small style="font-size:7.8px;font-weight:800">🔴 انصراف الآن</small><b class="en" id="outBtnTime" style="font-size:10.7px;font-weight:900">--:--</b>
 </button>
 </div>
-<div id="punchStatus" style="background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:5px 8px;font-size:8.5px;text-align:center;color:var(--text-soft);margin:3px 0;display:none;font-weight:700"></div>
+<div id="punchStatus" style="background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:5px 8px;font-size:8.5px;text-align:center;display:none;font-weight:700"></div>
 <div id="closedList" style="margin:6px 0;display:flex;gap:4px;flex-wrap:wrap"></div>
 </div>
 </div>
 
 <div id="mainWrap">
 <div id="spacer"></div>
-<div class="table-wrap"><div class="table-head"><div>اليوم</div><div>حضور</div><div>انصراف</div><div>ساعات</div><div>ملاحظات</div><div>إجازة</div><div>مسح</div></div><div id="days"></div></div>
+<div class="table-wrap"><div class="table-head"><div>اليوم</div><div>حضور</div><div>انصراف</div><div>ساعات</div><div>الصافي</div><div>ملاحظات</div><div>إجازة</div><div>مسح</div></div><div id="days"></div></div>
 </div>
 
 <div id="proModal" onclick="if(event.target==this)closeModal()"><div class="modal-box"><div style="padding:16px;text-align:center"><div id="modalIcon" style="width:42px;height:42px;background:#FFF1F2;border-radius:11px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:20px">🗑️</div><div id="modalTitle" style="font-weight:900;font-size:12.5px;color:var(--text)">تمسح حضور اليوم ده؟</div><div id="modalDesc" style="font-size:9.5px;color:var(--text-soft);margin-top:4px">هيتم مسح الحضور والانصراف بس</div></div><div style="display:flex;gap:8px;padding:10px;background:var(--bg-soft);border-top:1px solid var(--card-border)"><button onclick="closeModal()" style="flex:1;background:var(--card);border:1px solid var(--card-border);padding:10px;border-radius:9px;font-weight:800">إلغاء</button><button id="modalOk" onclick="confirmModal()" style="flex:1;background:#ef4444;color:#fff;border:none;padding:10px;border-radius:9px;font-weight:900">مسح ✓</button></div></div></div>
@@ -109,26 +109,51 @@ function unFmt(el){ el.value=el.value.replace(/,/g,''); el.select(); }
 function toEn(s){return String(s).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/,/g,'').replace(/[^0-9.:]/g,'');}
 function parseHour(v){if(!v) return 0;v=toEn(v);if(v.includes(':')){let p=v.split(':');return (parseFloat(p[0])||0)+(parseFloat(p[1])||0)/60;}return parseFloat(v)||0;}
 function calcDiff(a,b){if(!a||!b) return 0;let s=parseHour(a), e=parseHour(b);let d=e-s;if(d<0)d+=24;return d>0?d:0;}
-function renderAll(){const list=document.getElementById('days');document.getElementById('monthLabel').innerText=`${curM+1} / ${curY}`;const y=curY,m=curM;const dim=new Date(y,m+1,0).getDate();let html='';for(let i=1;i<=dim;i++){const key=`${y}-${m+1}-${i}`;const rec=data[key]||{in:'',out:''};const isHol=hols[key];const hours=calcDiff(rec.in,rec.out);const dayAr=['أحد','إثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'][new Date(y,m,i).getDay()];const noteVal=notes[key]||'';const isDone=rec.in&&rec.out&&!isHol;const inClass=rec.in?(isDone?'filled':'half'):'';const outClass=rec.out?(isDone?'filled':'half'):'';html+=`<div class="row-item ${isDone?'done':''}"><div style="font-size:8.7px;font-weight:700">${dayAr} <span class="en" style="font-size:7.8px;color:var(--text-soft)">(${i}/${m+1})</span></div><input id="in-${key}" type="tel" class="time-box en ${inClass}" value="${rec.in}" placeholder="7" ${isHol?'disabled':''} oninput="saveD('${key}','in',this.value)"><input id="out-${key}" type="tel" class="time-box en ${outClass}" value="${rec.out}" placeholder="19" ${isHol?'disabled':''} oninput="saveD('${key}','out',this.value)"><div id="h-${key}" class="en" style="font-size:9.7px;font-weight:900;color:${isDone?'var(--hero)':''}">${isHol?'-':hours?hours.toFixed(2):'-'}</div><input id="note-${key}" type="text" class="note-box" placeholder="ملاحظة..." value="${noteVal}" oninput="saveNote('${key}',this.value)"><button onclick="toggleHol('${key}')" style="border:none;background:${isHol?'var(--hero)':'var(--bg-soft)'};width:19px;height:19px;border-radius:5px;font-size:8.7px;color:${isHol?'#fff':'var(--text-soft)'};border:1px solid var(--card-border)">${isHol?'✓':'○'}</button><button class="clear-btn" onclick="openClearModal('${key}')">✕</button></div>`;}list.innerHTML=html;calcTotals();renderClosedList();}
+function renderAll(){
+  const list=document.getElementById('days');
+  document.getElementById('monthLabel').innerText=`${curM+1} / ${curY}`;
+  const y=curY,m=curM;
+  const dim=new Date(y,m+1,0).getDate();
+  let v1p=parseFloat(toEn(document.getElementById('v1')?.value))||0;
+  let v2p=parseFloat(toEn(document.getElementById('v2')?.value))||1;
+  let price = v2p ? v1p / v2p : 0;
+  let html='';
+  for(let i=1;i<=dim;i++){
+    const key=`${y}-${m+1}-${i}`;
+    const rec=data[key]||{in:'',out:''};
+    const isHol=hols[key];
+    const hours=calcDiff(rec.in,rec.out);
+    const dayAr=['أحد','إثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'][new Date(y,m,i).getDay()];
+    const noteVal=notes[key]||'';
+    const isDone=rec.in&&rec.out&&!isHol;
+    const inClass=rec.in?(isDone?'filled':'half'):'';
+    const outClass=rec.out?(isDone?'filled':'half'):'';
+    let dailyMoney = hours && price ? Math.round(hours*price) : 0;
+    html+=`<div class="row-item ${isDone?'done':''}">
+      <div style="font-size:8.3px;font-weight:800;white-space:nowrap;overflow:hidden">${dayAr} <span class="en" style="font-size:7px;color:var(--text-soft)">(${i})</span></div>
+      <input id="in-${key}" type="tel" class="time-box en ${inClass}" value="${rec.in}" placeholder="7" ${isHol?'disabled':''} onfocus="this.select()" oninput="saveD('${key}','in',this.value)">
+      <input id="out-${key}" type="tel" class="time-box en ${outClass}" value="${rec.out}" placeholder="19" ${isHol?'disabled':''} onfocus="this.select()" oninput="saveD('${key}','out',this.value)">
+      <div id="h-${key}" class="en" style="font-size:8.8px;font-weight:900;color:${isDone?'var(--hero)':''}">${isHol?'-':hours?hours.toFixed(2):'-'}</div>
+      <div id="s-${key}" class="en" style="font-size:8.5px;font-weight:900;color:${isDone?'var(--hero)':'var(--text-soft)'}">${isHol?'-':dailyMoney?dailyMoney.toLocaleString('en-US'): '-'}</div>
+      <input id="note-${key}" type="text" class="note-box" placeholder="..." value="${noteVal}" onfocus="this.select()" oninput="saveNote('${key}',this.value)">
+      <button onclick="toggleHol('${key}')" style="border:none;background:${isHol?'var(--hero)':'var(--bg-soft)'};width:20px;height:20px;border-radius:5px;font-size:8.7px;color:${isHol?'#fff':'var(--text-soft)'};border:1px solid var(--card-border)">${isHol?'✓':'○'}</button>
+      <button class="clear-btn" onclick="openClearModal('${key}')">✕</button>
+    </div>`;
+  }
+  list.innerHTML=html;
+  calcTotals();
+  renderClosedList();
+}
 
 function quickPunch(type){
   let now=new Date();
-  let realY=now.getFullYear();
-  let realM=now.getMonth();
-  if(curY!==realY || curM!==realM){
-    curY=realY; curM=realM;
-    renderAll();
-    setTimeout(()=>{ doQuickPunch(type, now); }, 200);
-  } else {
-    doQuickPunch(type, now);
-  }
+  let realY=now.getFullYear(); let realM=now.getMonth();
+  if(curY!==realY || curM!==realM){ curY=realY; curM=realM; renderAll(); setTimeout(()=>{ doQuickPunch(type, now); }, 200); } else { doQuickPunch(type, now); }
 }
 function doQuickPunch(type, now){
-  let y=curY, m=curM;
-  let d=now.getDate();
+  let y=curY, m=curM, d=now.getDate();
   let key=`${y}-${m+1}-${d}`;
-  let h=now.getHours();
-  let mm=now.getMinutes();
+  let h=now.getHours(); let mm=now.getMinutes();
   let simpleTime = mm===0 ? `${h}` : `${h}:${String(mm).padStart(2,'0')}`;
   let timeStr = `${String(h).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
   if(!data[key]) data[key]={in:'',out:''};
@@ -145,41 +170,16 @@ function doQuickPunch(type, now){
   renderAll();
   setTimeout(()=>{
     let el=document.getElementById(type==='in'?`in-${key}`:`out-${key}`);
-    if(el){
-      el.classList.add('filled');
-      let row=el.closest('.row-item');
-      if(row) row.scrollIntoView({behavior:'smooth', block:'center'});
-    }
+    if(el){ let row=el.closest('.row-item'); if(row) row.scrollIntoView({behavior:'smooth', block:'center'}); }
     let status=document.getElementById('punchStatus');
-    if(status){
-      status.style.display='block';
-      status.innerHTML = type==='in' ? `✅ حضور ${d}/${m+1} الساعة ${timeStr} - اتسجل` : `✅ انصراف ${d}/${m+1} الساعة ${timeStr} - اتسجل`;
-      status.style.background = type==='in' ? '#f0fdf4' : '#fef2f2';
-      status.style.borderColor = type==='in' ? '#bbf7d0' : '#fecaca';
-      status.style.color = type==='in' ? '#16A34A' : '#ef4444';
-      setTimeout(()=>{ status.style.display='none'; }, 3500);
-    }
+    if(status){ status.style.display='block'; status.innerHTML=`✅ ${type==='in'?'حضور':'انصراف'} ${d}/${m+1} الساعة ${timeStr}`; status.style.background=type==='in'?'#f0fdf4':'#fef2f2'; status.style.borderColor=type==='in'?'#bbf7d0':'#fecaca'; status.style.color=type==='in'?'#16A34A':'#ef4444'; setTimeout(()=>{status.style.display='none'},3000); }
   }, 250);
-  try{
-    let ctx=new (window.AudioContext||window.webkitAudioContext)();
-    let o=ctx.createOscillator(); let g=ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    o.frequency.value = type==='in' ? 880 : 440;
-    g.gain.value=0.2; o.start();
-    g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime+0.35);
-    setTimeout(()=>{ try{ctx.close()}catch(e){} }, 500);
-  }catch(e){}
 }
 function updatePunchBtnTimes(){
-  let now=new Date();
-  let t=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
-  let a=document.getElementById('inBtnTime');
-  let b=document.getElementById('outBtnTime');
-  if(a) a.textContent=t;
-  if(b) b.textContent=t;
+  let now=new Date(); let t=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  let a=document.getElementById('inBtnTime'); let b=document.getElementById('outBtnTime'); if(a) a.textContent=t; if(b) b.textContent=t;
 }
-setInterval(updatePunchBtnTimes, 15000);
-setTimeout(updatePunchBtnTimes, 200);
+setInterval(updatePunchBtnTimes, 15000); setTimeout(updatePunchBtnTimes, 200);
 
 function doClearDay(k){ data[k]={in:'',out:''}; localStorage.setItem('att_fixed_final',JSON.stringify(data)); renderAll(); }
 function saveD(k,t,v){
@@ -201,6 +201,15 @@ function saveD(k,t,v){
   const h=calcDiff(data[k].in,data[k].out);
   const hEl=document.getElementById('h-'+k);
   if(hEl){ hEl.innerText=h?h.toFixed(2):'-'; hEl.style.color=h?'var(--hero)':''; }
+  const sEl=document.getElementById('s-'+k);
+  if(sEl){
+    let v1p=parseFloat(toEn(document.getElementById('v1')?.value))||0;
+    let v2p=parseFloat(toEn(document.getElementById('v2')?.value))||1;
+    let price = v2p ? v1p / v2p : 0;
+    let dm = h && price ? Math.round(h*price) : 0;
+    sEl.innerText = dm ? dm.toLocaleString('en-US') : '-';
+    sEl.style.color = dm ? 'var(--hero)' : '';
+  }
   const inEl=document.getElementById('in-'+k);
   const outEl=document.getElementById('out-'+k);
   const row=inEl?.closest('.row-item');
