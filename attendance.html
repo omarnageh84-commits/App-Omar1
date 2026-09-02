@@ -41,7 +41,7 @@ body{padding:0 6px 6px 6px;min-height:100dvh}
 .clear-btn{border:none;background:#FFF1F2;color:#ef4444;width:22px;height:22px;border-radius:7px;font-size:11px;cursor:pointer;border:1px solid #FECDD3;display:flex;align-items:center;justify-content:center}
 #days{max-height:none!important;overflow:visible!important}
 #mainWrap{max-width:600px;margin:0 auto;width:100%}
-#spacer{height:195px;transition:.2s}
+#spacer{height:235px;transition:.2s}
 #spacer.hidden{height:44px}
 #proModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;align-items:center;justify-content:center;padding:14px;backdrop-filter:blur(6px)}
 #proModal.show{display:flex}
@@ -63,6 +63,16 @@ body{padding:0 6px 6px 6px;min-height:100dvh}
 <div class="stat"><small>المطلوب</small><input id="v3" type="tel" class="en" value="15,000" onfocus="unFmt(this)" onblur="fmtField(this);calcTotals()" oninput="calcTotals()" style="width:100%;border:none;background:transparent;text-align:center;outline:none"></div>
 <div class="stat"><small>المطلوب يومياً</small><b id="outDaily" class="en">0</b></div>
 </div>
+<!-- أزرار حضور وانصراف - صغيرة بنفس شكل الخانات -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:4px 0 2px 0">
+<button onclick="quickPunch('in')" style="border-radius:9px;padding:7px 3px;border:1px solid var(--hero);text-align:center;background:var(--hero);color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;transition:.15s">
+<small style="font-size:7.8px;font-weight:800;opacity:.95;display:block;letter-spacing:.2px">🟢 حضور الآن</small><b class="en" id="inBtnTime" style="font-size:10.7px;font-weight:900">--:--</b>
+</button>
+<button onclick="quickPunch('out')" style="border-radius:9px;padding:7px 3px;border:1px solid #ef4444;text-align:center;background:#fff1f2;color:#ef4444;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;transition:.15s">
+<small style="font-size:7.8px;font-weight:800;display:block;letter-spacing:.2px">🔴 انصراف الآن</small><b class="en" id="outBtnTime" style="font-size:10.7px;font-weight:900">--:--</b>
+</button>
+</div>
+<div id="punchStatus" style="background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:5px 8px;font-size:8.5px;text-align:center;color:var(--text-soft);margin:3px 0;display:none;font-weight:700"></div>
 <div id="closedList" style="margin:6px 0;display:flex;gap:4px;flex-wrap:wrap"></div>
 </div>
 </div>
@@ -100,6 +110,77 @@ function toEn(s){return String(s).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.i
 function parseHour(v){if(!v) return 0;v=toEn(v);if(v.includes(':')){let p=v.split(':');return (parseFloat(p[0])||0)+(parseFloat(p[1])||0)/60;}return parseFloat(v)||0;}
 function calcDiff(a,b){if(!a||!b) return 0;let s=parseHour(a), e=parseHour(b);let d=e-s;if(d<0)d+=24;return d>0?d:0;}
 function renderAll(){const list=document.getElementById('days');document.getElementById('monthLabel').innerText=`${curM+1} / ${curY}`;const y=curY,m=curM;const dim=new Date(y,m+1,0).getDate();let html='';for(let i=1;i<=dim;i++){const key=`${y}-${m+1}-${i}`;const rec=data[key]||{in:'',out:''};const isHol=hols[key];const hours=calcDiff(rec.in,rec.out);const dayAr=['أحد','إثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'][new Date(y,m,i).getDay()];const noteVal=notes[key]||'';const isDone=rec.in&&rec.out&&!isHol;const inClass=rec.in?(isDone?'filled':'half'):'';const outClass=rec.out?(isDone?'filled':'half'):'';html+=`<div class="row-item ${isDone?'done':''}"><div style="font-size:8.7px;font-weight:700">${dayAr} <span class="en" style="font-size:7.8px;color:var(--text-soft)">(${i}/${m+1})</span></div><input id="in-${key}" type="tel" class="time-box en ${inClass}" value="${rec.in}" placeholder="7" ${isHol?'disabled':''} oninput="saveD('${key}','in',this.value)"><input id="out-${key}" type="tel" class="time-box en ${outClass}" value="${rec.out}" placeholder="19" ${isHol?'disabled':''} oninput="saveD('${key}','out',this.value)"><div id="h-${key}" class="en" style="font-size:9.7px;font-weight:900;color:${isDone?'var(--hero)':''}">${isHol?'-':hours?hours.toFixed(2):'-'}</div><input id="note-${key}" type="text" class="note-box" placeholder="ملاحظة..." value="${noteVal}" oninput="saveNote('${key}',this.value)"><button onclick="toggleHol('${key}')" style="border:none;background:${isHol?'var(--hero)':'var(--bg-soft)'};width:19px;height:19px;border-radius:5px;font-size:8.7px;color:${isHol?'#fff':'var(--text-soft)'};border:1px solid var(--card-border)">${isHol?'✓':'○'}</button><button class="clear-btn" onclick="openClearModal('${key}')">✕</button></div>`;}list.innerHTML=html;calcTotals();renderClosedList();}
+
+function quickPunch(type){
+  let now=new Date();
+  let realY=now.getFullYear();
+  let realM=now.getMonth();
+  if(curY!==realY || curM!==realM){
+    curY=realY; curM=realM;
+    renderAll();
+    setTimeout(()=>{ doQuickPunch(type, now); }, 200);
+  } else {
+    doQuickPunch(type, now);
+  }
+}
+function doQuickPunch(type, now){
+  let y=curY, m=curM;
+  let d=now.getDate();
+  let key=`${y}-${m+1}-${d}`;
+  let h=now.getHours();
+  let mm=now.getMinutes();
+  let simpleTime = mm===0 ? `${h}` : `${h}:${String(mm).padStart(2,'0')}`;
+  let timeStr = `${String(h).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+  if(!data[key]) data[key]={in:'',out:''};
+  if(type==='in') data[key].in=simpleTime; else data[key].out=simpleTime;
+  localStorage.setItem('att_fixed_final', JSON.stringify(data));
+  try{
+    let atts=JSON.parse(localStorage.getItem('omar_att_v2')||'[]');
+    let dateStr=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    let typeName=type==='in'?'دخول':'خروج';
+    atts=atts.filter(a=>!(a.date===dateStr && a.type===typeName && a.source==='attendance'));
+    atts.push({id:Date.now().toString(), type:typeName, date:dateStr, time:timeStr+':00', timestamp:Date.now(), source:'attendance', key:key});
+    localStorage.setItem('omar_att_v2', JSON.stringify(atts));
+  }catch(e){}
+  renderAll();
+  setTimeout(()=>{
+    let el=document.getElementById(type==='in'?`in-${key}`:`out-${key}`);
+    if(el){
+      el.classList.add('filled');
+      let row=el.closest('.row-item');
+      if(row) row.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+    let status=document.getElementById('punchStatus');
+    if(status){
+      status.style.display='block';
+      status.innerHTML = type==='in' ? `✅ حضور ${d}/${m+1} الساعة ${timeStr} - اتسجل` : `✅ انصراف ${d}/${m+1} الساعة ${timeStr} - اتسجل`;
+      status.style.background = type==='in' ? '#f0fdf4' : '#fef2f2';
+      status.style.borderColor = type==='in' ? '#bbf7d0' : '#fecaca';
+      status.style.color = type==='in' ? '#16A34A' : '#ef4444';
+      setTimeout(()=>{ status.style.display='none'; }, 3500);
+    }
+  }, 250);
+  try{
+    let ctx=new (window.AudioContext||window.webkitAudioContext)();
+    let o=ctx.createOscillator(); let g=ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.frequency.value = type==='in' ? 880 : 440;
+    g.gain.value=0.2; o.start();
+    g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime+0.35);
+    setTimeout(()=>{ try{ctx.close()}catch(e){} }, 500);
+  }catch(e){}
+}
+function updatePunchBtnTimes(){
+  let now=new Date();
+  let t=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  let a=document.getElementById('inBtnTime');
+  let b=document.getElementById('outBtnTime');
+  if(a) a.textContent=t;
+  if(b) b.textContent=t;
+}
+setInterval(updatePunchBtnTimes, 15000);
+setTimeout(updatePunchBtnTimes, 200);
+
 function doClearDay(k){ data[k]={in:'',out:''}; localStorage.setItem('att_fixed_final',JSON.stringify(data)); renderAll(); }
 function saveD(k,t,v){
   let clean=toEn(v);
