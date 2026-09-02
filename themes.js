@@ -20,7 +20,11 @@ function applyTheme(name){
 window.themes = themes;
 window.applyTheme = applyTheme;
 
-// Auto apply saved theme immediately - no lag
-const savedTheme = localStorage.getItem('omar_theme') || 'green';
-const st = themes[savedTheme] || themes.green;
-Object.entries(st).forEach(([k,v])=> document.documentElement.style.setProperty(k,v));
+// Instant apply - no lag, no iframe loop
+(function(){
+  try{
+    const saved = localStorage.getItem('omar_theme') || 'green';
+    const cur = themes[saved] || themes.green;
+    Object.entries(cur).forEach(([k,v])=> document.documentElement.style.setProperty(k,v));
+  }catch(e){}
+})();
