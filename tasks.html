@@ -181,7 +181,7 @@ body{display:flex;flex-direction:column}
       <label style="display:flex;gap:8px;align-items:center;background:var(--bg-soft);padding:8px;border-radius:10px;border:1.5px solid var(--card-border);margin-bottom:4px"><input type="radio" name="remSound" value="chime"> 🎵 هادئ <button type="button" onclick="previewSound('chime')" style="margin-right:auto;border:none;background:var(--card);width:28px;height:28px;border-radius:6px">▶️</button></label>
       <label style="display:flex;gap:8px;align-items:center;background:var(--bg-soft);padding:8px;border-radius:10px;border:1.5px solid var(--card-border);margin-bottom:4px"><input type="radio" name="remSound" value="alert"> 🚨 قوي <button type="button" onclick="previewSound('alert')" style="margin-right:auto;border:none;background:var(--card);width:28px;height:28px;border-radius:6px">▶️</button></label>
       <label style="display:flex;gap:8px;align-items:center;background:var(--bg-soft);padding:8px;border-radius:10px;border:1.5px solid var(--card-border);margin-bottom:4px"><input type="radio" name="remSound" value="digital"> ⏰ ديجيتال <button type="button" onclick="previewSound('digital')" style="margin-right:auto;border:none;background:var(--card);width:28px;height:28px;border-radius:6px">▶️</button></label>
-      <label style="display:flex;gap:8px;align-items:center;background:var(--bg-soft);padding:8px;border-radius:10px;border:1.5px solid var(--card-border);"><input type="radio" name="remSound" value="custom"> 📁 من التليفون <button type="button" onclick="document.getElementById('customSoundFile').click()" style="margin-right:auto;border:none;background:var(--hero);color:#fff;padding:4px 10px;border-radius:6px;font-size:9px">اختيار</button></label>
+      <label style="display:flex;gap:8px;align-items:center;background:var(--bg-soft);padding:8px;border-radius:10px;border:1.5px solid var(--card-border);"><input type="radio" name="remSound" value="custom" onchange="if(this.checked) document.getElementById('customSoundFile').click()"> 📁 من التليفون <button type="button" onclick="document.getElementById('customSoundFile').click()" style="margin-right:auto;border:none;background:var(--hero);color:#fff;padding:4px 10px;border-radius:6px;font-size:9px">اختيار</button></label>
       <input type="file" id="customSoundFile" accept="audio/*" style="display:none" onchange="handleCustomSound(this.files)">
       <div id="customSoundName" style="font-size:8px;color:var(--text-soft);margin-top:6px;display:none">تم اختيار نغمة مخصصة</div>
       <audio id="reminderAudio" style="display:none"></audio>
@@ -565,11 +565,25 @@ function applyColor(col){
   saveSel();
 }
 function clearAllNotes(){
-  if(confirm('متأكد عايز تمسح كل الملاحظات؟')){
-    document.getElementById('richEditor').innerHTML='';
-    document.getElementById('richEditor').focus();
-    showToast('تم مسح الكل');
-  }
+  let ed=document.getElementById('richEditor');
+  if(!ed) return;
+  // مسح فوري بدون confirm عشان الموبايل
+  ed.innerHTML='';
+  ed.textContent='';
+  ed.focus();
+  // نحط سطر فاضي عشان المؤشر يظهر
+  setTimeout(()=>{
+    ed.innerHTML='<br>';
+    let range=document.createRange();
+    let sel=window.getSelection();
+    range.selectNodeContents(ed);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+    ed.focus();
+  },10);
+  showToast('تم مسح كل الملاحظات ✅');
+  saveSel();
 }
 function clearAllFormatting(){
   // ده للتوافق القديم - بقى يمسح كله
