@@ -6,7 +6,120 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#16A34A">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@500;600;700&display=swap" rel="stylesheet">
-<script src="themes.js?v=18"></script>
+<script>
+
+const themes = {
+  green: {
+    '--bg': '#F0FDF4',
+    '--bg-soft': '#DCFCE7',
+    '--card': '#FFFFFF',
+    '--card-border': '#BBF7D0',
+    '--text': '#14532D',
+    '--text-soft': '#4ADE80',
+    '--hero': '#16A34A',
+    '--accent': '#22C55E',
+    '--nav-bg': 'rgba(255,255,255,0.92)'
+  },
+  dark: {
+    '--bg': '#020617',
+    '--bg-soft': '#1E293B',
+    '--card': '#0F172A',
+    '--card-border': '#334155',
+    '--text': '#F8FAFC',
+    '--text-soft': '#64748B',
+    '--hero': '#22C55E',
+    '--accent': '#16A34A',
+    '--nav-bg': 'rgba(15,23,42,0.92)'
+  },
+  blue: {
+    '--bg': '#EFF6FF',
+    '--bg-soft': '#DBEAFE',
+    '--card': '#FFFFFF',
+    '--card-border': '#93C5FD',
+    '--text': '#1E3A8A',
+    '--text-soft': '#3B82F6',
+    '--hero': '#2563EB',
+    '--accent': '#1D4ED8',
+    '--nav-bg': 'rgba(255,255,255,0.92)'
+  },
+  purple: {
+    '--bg': '#F5F3FF',
+    '--bg-soft': '#EDE9FE',
+    '--card': '#FFFFFF',
+    '--card-border': '#C4B5FD',
+    '--text': '#4C1D95',
+    '--text-soft': '#8B5CF6',
+    '--hero': '#7C3AED',
+    '--accent': '#6D28D9',
+    '--nav-bg': 'rgba(255,255,255,0.92)'
+  },
+  orange: {
+    '--bg': '#FFFBEB',
+    '--bg-soft': '#FEF3C7',
+    '--card': '#FFFFFF',
+    '--card-border': '#FCD34D',
+    '--text': '#78350F',
+    '--text-soft': '#D97706',
+    '--hero': '#EA580C',
+    '--accent': '#F97316',
+    '--nav-bg': 'rgba(255,255,255,0.92)'
+  },
+  rose: {
+    '--bg': '#FFF1F2',
+    '--bg-soft': '#FFE4E6',
+    '--card': '#FFFFFF',
+    '--card-border': '#FDA4AF',
+    '--text': '#881337',
+    '--text-soft': '#E11D48',
+    '--hero': '#E11D48',
+    '--accent': '#BE123C',
+    '--nav-bg': 'rgba(255,255,255,0.92)'
+  },
+  teal: {
+    '--bg': '#F0FDFA',
+    '--bg-soft': '#CCFBF1',
+    '--card': '#FFFFFF',
+    '--card-border': '#5EEAD4',
+    '--text': '#134E4A',
+    '--text-soft': '#0D9488',
+    '--hero': '#0F766E',
+    '--accent': '#14B8A6',
+    '--nav-bg': 'rgba(255,255,255,0.92)'
+  },
+  night: {
+    '--bg': '#0B0F1A',
+    '--bg-soft': '#1A2332',
+    '--card': '#151D2A',
+    '--card-border': '#2A3441',
+    '--text': '#E2E8F0',
+    '--text-soft': '#64748B',
+    '--hero': '#F59E0B',
+    '--accent': '#FBBF24',
+    '--nav-bg': 'rgba(21,29,42,0.92)'
+  }
+};
+
+function applyTheme(name){
+  try{
+    const t = themes[name] || themes.green;
+    Object.entries(t).forEach(([k,v])=> document.documentElement.style.setProperty(k,v));
+    localStorage.setItem('omar_theme', name);
+    let meta = document.querySelector('meta[name="theme-color"]');
+    if(meta) meta.content = t['--hero'];
+    document.querySelectorAll('iframe.page').forEach(f=>{
+      try{
+        if(f.contentDocument && f.contentDocument.documentElement){
+          Object.entries(t).forEach(([k,v])=> f.contentDocument.documentElement.style.setProperty(k,v));
+        }
+      }catch(e){}
+    });
+  }catch(e){ console.error(e); }
+}
+
+window.themes = themes;
+window.applyTheme = applyTheme;
+
+</script>
 <style>
 :root{ --bg:#F0FDF4; --bg-soft:#DCFCE7; --card:#FFFFFF; --card-border:#BBF7D0; --text:#14532D; --text-soft:#4ADE80; --primary:#16A34A; --hero:#16A34A; --accent:#22C55E; --nav-bg: rgba(255,255,255,0.92); }
 *{box-sizing:border-box;margin:0;padding:0;font-family:'IBM Plex Sans Arabic',sans-serif}
@@ -36,7 +149,7 @@ body{display:flex;justify-content:center;align-items:flex-start;background:#0f17
 <body>
 <div class="phone-shell">
   <div class="pageWrap">
-    <iframe data-page="home.html" src="home.html?v=18" class="page active" title="home"></iframe>
+    <iframe data-page="home.html" src="home.html?v=19" class="page active" title="home"></iframe>
     <iframe data-page="daily.html" src="about:blank" class="page" title="daily"></iframe>
     <iframe data-page="attendance.html" src="about:blank" class="page" title="attendance"></iframe>
     <iframe data-page="tasks.html" src="about:blank" class="page" title="tasks"></iframe>
@@ -56,7 +169,7 @@ function switchPage(name,btn){
     const is=f.dataset.page===name;
     f.classList.toggle('active',is);
     if(is && f.src.includes('about:blank')){
-      f.src=name+'?v=18';
+      f.src=name+'?v=19';
       f.onload=()=>{
         let cur=localStorage.getItem('omar_theme')||'green';
         if(window.themes && themes[cur] && f.contentDocument){
@@ -69,12 +182,12 @@ function switchPage(name,btn){
   btn.classList.add('active');
   if(navigator.vibrate) navigator.vibrate(10);
 }
-applyTheme(localStorage.getItem('omar_theme')||'green');
+if(typeof applyTheme!=="undefined") applyTheme(localStorage.getItem('omar_theme')||'green');
 if('serviceWorker' in navigator){
   navigator.serviceWorker.getRegistrations().then(regs=>{
     regs.forEach(r=>{ if(r.active && r.active.scriptURL.includes('sw.js')) { console.log('SW found', r.scope); } });
   });
-  navigator.serviceWorker.register('./sw.js?v=18').then(()=>console.log('✅ PWA Ready v18 - يمكنك تثبيته من كروم')).catch(e=>console.error(e));
+  navigator.serviceWorker.register('./sw.js?v=19').then(()=>console.log('✅ PWA Ready v18 - يمكنك تثبيته من كروم')).catch(e=>console.error(e));
   // Force clear old cache if daily still broken
   if(localStorage.getItem('force_reload_v18')!=='1'){
     caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k)))).then(()=>{
