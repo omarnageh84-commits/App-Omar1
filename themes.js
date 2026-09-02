@@ -17,16 +17,18 @@ function applyTheme(name, broadcast=true){
   if(meta) meta.content = t['--hero'];
   
   if(broadcast){
+    // 1. بلغ الأب و خليه يبلغ كل إخواته
     try{
       if(window.parent && window.parent!==window && window.parent.applyTheme){
-        window.parent.applyTheme(name, false);
+        window.parent.applyTheme(name, true);
       }
     }catch(e){}
+    // 2. بلغ كل الـ iframes اللي جواك
     try{
       const frames = document.querySelectorAll('iframe.page, iframe');
       frames.forEach(f=>{
         try{
-          if(f.contentWindow && f.contentWindow.applyTheme){
+          if(f.contentWindow && f.contentWindow.applyTheme && f.contentWindow!==window){
             f.contentWindow.applyTheme(name, false);
           }
         }catch(e){}
