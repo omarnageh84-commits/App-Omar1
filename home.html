@@ -3,7 +3,120 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>الرئيسية</title>
-<script src="themes.js?v=18"></script>
+<script>
+
+const themes = {
+  green: {
+    '--bg': '#F0FDF4',
+    '--bg-soft': '#DCFCE7',
+    '--card': '#FFFFFF',
+    '--card-border': '#BBF7D0',
+    '--text': '#14532D',
+    '--text-soft': '#4ADE80',
+    '--hero': '#16A34A',
+    '--accent': '#22C55E',
+    '--nav-bg': 'rgba(255,255,255,0.92)'
+  },
+  dark: {
+    '--bg': '#020617',
+    '--bg-soft': '#1E293B',
+    '--card': '#0F172A',
+    '--card-border': '#334155',
+    '--text': '#F8FAFC',
+    '--text-soft': '#64748B',
+    '--hero': '#22C55E',
+    '--accent': '#16A34A',
+    '--nav-bg': 'rgba(15,23,42,0.92)'
+  },
+  blue: {
+    '--bg': '#EFF6FF',
+    '--bg-soft': '#DBEAFE',
+    '--card': '#FFFFFF',
+    '--card-border': '#93C5FD',
+    '--text': '#1E3A8A',
+    '--text-soft': '#3B82F6',
+    '--hero': '#2563EB',
+    '--accent': '#1D4ED8',
+    '--nav-bg': 'rgba(255,255,255,0.92)'
+  },
+  purple: {
+    '--bg': '#F5F3FF',
+    '--bg-soft': '#EDE9FE',
+    '--card': '#FFFFFF',
+    '--card-border': '#C4B5FD',
+    '--text': '#4C1D95',
+    '--text-soft': '#8B5CF6',
+    '--hero': '#7C3AED',
+    '--accent': '#6D28D9',
+    '--nav-bg': 'rgba(255,255,255,0.92)'
+  },
+  orange: {
+    '--bg': '#FFFBEB',
+    '--bg-soft': '#FEF3C7',
+    '--card': '#FFFFFF',
+    '--card-border': '#FCD34D',
+    '--text': '#78350F',
+    '--text-soft': '#D97706',
+    '--hero': '#EA580C',
+    '--accent': '#F97316',
+    '--nav-bg': 'rgba(255,255,255,0.92)'
+  },
+  rose: {
+    '--bg': '#FFF1F2',
+    '--bg-soft': '#FFE4E6',
+    '--card': '#FFFFFF',
+    '--card-border': '#FDA4AF',
+    '--text': '#881337',
+    '--text-soft': '#E11D48',
+    '--hero': '#E11D48',
+    '--accent': '#BE123C',
+    '--nav-bg': 'rgba(255,255,255,0.92)'
+  },
+  teal: {
+    '--bg': '#F0FDFA',
+    '--bg-soft': '#CCFBF1',
+    '--card': '#FFFFFF',
+    '--card-border': '#5EEAD4',
+    '--text': '#134E4A',
+    '--text-soft': '#0D9488',
+    '--hero': '#0F766E',
+    '--accent': '#14B8A6',
+    '--nav-bg': 'rgba(255,255,255,0.92)'
+  },
+  night: {
+    '--bg': '#0B0F1A',
+    '--bg-soft': '#1A2332',
+    '--card': '#151D2A',
+    '--card-border': '#2A3441',
+    '--text': '#E2E8F0',
+    '--text-soft': '#64748B',
+    '--hero': '#F59E0B',
+    '--accent': '#FBBF24',
+    '--nav-bg': 'rgba(21,29,42,0.92)'
+  }
+};
+
+function applyTheme(name){
+  try{
+    const t = themes[name] || themes.green;
+    Object.entries(t).forEach(([k,v])=> document.documentElement.style.setProperty(k,v));
+    localStorage.setItem('omar_theme', name);
+    let meta = document.querySelector('meta[name="theme-color"]');
+    if(meta) meta.content = t['--hero'];
+    document.querySelectorAll('iframe.page').forEach(f=>{
+      try{
+        if(f.contentDocument && f.contentDocument.documentElement){
+          Object.entries(t).forEach(([k,v])=> f.contentDocument.documentElement.style.setProperty(k,v));
+        }
+      }catch(e){}
+    });
+  }catch(e){ console.error(e); }
+}
+
+window.themes = themes;
+window.applyTheme = applyTheme;
+
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -267,7 +380,8 @@ function handleImport(e){
 }
 function parseCSV(txt){ let lines=txt.split('\n').filter(l=>l.trim()); let headers=lines[0].split(',').map(h=>h.trim()); let out=[]; for(let i=1;i<lines.length;i++){ let cols=lines[i].split(','); let obj={}; headers.forEach((h,idx)=>{obj[h]=cols[idx];}); out.push(obj);} return out;}
 
-function exportExcelMultiSheet(){
+function exportExcelMultiSheet(){ if(typeof XLSX==='undefined'){ toast('Excel غير متاح offline'); return; }
+
   try{
     const wb = XLSX.utils.book_new();
     let dailyData = transactions.map(t=>({التاريخ:t.date, النوع:t.type, البند:t.item||t.person, المحفظة:t.wallet, القيمة:t.amount, الملاحظة:t.note||''}));
@@ -327,7 +441,28 @@ function handleAttendance(type){
     let p=document.getElementById('attPulse'); if(p){ p.style.background=type==='دخول'?'#22c55e':'#f59e0b'; p.style.transform='scale(1.8)'; setTimeout(()=>p.style.transform='scale(1)',400); }
   }catch(e){ toast('خطأ حضور: '+e.message); }
 }
-function renderAtt(){try{let atts=JSON.parse(localStorage.getItem('omar_att_v2')||'[]').filter(a=>a.date===new Date().toISOString().slice(0,10)); let el=document.getElementById('attToday'); if(!el) return; el.textContent=atts.length?`${atts.length} حركة اليوم - آخر ${atts[atts.length-1].type}`:'لا يوجد حضور اليوم - دوس دخول';}catch(e){}}
+function renderAtt(){
+  try{
+    let data=JSON.parse(localStorage.getItem('att_fixed_final')||'{}');
+    let today=new Date();
+    let key=`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
+    let rec=data[key];
+    let el=document.getElementById('attToday');
+    if(!el) return;
+    if(rec && (rec.in || rec.out)){
+      let parts=[];
+      if(rec.in) parts.push(`دخول ${rec.in}:00`);
+      if(rec.out) parts.push(`خروج ${rec.out}:00`);
+      el.innerHTML=`<span style="font-weight:900;color:#16a34a">اليوم: ${parts.join(' - ')} ✅ مسمع في الحضور</span>`;
+      el.style.background='#f0fdf4'; el.style.padding='4px 6px'; el.style.borderRadius='6px';
+    }else{
+      let atts=JSON.parse(localStorage.getItem('omar_att_v2')||'[]').filter(a=>a.date===new Date().toISOString().slice(0,10));
+      el.textContent=atts.length?`${atts.length} حركة اليوم - آخر ${atts[atts.length-1].type}`:'لا يوجد حضور اليوم - دوس دخول';
+      el.style.background=''; el.style.padding=''; el.style.borderRadius='';
+    }
+  }catch(e){}
+}
+
 
 function renderTasks(){try{let today=tasks.filter(t=>!t.done).slice(0,5);let html=today.length?today.map(t=>`• ${t.title} <small>(${t.priority||'عادية'})</small>`).join('<br>'):'<span style="color:var(--text-soft)">لا يوجد مهام</span>';let el=document.getElementById('tasksToday'); if(el) el.innerHTML=html;}catch(e){}}
 function openTaskModal(){document.getElementById('taskTitle').value='';document.getElementById('taskModal').classList.add('open');}
