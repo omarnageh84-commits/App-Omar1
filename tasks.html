@@ -25,9 +25,10 @@ body{display:flex;flex-direction:column}
 .task-card{flex:1;background:var(--card);border:1.5px solid var(--card-border);border-radius:14px;padding:0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;position:relative;overflow:hidden;transition:.2s;min-height:62px}
 .task-card:active{transform:scale(.98)}
 .task-progress-bg{position:absolute;top:0;right:0;bottom:0;pointer-events:none;transition:width .4s ease, background .3s;z-index:0}
-.task-progress-bg.low{opacity:.18}
-.task-progress-bg.mid{opacity:.35}
-.task-progress-bg.high{opacity:.55}
+.task-progress-bg.low{opacity:.22;background:var(--hero)}
+.task-progress-bg.mid{opacity:.42;background:linear-gradient(90deg,var(--hero),var(--accent))}
+.task-progress-bg.high{opacity:.62;background:linear-gradient(90deg,var(--hero),#000)}
+.task-progress-bg{filter:saturate(1.2)}
 .task-card-content{position:relative;z-index:1;display:flex;gap:10px;align-items:center;width:100%;padding:12px}
 .task-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:var(--bg-soft);border:1px solid var(--card-border)}
 .task-info{flex:1;min-width:0}
@@ -102,12 +103,6 @@ body{display:flex;flex-direction:column}
     <button onclick="openManager()" style="border:1.5px solid var(--card-border);background:var(--card);border-radius:10px;padding:8px 12px;font-size:11px;font-weight:800;color:var(--text)">⚙️</button>
   </div>
   <div class="filter-row nu-scroll" id="filterRow"></div>
-  <div id="hiddenBar" style="display:none;background:linear-gradient(135deg,#0F172A,#1E293B);border-bottom:1.5px solid #334155;padding:8px 12px;align-items:center;gap:8px">
-    <div style="flex:1;color:#F8FAFC;font-size:10px;font-weight:800">🔒 التبويب المخفي مفتوح - محدش هيشوفه غيرك</div>
-    <input id="hiddenCodeChange" class="input-pro" style="width:110px;padding:6px;font-size:10px;background:#1E293B;color:#fff;border-color:#334155" placeholder="كود جديد">
-    <button onclick="saveHiddenCodeInline()" style="background:#F59E0B;color:#000;border:none;border-radius:8px;padding:6px 10px;font-size:9px;font-weight:900">تغيير الكود</button>
-    <button onclick="closeHidden()" style="background:#334155;color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:9px">✕ قفل</button>
-  </div>
   <div id="board" class="nu-scroll"></div>
   <button id="fab" onclick="openModal()">+</button>
 </div>
@@ -137,7 +132,6 @@ body{display:flex;flex-direction:column}
     <div id="subList" style="display:flex;flex-direction:column;gap:6px"></div>
     <div style="display:flex;gap:6px"><input id="newSub" class="input-pro" placeholder="مهمة فرعية جديدة..." style="flex:1"><button onclick="addSub()" style="background:var(--hero);color:#fff;border:none;border-radius:10px;padding:10px 14px;font-weight:800">+</button></div>
     <div style="margin-top:8px;display:flex;gap:6px;align-items:center;background:var(--bg-soft);border:1.5px dashed var(--card-border);border-radius:10px;padding:8px"><div style="flex:1"><div style="font-size:10px;font-weight:800">التقدم</div><div style="height:8px;background:var(--card-border);border-radius:99px;overflow:hidden;margin-top:4px"><div id="subProgressBar" style="height:100%;width:0%;background:var(--hero);transition:.4s"></div></div></div><div id="subProgressText" style="font-size:11px;font-weight:900;color:var(--hero)">0%</div></div>
-    <button onclick="saveTask()" style="margin-top:10px;background:var(--hero);color:#fff;border:none;border-radius:12px;padding:12px;font-weight:900;font-size:13px;cursor:pointer">💾 حفظ الفرعية + التقدم</button>
   </div>
   <div id="pane-details" class="pane">
     <div class="card"><label style="font-size:10px;font-weight:800;display:block;margin-bottom:6px">الوصف</label><textarea id="mDesc" class="input-pro" rows="3" placeholder="تفاصيل المهمة..."></textarea></div>
@@ -157,7 +151,6 @@ body{display:flex;flex-direction:column}
       <button class="rich-btn" onclick="formatDoc('hiliteColor','yellow')" title="تظليل">🖍️</button>
     </div>
     <div id="richEditor" class="rich-editor" contenteditable="true" placeholder="اكتب ملاحظاتك هنا... تقدر تذاكر عليها، ترقم، تنقط، تكبر الخط وتغير لونه"></div>
-    <button onclick="saveTask()" style="margin-top:10px;background:var(--hero);color:#fff;border:none;border-radius:12px;padding:12px;font-weight:900;font-size:13px;cursor:pointer">💾 حفظ الملاحظات</button>
   </div>
   <div id="pane-media" class="pane">
     <div class="table-actions" style="margin-bottom:10px">
@@ -177,7 +170,6 @@ body{display:flex;flex-direction:column}
       <div style="font-size:9px;color:#ef4444;margin-top:4px">جاري التسجيل...</div>
     </div>
     <div id="mediaGrid" class="media-grid"></div>
-    <button onclick="saveTask()" style="margin-top:10px;background:var(--hero);color:#fff;border:none;border-radius:12px;padding:12px;font-weight:900;font-size:13px;cursor:pointer">💾 حفظ الوسائط</button>
   </div>
   <div id="pane-table" class="pane">
     <div class="table-actions">
@@ -194,7 +186,6 @@ body{display:flex;flex-direction:column}
       </table>
     </div>
     <div style="font-size:9px;color:var(--text-soft);margin-top:8px;line-height:1.5">💡 تقدر تكتب أرقام في الخانات وتدوس جمع تلقائي، أو تكتب في خانة مثلا <b>كتافست</b> وسعرها، والجدول يحسبلك المجموع. تقدر تضيف أعمدة براحتك.</div>
-    <button onclick="saveTask()" style="margin-top:10px;background:var(--hero);color:#fff;border:none;border-radius:12px;padding:12px;font-weight:900;font-size:13px;cursor:pointer">💾 حفظ الجدول</button>
   </div>
 </div>
 
@@ -259,8 +250,11 @@ function getProgress(t){
 function handleSearchInput(v){
   let code=localStorage.getItem('omar_hidden_code_v1')||'27943';
   if(v.trim()===code || v.trim()==='27943'){
-    hiddenVisible=true; renderFilters();
+    hiddenVisible=true; 
+    curFilter='مخفي';
+    render(); 
     showToast('تم فتح التبويب المخفي','🔓');
+    document.getElementById('search').value='';
   }
 }
 function renderFilters(){
@@ -275,19 +269,7 @@ function renderFilters(){
   let sel=document.getElementById('mCat');
   if(sel) sel.innerHTML=cats.map(c=>`<option value="${c.name}">${c.emoji} ${c.name}</option>`).join('') + `<option value="${hiddenName}">🔒 ${hiddenName}</option>`;
 }
-function setFilter(n){
-  let prev=curFilter;
-  curFilter=n;
-  // لو خرجت من المخفي لأي تبويب تاني، اقفله
-  if(prev==='مخفي' && n!=='مخفي'){
-    hiddenVisible=false;
-  }
-  // لو كنت في المخفي وكتبت مهمة عادية، لما ترجع للكل المخفي يختفي بعد ثانية
-  if(n!=='مخفي' && hiddenVisible){
-    setTimeout(()=>{ if(curFilter!== 'مخفي'){ hiddenVisible=false; renderFilters(); } }, 3000);
-  }
-  render();
-}
+function setFilter(n){curFilter=n; render();}
 function render(){
   renderFilters();
   let board=document.getElementById('board');
@@ -338,19 +320,19 @@ function toggleDone(id){
   saveLS(); render(); showToast(t.done?'تم الإنجاز':'تم الإرجاع');
 }
 function quickAdd(v){
-  if(!v.trim()) return;
+  if(!v || !v.trim()){ showToast('اكتب اسم المهمة','', 'error'); return; }
   let code=localStorage.getItem('omar_hidden_code_v1')||'27943';
   let isHidden = v.startsWith(code+' ')||v.startsWith('27943 ');
   let txt = isHidden ? v.split(' ').slice(1).join(' ') : v.trim();
   if(!txt) return;
-  tasks.unshift({id:Date.now().toString(),text:txt,cat:isHidden?'مخفي':(cats[0]?.name||'عام'),priority:isHidden?'مهم':'عادي',desc:'',notes:'',notesHTML:'',subs:[],media:{images:[],audios:[],videos:[]},table:{cols:['الصنف','العدد','السعر'],rows:[['','',''],['','','']]},color:isHidden?'#ef4444':'var(--hero)',done:false,date:new Date().toISOString()});
-  saveLS(); 
-  if(!isHidden && hiddenVisible){
-    // لو ضفت مهمة عادية وانت فاتح المخفي، اقفل المخفي
-    hiddenVisible=false;
-    curFilter='الكل';
+  // تحديد الفئة حسب التبويب المختار حاليا
+  let targetCat = cats[0]?.name||'عام';
+  if(curFilter!=='الكل' && curFilter!=='منتهي'){
+    targetCat = curFilter;
   }
-  render(); document.getElementById('search').value=''; showToast(isHidden?'مهمة مخفية مضافة':'تمت الإضافة','🔴 '+(isHidden?'مخفي':''));
+  if(isHidden) targetCat='مخفي';
+  tasks.unshift({id:Date.now().toString(),text:txt,cat:targetCat,priority:isHidden?'مهم':'عادي',desc:'',notes:'',notesHTML:'',subs:[],media:{images:[],audios:[],videos:[]},table:{cols:['الصنف','العدد','السعر'],rows:[['','',''],['','','']]},color:isHidden?'#ef4444':'var(--hero)',done:false,date:new Date().toISOString()});
+  saveLS(); render(); document.getElementById('search').value=''; showToast(isHidden?'مهمة مخفية مضافة':'تمت الإضافة','🔴 '+(isHidden?'مخفي':''));
 }
 function openModal(){
   editingId=null; curSubs=[]; curMedia={images:[],audios:[],videos:[]}; curTable={cols:['الصنف','العدد','السعر'],rows:[['','',''],['','','']]};
@@ -367,13 +349,7 @@ function openModal(){
   document.getElementById('modal').classList.add('show');
   switchPane('sub', document.querySelector('.pro-seg-btn'));
 }
-function closeModal(){
-  // auto save if editing
-  if(editingId){
-    try{ saveTask(); }catch(e){}
-  }
-  document.getElementById('modal').classList.remove('show'); editingId=null; closeCamera(); stopRec();
-}
+function closeModal(){document.getElementById('modal').classList.remove('show'); editingId=null; closeCamera(); stopRec();}
 function editTask(id){
   let t=tasks.find(x=>x.id===id); if(!t) return;
   editingId=id; curSubs=[...(t.subs||[])]; curMedia=t.media||{images:[],audios:[],videos:[]}; curTable=t.table||{cols:['الصنف','العدد','السعر'],rows:[['','','']]};
@@ -389,11 +365,19 @@ function editTask(id){
 }
 function renderSubs(){
   let el=document.getElementById('subList');
-  if(!curSubs.length){el.innerHTML='<div style="text-align:center;color:var(--text-soft);font-size:10px;padding:10px">لا يوجد مهام فرعية</div>';}
+  if(!curSubs.length){el.innerHTML='<div style="text-align:center;color:var(--text-soft);font-size:10px;padding:10px">لا يوجد مهام فرعية - ضيف من تحت</div>';}
   else{
-    el.innerHTML=curSubs.map((s,i)=>`<div style="display:flex;gap:6px;align-items:center;background:var(--bg-soft);border:1.5px solid var(--card-border);border-radius:10px;padding:8px"><input type="checkbox" ${s.done?'checked':''} onchange="curSubs[${i}].done=this.checked;updateSubProgress()"><input value="${s.text||''}" oninput="curSubs[${i}].text=this.value" class="input-pro" style="flex:1;padding:6px;font-size:11px"><button onclick="curSubs.splice(${i},1);renderSubs();updateSubProgress()" style="border:none;background:#FFF1F2;color:#ef4444;width:28px;height:28px;border-radius:7px">✕</button></div>`).join('');
+    el.innerHTML=curSubs.map((s,i)=>`<div style="display:flex;gap:6px;align-items:center;background:var(--bg-soft);border:1.5px solid var(--card-border);border-radius:10px;padding:8px"><input type="checkbox" ${s.done?'checked':''} onchange="curSubs[${i}].done=this.checked;updateSubProgress();autoSaveSubs()"><input value="${s.text||''}" oninput="curSubs[${i}].text=this.value;autoSaveSubs()" class="input-pro" style="flex:1;padding:6px;font-size:11px"><button onclick="curSubs.splice(${i},1);renderSubs();updateSubProgress();autoSaveSubs()" style="border:none;background:#FFF1F2;color:#ef4444;width:28px;height:28px;border-radius:7px">✕</button></div>`).join('');
   }
   updateSubProgress();
+}
+function autoSaveSubs(){
+  if(!editingId) return;
+  let t=tasks.find(x=>x.id===editingId);
+  if(!t) return;
+  t.subs=[...curSubs];
+  saveLS();
+  render(); // يحدث التقدم على الكارت والتبويب بره
 }
 function updateSubProgress(){
   let total=curSubs.length; let done=curSubs.filter(s=>s.done).length;
@@ -552,8 +536,6 @@ function addCategory(){let n=document.getElementById('newCatName').value.trim(),
 function delCat(id){cats=cats.filter(c=>c.id!==id);renderManagerLists();render();saveLS();}
 function renderManagerLists(){let catSel=document.getElementById('mCat');if(catSel)catSel.innerHTML=cats.map(c=>`<option value="${c.name}">${c.emoji} ${c.name}</option>`).join('')+`<option value="مخفي">🔒 مخفي</option>`;let catList=document.getElementById('catList');if(catList)catList.innerHTML=cats.map(c=>`<div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg-soft);padding:7px 9px;border-radius:8px;margin-bottom:5px;border:1px solid var(--card-border)"><div style="color:var(--text);font-size:10.3px">${c.emoji} <b>${c.name}</b></div><button onclick="delCat(${c.id})" style="border:none;background:#FEE2E2;width:25px;height:25px;border-radius:6px;color:#ef4444">✕</button></div>`).join('');}
 function saveHiddenCode(){let inp=document.getElementById('hiddenCodeInput'); if(!inp) return; let v=inp.value.trim(); if(!v) return; localStorage.setItem('omar_hidden_code_v1', v); showToast('تم حفظ الكود','الكود: '+v,'success'); inp.value='';}
-function saveHiddenCodeInline(){let inp=document.getElementById('hiddenCodeChange'); if(!inp) return; let v=inp.value.trim(); if(!v){ showToast('اكتب كود جديد','', 'error'); return;} if(v.length<3){ showToast('الكود قصير','3 أحرف على الأقل','error'); return;} localStorage.setItem('omar_hidden_code_v1', v); showToast('تم تغيير الكود','الجديد: '+v+' - هيتقفل لوحده دلوقتي','success'); inp.value=''; setTimeout(()=>closeHidden(), 1200); }
-function closeHidden(){ hiddenVisible=false; curFilter='الكل'; render(); showToast('تم قفل المخفي','🔒'); }
 try{applyTheme(localStorage.getItem('omar_theme')||'green',false);}catch(e){}
 renderManagerLists();render();
 </script>
