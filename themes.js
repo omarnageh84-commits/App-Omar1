@@ -15,15 +15,12 @@ function applyTheme(name, broadcast=true){
   try{ localStorage.setItem('omar_theme', name); }catch(e){}
   const meta = document.querySelector('meta[name="theme-color"]');
   if(meta) meta.content = t['--hero'];
-  
   if(broadcast){
-    // 1. بلغ الأب و خليه يبلغ كل إخواته
     try{
       if(window.parent && window.parent!==window && window.parent.applyTheme){
         window.parent.applyTheme(name, true);
       }
     }catch(e){}
-    // 2. بلغ كل الـ iframes اللي جواك
     try{
       const frames = document.querySelectorAll('iframe.page, iframe');
       frames.forEach(f=>{
@@ -36,20 +33,15 @@ function applyTheme(name, broadcast=true){
     }catch(e){}
   }
 }
-
 window.themes = themes;
 window.applyTheme = applyTheme;
-
 (function(){
   try{
     const saved = localStorage.getItem('omar_theme') || 'green';
     const cur = themes[saved] || themes.green;
     Object.entries(cur).forEach(([k,v])=> document.documentElement.style.setProperty(k,v));
-    const meta = document.querySelector('meta[name="theme-color"]');
-    if(meta) meta.content = cur['--hero'];
   }catch(e){}
 })();
-
 window.addEventListener('storage', (e)=>{
   if(e.key==='omar_theme' && e.newValue){
     applyTheme(e.newValue, false);
