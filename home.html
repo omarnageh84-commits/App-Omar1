@@ -308,10 +308,11 @@ function closeFab(){document.getElementById('fabModal').classList.remove('open')
 function renderThemes(){
   try{
     let cont=document.getElementById('themeDots'); if(!cont) return; cont.innerHTML='';
-    const colors={green:'#16A34A', dark:'#0F172A', blue:'#2563EB', purple:'#7C3AED', orange:'#EA580C', rose:'#E11D48', teal:'#0F766E', night:'#0B0F1A'};
-    const names={green:'أخضر', dark:'دارك', blue:'أزرق', purple:'موف', orange:'برتقالي', rose:'وردي', teal:'تيل', night:'ليلي'};
+    const colors={teal:'#0F766E', green:'#16A34A', dark:'#0F172A', blue:'#2563EB', purple:'#7C3AED', orange:'#EA580C', rose:'#E11D48', night:'#0B0F1A'};
+    const names={teal:'تيل ⭐', green:'أخضر', dark:'دارك', blue:'أزرق', purple:'موف', orange:'برتقالي', rose:'وردي', night:'ليلي'};
     const cur=localStorage.getItem('omar_theme')||'teal';
-    Object.keys(window.themes||{green:'#16A34A',dark:'#0F172A',blue:'#2563EB',purple:'#7C3AED',orange:'#EA580C',rose:'#E11D48',teal:'#0F766E',night:'#0B0F1A'}).forEach(k=>{
+    const ordered=['teal','green','dark','blue','purple','orange','rose','night'];
+    ordered.forEach(k=>{
       let d=document.createElement('div'); d.className='theme-dot'+(cur===k?' active':''); d.style.background=colors[k]||'#16A34A'; d.title=names[k]||k;
       let sm=document.createElement('small'); sm.textContent=names[k]||k; d.appendChild(sm);
       d.onclick=()=>{ applyTheme(k); try{ if(window.parent && window.parent.applyTheme) window.parent.applyTheme(k); }catch(e){} renderThemes(); };
