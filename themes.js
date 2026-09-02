@@ -10,50 +10,17 @@ const themes = {
 };
 
 function applyTheme(name){
-  try{
-    const t = themes[name] || themes.green;
-    Object.entries(t).forEach(([k,v])=> document.documentElement.style.setProperty(k,v));
-    localStorage.setItem('omar_theme', name);
-    let meta = document.querySelector('meta[name="theme-color"]');
-    if(meta) meta.content = t['--hero'];
-    // Broadcast to all iframes without lag - postMessage
-    try{
-      if(window.parent && window.parent !== window){
-        window.parent.postMessage({type:'THEME_CHANGE', theme:name}, '*');
-      }
-    }catch(e){}
-    // If this is the parent (index.html), apply to existing loaded iframes instantly
-    if(document.querySelectorAll){
-      document.querySelectorAll('iframe.page').forEach(f=>{
-        try{
-          if(f.contentWindow && f.contentWindow.applyTheme) f.contentWindow.applyTheme(name);
-          else if(f.contentDocument && f.contentDocument.documentElement){
-            Object.entries(t).forEach(([k,v])=> f.contentDocument.documentElement.style.setProperty(k,v));
-          }
-        }catch(e){}
-      });
-    }
-  }catch(e){ console.error(e); }
+  const t = themes[name] || themes.green;
+  Object.entries(t).forEach(([k,v])=> document.documentElement.style.setProperty(k,v));
+  localStorage.setItem('omar_theme', name);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.content = t['--hero'];
 }
-
-// Listen for theme changes from parent or child
-window.addEventListener('message', (e)=>{
-  if(e.data && e.data.type==='THEME_CHANGE' && e.data.theme){
-    try{
-      const t = themes[e.data.theme] || themes.green;
-      Object.entries(t).forEach(([k,v])=> document.documentElement.style.setProperty(k,v));
-    }catch(err){}
-  }
-});
 
 window.themes = themes;
 window.applyTheme = applyTheme;
 
-// Auto apply saved theme on load
-(function(){
-  let saved = localStorage.getItem('omar_theme') || 'green';
-  try{
-    const t = themes[saved] || themes.green;
-    Object.entries(t).forEach(([k,v])=> document.documentElement.style.setProperty(k,v));
-  }catch(e){}
-})();
+// Auto apply saved theme immediately - no lag
+const savedTheme = localStorage.getItem('omar_theme') || 'green';
+const st = themes[savedTheme] || themes.green;
+Object.entries(st).forEach(([k,v])=> document.documentElement.style.setProperty(k,v));
