@@ -8,23 +8,23 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Tajawal',sans-serif}
 html,body{overflow-x:hidden;background:var(--bg);color:var(--text)}
-body{padding:0 6px 0 6px;min-height:100dvh;margin:0}
+body{padding:0 6px 0 6px;min-height:100dvh;margin:0;zoom:1.06}
 .en{font-family:'JetBrains Mono',monospace!important;direction:ltr!important;text-align:center}
 .card{background:var(--card);border:1px solid var(--card-border);border-radius:9px;padding:7px 8px;width:100%}
 #frozenTop{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;z-index:30;background:var(--bg);padding:4px 6px 3px 6px;border-bottom:none;box-shadow:none;margin:0}
-.stats{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:2px;margin:3px 0 0 0}
-.stat{border-radius:7px;padding:5px 2px;border:1px solid var(--card-border);text-align:center;background:var(--card)}
-.stat small{font-size:7px;font-weight:700;opacity:.8;display:block;color:var(--text-soft);line-height:1}
-.stat b,.stat input{font-size:9.8px!important;font-weight:900;color:var(--text);line-height:1.2}
-.time-box{width:90%;border:1px solid var(--card-border);border-radius:6px;padding:4px 1px;text-align:center;font-size:8.8px;background:var(--bg);color:var(--text);outline:none;font-weight:800}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:3px;margin:4px 0 0 0}
+.stat{border-radius:8px;padding:6px 2px;border:1px solid var(--card-border);text-align:center;background:var(--card)}
+.stat small{font-size:7.5px;font-weight:700;opacity:.8;display:block;color:var(--text-soft);line-height:1}
+.stat b,.stat input{font-size:10.4px!important;font-weight:900;color:var(--text);line-height:1.2}
+.time-box{width:90%;border:1px solid var(--card-border);border-radius:6px;padding:5px 1px;text-align:center;font-size:9.3px;background:var(--bg);color:var(--text);outline:none;font-weight:800}
 .time-box.filled{background:var(--hero)!important;color:#fff!important;border-color:var(--hero)!important}
 .time-box.half{background:var(--bg-soft)!important;border-color:var(--hero)!important;color:var(--hero)!important}
-.note-box{width:92%;border:1px dashed var(--card-border);border-radius:6px;padding:3px 2px;font-size:7.5px;background:var(--bg);color:var(--text);outline:none;text-align:center}
+.note-box{width:92%;border:1px dashed var(--card-border);border-radius:6px;padding:4px 2px;font-size:8px;background:var(--bg);color:var(--text);outline:none;text-align:center}
 .table-wrap{background:var(--card);border:1px solid var(--card-border);border-radius:0 0 9px 9px;overflow:hidden;width:100%;margin:0}
-.table-head{display:grid;grid-template-columns:0.85fr 0.58fr 0.58fr 0.4fr 0.5fr 0.85fr 0.25fr 0.25fr;gap:0;background:var(--bg-soft);font-size:7px;font-weight:800;padding:5px 2px;text-align:center;color:var(--text-soft);border-bottom:1px solid var(--card-border);position:sticky;top:0;z-index:2}
-.row-item{display:grid;grid-template-columns:0.85fr 0.58fr 0.58fr 0.4fr 0.5fr 0.85fr 0.25fr 0.25fr;gap:0;align-items:center;padding:3px 1px;border-bottom:1px solid var(--bg-soft);background:var(--card)}
+.table-head{display:grid;grid-template-columns:0.85fr 0.58fr 0.58fr 0.4fr 0.5fr 0.85fr 0.25fr 0.25fr;gap:0;background:var(--bg-soft);font-size:7.5px;font-weight:800;padding:6px 2px;text-align:center;color:var(--text-soft);border-bottom:1px solid var(--card-border);position:sticky;top:0;z-index:2}
+.row-item{display:grid;grid-template-columns:0.85fr 0.58fr 0.58fr 0.4fr 0.5fr 0.85fr 0.25fr 0.25fr;gap:0;align-items:center;padding:4px 1px;border-bottom:1px solid var(--bg-soft);background:var(--card)}
 .row-item.done{border-right:2px solid var(--hero)}
-.clear-btn{border:none;background:#FFF1F2;color:#ef4444;width:17px;height:17px;border-radius:4px;font-size:8px;cursor:pointer;border:1px solid #FECDD3;display:flex;align-items:center;justify-content:center}
+.clear-btn{border:none;background:#FFF1F2;color:#ef4444;width:18px;height:18px;border-radius:5px;font-size:9px;cursor:pointer;border:1px solid #FECDD3;display:flex;align-items:center;justify-content:center}
 #days{max-height:none!important;overflow:visible!important}
 #mainWrap{max-width:430px;margin:0 auto;width:100%;padding:0 6px}
 #spacer{height:0;transition:none;margin:0;padding:0}
@@ -34,9 +34,9 @@ body{padding:0 6px 0 6px;min-height:100dvh;margin:0}
 .modal-box{background:var(--card);width:100%;max-width:330px;border-radius:16px;overflow:hidden;border:1px solid var(--card-border)}
 </style><script src="drive-sync.js"></script></head><body>
 <div id="frozenTop">
-<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:5px 7px">
-<div style="display:flex;gap:4px;align-items:center"><div style="font-size:8.5px;font-weight:900">⏱️ الحضور</div><button onclick="toggleTop()" id="toggleBtn" style="background:var(--bg-soft);border:1px solid var(--card-border);padding:2px 6px;border-radius:999px;font-size:7px;font-weight:700;color:var(--text)">▲ إخفاء</button></div>
-<div style="display:flex;gap:2px;align-items:center"><div id="monthLabel" class="en" style="font-size:8px;background:var(--hero);color:#fff;padding:2px 6px;border-radius:999px;font-weight:900">9 / 2026</div><button onclick="changeMonth(-1)" style="background:var(--card);border:1px solid var(--card-border);width:20px;height:20px;border-radius:5px;font-weight:900;font-size:10px">‹</button><button onclick="changeMonth(1)" style="background:var(--card);border:1px solid var(--card-border);width:20px;height:20px;border-radius:5px;font-weight:900;font-size:10px">›</button><div id="clock" class="en" style="font-size:7px;background:var(--bg-soft);padding:2px 5px;border-radius:999px">00:00:00</div></div>
+<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px">
+<div style="display:flex;gap:4px;align-items:center"><div style="font-size:9px;font-weight:900">⏱️ الحضور</div><button onclick="toggleTop()" id="toggleBtn" style="background:var(--bg-soft);border:1px solid var(--card-border);padding:2px 6px;border-radius:999px;font-size:7.5px;font-weight:700;color:var(--text)">▲ إخفاء</button></div>
+<div style="display:flex;gap:2px;align-items:center"><div id="monthLabel" class="en" style="font-size:8.5px;background:var(--hero);color:#fff;padding:2px 6px;border-radius:999px;font-weight:900">9 / 2026</div><button onclick="changeMonth(-1)" style="background:var(--card);border:1px solid var(--card-border);width:21px;height:21px;border-radius:5px;font-weight:900;font-size:11px">‹</button><button onclick="changeMonth(1)" style="background:var(--card);border:1px solid var(--card-border);width:21px;height:21px;border-radius:5px;font-weight:900;font-size:11px">›</button><div id="clock" class="en" style="font-size:7.5px;background:var(--bg-soft);padding:2px 5px;border-radius:999px">00:00:00</div></div>
 </div>
 <div id="topInfo" style="margin:0;padding:0">
 <div class="stats">
@@ -49,16 +49,16 @@ body{padding:0 6px 0 6px;min-height:100dvh;margin:0}
 <div class="stat"><small>المطلوب</small><input id="v3" type="tel" class="en" value="15,000" onfocus="handleFocus(this)" onblur="fmtField(this);calcTotals()" oninput="calcTotals()" style="width:100%;border:none;background:transparent;text-align:center;outline:none"></div>
 <div class="stat"><small>المطلوب يومياً</small><b id="outDaily" class="en">0</b></div>
 </div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;margin:2px 0 0 0">
-<button onclick="quickPunch('in')" style="border-radius:7px;padding:4px 2px;border:1px solid var(--hero);text-align:center;background:var(--hero);color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:0;line-height:1.1">
-<small style="font-size:7px;font-weight:800">🟢 حضور الآن</small><b class="en" id="inBtnTime" style="font-size:9.5px;font-weight:900">--:--</b>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin:3px 0 0 0">
+<button onclick="quickPunch('in')" style="border-radius:8px;padding:6px 2px;border:1px solid var(--hero);text-align:center;background:var(--hero);color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;line-height:1.1">
+<small style="font-size:7.5px;font-weight:800">🟢 حضور الآن</small><b class="en" id="inBtnTime" style="font-size:10.2px;font-weight:900">--:--</b>
 </button>
-<button onclick="quickPunch('out')" style="border-radius:7px;padding:4px 2px;border:1px solid #ef4444;text-align:center;background:#FFF1F2;color:#ef4444;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:0;line-height:1.1">
-<small style="font-size:7px;font-weight:800">🔴 انصراف الآن</small><b class="en" id="outBtnTime" style="font-size:9.5px;font-weight:900">--:--</b>
+<button onclick="quickPunch('out')" style="border-radius:8px;padding:6px 2px;border:1px solid #ef4444;text-align:center;background:#FFF1F2;color:#ef4444;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;line-height:1.1">
+<small style="font-size:7.5px;font-weight:800">🔴 انصراف الآن</small><b class="en" id="outBtnTime" style="font-size:10.2px;font-weight:900">--:--</b>
 </button>
 </div>
-<div id="punchStatus" style="background:var(--card);border:1px solid var(--card-border);border-radius:5px;padding:2px 5px;font-size:7px;text-align:center;display:none;font-weight:700;margin-top:2px;line-height:1.2"></div>
-<div id="closedList" style="margin:1px 0 0 0;display:flex;gap:2px;flex-wrap:wrap"></div>
+<div id="punchStatus" style="background:var(--card);border:1px solid var(--card-border);border-radius:6px;padding:3px 6px;font-size:8px;text-align:center;display:none;font-weight:700;margin-top:2px;line-height:1.2"></div>
+<div id="closedList" style="margin:2px 0 0 0;display:flex;gap:2px;flex-wrap:wrap"></div>
 </div>
 </div>
 
@@ -67,7 +67,7 @@ body{padding:0 6px 0 6px;min-height:100dvh;margin:0}
 <div class="table-wrap"><div class="table-head"><div>اليوم</div><div>حضور</div><div>انصراف</div><div>ساعات</div><div>الصافي</div><div>ملاحظات</div><div>إجازة</div><div>مسح</div></div><div id="days"></div></div>
 </div>
 
-<div id="proModal" onclick="if(event.target==this)closeModal()"><div class="modal-box"><div style="padding:14px;text-align:center"><div id="modalIcon" style="width:38px;height:38px;background:#FFF1F2;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-size:18px">🗑️</div><div id="modalTitle" style="font-weight:900;font-size:11px;color:var(--text)">تمسح حضور اليوم ده؟</div><div id="modalDesc" style="font-size:8.5px;color:var(--text-soft);margin-top:3px">هيتم مسح الحضور والانصراف بس</div></div><div style="display:flex;gap:6px;padding:8px;background:var(--bg-soft);border-top:1px solid var(--card-border)"><button onclick="closeModal()" style="flex:1;background:var(--card);border:1px solid var(--card-border);padding:8px;border-radius:8px;font-weight:800;font-size:8.5px">إلغاء</button><button id="modalOk" onclick="confirmModal()" style="flex:1;background:#ef4444;color:#fff;border:none;padding:8px;border-radius:8px;font-weight:900;font-size:8.5px">مسح ✓</button></div></div></div>
+<div id="proModal" onclick="if(event.target==this)closeModal()"><div class="modal-box"><div style="padding:14px;text-align:center"><div id="modalIcon" style="width:40px;height:40px;background:#FFF1F2;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-size:19px">🗑️</div><div id="modalTitle" style="font-weight:900;font-size:12px;color:var(--text)">تمسح حضور اليوم ده؟</div><div id="modalDesc" style="font-size:9px;color:var(--text-soft);margin-top:3px">هيتم مسح الحضور والانصراف بس</div></div><div style="display:flex;gap:6px;padding:8px;background:var(--bg-soft);border-top:1px solid var(--card-border)"><button onclick="closeModal()" style="flex:1;background:var(--card);border:1px solid var(--card-border);padding:9px;border-radius:8px;font-weight:800;font-size:9px">إلغاء</button><button id="modalOk" onclick="confirmModal()" style="flex:1;background:#ef4444;color:#fff;border:none;padding:9px;border-radius:8px;font-weight:900;font-size:9px">مسح ✓</button></div></div></div>
 <script>
 let modalAction=null, modalKey=null;
 function openClearModal(key){ modalAction='clear'; modalKey=key; document.getElementById('proModal').classList.add('show'); }
@@ -83,7 +83,7 @@ function applyTop(){
   else { spacer.className=''; setTimeout(updateSpacer, 30); }
 }
 function changeMonth(d){curM+=d;if(curM<0){curM=11;curY--;}if(curM>11){curM=0;curY++;}renderAll();}
-function renderClosedList(){let html='';Object.keys(closed).forEach(k=>{html+=`<span style="font-size:6.5px;background:var(--bg-soft);border:1px solid var(--card-border);padding:1px 5px;border-radius:999px">🔒 ${k} - ${closed[k].money}ج</span>`;});document.getElementById('closedList').innerHTML=html;}
+function renderClosedList(){let html='';Object.keys(closed).forEach(k=>{html+=`<span style="font-size:7px;background:var(--bg-soft);border:1px solid var(--card-border);padding:2px 6px;border-radius:999px">🔒 ${k} - ${closed[k].money}ج</span>`;});document.getElementById('closedList').innerHTML=html;}
 let data=JSON.parse(localStorage.getItem('att_fixed_final')||'{}');let hols=JSON.parse(localStorage.getItem('att_hols_fixed')||'{}');let notes=JSON.parse(localStorage.getItem('att_notes')||'{}');
 function fmtField(el){ let raw=el.value.replace(/,/g,'').trim(); if(!raw) return; let num=parseFloat(raw); if(!isNaN(num)) el.value=num.toLocaleString('en-US'); }
 function unFmt(el){ el.value=el.value.replace(/,/g,''); }
@@ -121,13 +121,13 @@ function renderAll(){
     const outClass=rec.out?(isDone?'filled':'half'):'';
     let dailyMoney = hours && price ? Math.round(hours*price) : 0;
     html+=`<div class="row-item ${isDone?'done':''}">
-      <div style="font-size:7.5px;font-weight:800;white-space:nowrap">${dayAr} <span class="en" style="font-size:6px;color:var(--text-soft)">(${i})</span></div>
+      <div style="font-size:8px;font-weight:800;white-space:nowrap">${dayAr} <span class="en" style="font-size:6.5px;color:var(--text-soft)">(${i})</span></div>
       <input id="in-${key}" type="tel" class="time-box en ${inClass}" value="${rec.in}" placeholder="7" ${isHol?'disabled':''} onfocus="selectAll(this)" onclick="selectAll(this)" oninput="saveD('${key}','in',this.value)">
       <input id="out-${key}" type="tel" class="time-box en ${outClass}" value="${rec.out}" placeholder="19" ${isHol?'disabled':''} onfocus="selectAll(this)" onclick="selectAll(this)" oninput="saveD('${key}','out',this.value)">
-      <div id="h-${key}" class="en" style="font-size:7.8px;font-weight:900;color:${isDone?'var(--hero)':''}">${isHol?'-':hours?hours.toFixed(2):'-'}</div>
-      <div id="s-${key}" class="en" style="font-size:7.5px;font-weight:900;color:${isDone?'var(--hero)':'var(--text-soft)'}">${isHol?'-':dailyMoney?dailyMoney.toLocaleString('en-US'):'-'}</div>
+      <div id="h-${key}" class="en" style="font-size:8.2px;font-weight:900;color:${isDone?'var(--hero)':''}">${isHol?'-':hours?hours.toFixed(2):'-'}</div>
+      <div id="s-${key}" class="en" style="font-size:8px;font-weight:900;color:${isDone?'var(--hero)':'var(--text-soft)'}">${isHol?'-':dailyMoney?dailyMoney.toLocaleString('en-US'):'-'}</div>
       <input id="note-${key}" type="text" class="note-box" placeholder="..." value="${noteVal}" onfocus="selectAll(this)" onclick="selectAll(this)" oninput="saveNote('${key}',this.value)">
-      <button onclick="toggleHol('${key}')" style="border:none;background:${isHol?'var(--hero)':'var(--bg-soft)'};width:17px;height:17px;border-radius:4px;font-size:7.5px;color:${isHol?'#fff':'var(--text-soft)'};border:1px solid var(--card-border)">${isHol?'✓':'○'}</button>
+      <button onclick="toggleHol('${key}')" style="border:none;background:${isHol?'var(--hero)':'var(--bg-soft)'};width:18px;height:18px;border-radius:4px;font-size:8px;color:${isHol?'#fff':'var(--text-soft)'};border:1px solid var(--card-border)">${isHol?'✓':'○'}</button>
       <button class="clear-btn" onclick="openClearModal('${key}')">✕</button>
     </div>`;
   }
