@@ -9,22 +9,47 @@ const themes = {
   night: {'--bg':'#0B0F1A','--bg-soft':'#1A2332','--card':'#151D2A','--card-border':'#2A3441','--text':'#E2E8F0','--text-soft':'#64748B','--hero':'#F59E0B','--accent':'#FBBF24','--nav-bg':'rgba(21,29,42,0.92)'}
 };
 
-function applyTheme(name){
+function applyTheme(name, broadcast=true){
   const t = themes[name] || themes.green;
   Object.entries(t).forEach(([k,v])=> document.documentElement.style.setProperty(k,v));
-  localStorage.setItem('omar_theme', name);
+  try{ localStorage.setItem('omar_theme', name); }catch(e){}
   const meta = document.querySelector('meta[name="theme-color"]');
   if(meta) meta.content = t['--hero'];
+  
+  if(broadcast){
+    try{
+      if(window.parent && window.parent!==window && window.parent.applyTheme){
+        window.parent.applyTheme(name, false);
+      }
+    }catch(e){}
+    try{
+      const frames = document.querySelectorAll('iframe.page, iframe');
+      frames.forEach(f=>{
+        try{
+          if(f.contentWindow && f.contentWindow.applyTheme){
+            f.contentWindow.applyTheme(name, false);
+          }
+        }catch(e){}
+      });
+    }catch(e){}
+  }
 }
 
 window.themes = themes;
 window.applyTheme = applyTheme;
 
-// Instant apply - no lag, no iframe loop
 (function(){
   try{
     const saved = localStorage.getItem('omar_theme') || 'green';
     const cur = themes[saved] || themes.green;
     Object.entries(cur).forEach(([k,v])=> document.documentElement.style.setProperty(k,v));
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if(meta) meta.content = cur['--hero'];
   }catch(e){}
 })();
+
+window.addEventListener('storage', (e)=>{
+  if(e.key==='omar_theme' && e.newValue){
+    applyTheme(e.newValue, false);
+  }
+});
