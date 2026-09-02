@@ -31,10 +31,13 @@ body{display:flex;justify-content:center;align-items:flex-start;background:#0f17
 .nav button{flex:1;height:100%;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:14px;color:var(--text-soft);font-size:9px;font-weight:700;cursor:pointer;transition:.2s}
 .nav button.active{background:var(--hero);color:#fff;box-shadow:0 8px 18px color-mix(in srgb, var(--hero) 30%, transparent)}
 .nav button .icon{font-size:18px}
+.top-notch{height:28px;display:flex;justify-content:center;align-items:center}
+.notch{width:90px;height:18px;background:#111;border-radius:0 0 12px 12px}
 </style>
 </head>
 <body>
 <div class="phone-shell">
+  <div class="top-notch"><div class="notch"></div></div>
   <div class="pageWrap">
     <iframe data-page="home.html" src="home.html" class="page active" title="home"></iframe>
     <iframe data-page="daily.html" src="about:blank" class="page" title="daily"></iframe>
@@ -57,17 +60,12 @@ function switchPage(name,btn){
     f.classList.toggle('active',is);
     if(is && f.src.includes('about:blank')){
       f.src=name;
-      f.onload=()=>{
-        let cur=localStorage.getItem('omar_theme')||'green';
-        if(window.themes && themes[cur] && f.contentDocument){
-          Object.entries(themes[cur]).forEach(([k,v])=>f.contentDocument.documentElement.style.setProperty(k,v));
-        }
-      };
     }
   });
   document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   if(navigator.vibrate) navigator.vibrate(10);
+  // Theme will auto-apply via themes.js auto-init from localStorage
 }
 applyTheme(localStorage.getItem('omar_theme')||'green');
 if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').then(()=>console.log('✅ PWA Ready - يمكنك تثبيته من كروم'));} window.switchPage=switchPage;
