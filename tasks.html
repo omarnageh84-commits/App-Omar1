@@ -364,8 +364,8 @@ function quickAdd(v){
   tasks.unshift(newTask);
   saveLS();render();
   document.getElementById('search').value='';
-  showToast(targetCat==='مخفي'?'مضافة في المخفي 🔒':'تمت الإضافة',targetCat);
-  setTimeout(()=>editTask(newTask.id),200);
+  showToast(targetCat==='مخفي'?'مضافة في المخفي 🔒':'تمت الإضافة ✅',targetCat);
+  // مش بنفتحها تلقائي - تظهر في القايمة وانت تفتحها بإيدك
 }
 function openModal(){
   editingId=null;curSubs=[];curMedia={images:[],audios:[]};curTable={cols:['الصنف','العدد','السعر'],rows:[['','','']]};
