@@ -42,11 +42,34 @@ canvas{width:100%!important;max-width:100%}
 .chart-wrap{display:flex;gap:8px;flex-wrap:wrap}
 .chart-box{flex:1;min-width:150px;background:var(--bg-soft);border:1px solid var(--card-border);border-radius:12px;padding:8px;text-align:center}
 .chart-box canvas{height:140px!important}
+
+#themeDots{
+  display:flex !important;
+  gap:8px !important;
+  flex-wrap:nowrap !important;
+  overflow-x:auto !important;
+  max-width:260px !important;
+  scrollbar-width:none !important;
+  -ms-overflow-style:none !important;
+}
+#themeDots::-webkit-scrollbar{ display:none !important; }
+.theme-dot{
+  flex:0 0 24px !important;
+  min-width:24px !important;
+}
+.top{
+  flex-wrap:nowrap !important;
+}
+.top > div:last-child{
+  flex:1;
+  min-width:0;
+}
+
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="top"><div><b>الرئيسية - أبو عمر</b><small id="today" style="font-size:8px;color:var(--text-soft);display:block"></small></div><div style="text-align:left"><small style="font-size:7px;color:var(--text-soft);display:block;margin-bottom:2px">اختيارات السيمزات</small><div id="themeDots" style="display:flex;gap:6px;flex-wrap:wrap;max-width:180px"></div></div></div>
+  <div class="top"><div><b>الرئيسية - أبو عمر</b><small id="today" style="font-size:8px;color:var(--text-soft);display:block"></small></div><div style="text-align:left"><small style="font-size:7px;color:var(--text-soft);display:block;margin-bottom:2px">اختيارات السيمزات</small><div id="themeDots" style="display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;max-width:220px;scrollbar-width:none;-webkit-overflow-scrolling:touch"></div></div></div>
 
   <!-- ثابت 5 كروت في كل التبوابات حتى في الإجمالي -->
   <div id="stats-home"></div>
@@ -287,8 +310,8 @@ function renderThemes(){
     let cont=document.getElementById('themeDots'); if(!cont) return; cont.innerHTML='';
     const colors={green:'#16A34A', dark:'#0F172A', blue:'#2563EB', purple:'#7C3AED', orange:'#EA580C', rose:'#E11D48', teal:'#0F766E', night:'#0B0F1A'};
     const names={green:'أخضر', dark:'دارك', blue:'أزرق', purple:'موف', orange:'برتقالي', rose:'وردي', teal:'تيل', night:'ليلي'};
-    const cur=localStorage.getItem('omar_theme')||'green';
-    Object.keys(window.themes||{}).forEach(k=>{
+    const cur=localStorage.getItem('omar_theme')||'teal';
+    Object.keys(window.themes||{green:'#16A34A',dark:'#0F172A',blue:'#2563EB',purple:'#7C3AED',orange:'#EA580C',rose:'#E11D48',teal:'#0F766E',night:'#0B0F1A'}).forEach(k=>{
       let d=document.createElement('div'); d.className='theme-dot'+(cur===k?' active':''); d.style.background=colors[k]||'#16A34A'; d.title=names[k]||k;
       let sm=document.createElement('small'); sm.textContent=names[k]||k; d.appendChild(sm);
       d.onclick=()=>{ applyTheme(k); try{ if(window.parent && window.parent.applyTheme) window.parent.applyTheme(k); }catch(e){} renderThemes(); };
@@ -300,7 +323,7 @@ function renderThemes(){
 (function init(){
   document.getElementById('today').textContent=new Date().toLocaleDateString('ar-EG');
   renderThemes();
-  try{applyTheme(localStorage.getItem('omar_theme')||'green');}catch(e){}
+  try{applyTheme(localStorage.getItem('omar_theme')||'teal');}catch(e){}
   fillMonths();
   renderTopStats();
   renderCharts();
