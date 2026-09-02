@@ -47,9 +47,18 @@ body{display:flex;flex-direction:column}
 .pane.active{display:flex}
 .card{background:var(--card);border:1.5px solid var(--card-border);border-radius:14px;padding:12px}
 .input-pro{width:100%;border:1.5px solid var(--card-border);border-radius:10px;padding:10px;background:var(--bg-soft);color:var(--text);font-size:12px;font-weight:600;outline:none}
-.rich-toolbar{display:flex;gap:4px;flex-wrap:wrap;background:var(--bg-soft);border:1.5px solid var(--card-border);border-radius:10px 10px 0 0;padding:6px}
-.rich-toolbar button{border:1px solid var(--card-border);background:var(--card);border-radius:7px;padding:5px 8px;font-size:11px;font-weight:700;cursor:pointer}
-.rich-editor{min-height:220px;max-height:420px;overflow:auto;padding:12px;background:var(--card);border:1.5px solid var(--card-border);border-top:none;border-radius:0 0 10px 10px;outline:none;font-size:13px;line-height:1.7}
+.rich-toolbar{display:flex;gap:4px;flex-wrap:wrap;background:var(--bg-soft);border:1.5px solid var(--card-border);border-radius:10px 10px 0 0;padding:6px;position:sticky;top:0;z-index:2}
+.rich-toolbar button{border:1px solid var(--card-border);background:var(--card);border-radius:7px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;transition:.15s}
+.rich-toolbar button:active{transform:scale(.95);background:var(--hero);color:#fff}
+.rich-editor{min-height:220px;max-height:420px;overflow:auto;padding:14px;background:var(--card);border:1.5px solid var(--card-border);border-top:none;border-radius:0 0 10px 10px;outline:none;font-size:14px;line-height:1.8;direction:rtl;text-align:right}
+.rich-editor ul{list-style:disc outside;padding-right:22px;margin:10px 0}
+.rich-editor ol{list-style:decimal outside;padding-right:22px;margin:10px 0}
+.rich-editor li{margin:4px 0;padding-right:4px}
+.rich-editor b,.rich-editor strong{font-weight:900}
+.rich-editor i,.rich-editor em{font-style:italic}
+.rich-editor [style*="background-color"]{padding:2px 4px;border-radius:4px}
+.rich-editor:empty:before{content:attr(placeholder);color:var(--text-soft);font-size:12px}
+
 #toastContainer{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:15000;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
 .toast-pro{background:var(--card);border:1.5px solid var(--card-border);border-radius:12px;padding:10px 14px;display:flex;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.18);min-width:260px;max-width:340px;pointer-events:auto;animation:toastIn .3s ease}
 @keyframes toastIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
@@ -94,23 +103,32 @@ body{display:flex;flex-direction:column}
   </div>
   <div id="pane-notes" class="pane">
     <div class="rich-toolbar">
-      <button onclick="richCmd('bold')"><b>B</b></button><button onclick="richCmd('italic')"><i>I</i></button>
-      <button onclick="openColorPicker('text')">🎨 لون الخط</button><button onclick="openColorPicker('bg')">🖌️ تظليل</button>
-      <button onclick="richCmd('insertUnorderedList')">• نقاط</button><button onclick="richCmd('insertOrderedList')">1. ترقيم</button>
-      <button onclick="changeRichSize(1)">A+</button><button onclick="changeRichSize(-1)">A-</button>
-      <button onclick="richCmd('removeFormat')">🧹 مسح</button>
+      <button onclick="saveSel();richCmd('bold')" title="عريض"><b>B</b></button>
+      <button onclick="saveSel();richCmd('italic')" title="مائل"><i>I</i></button>
+      <button onclick="saveSel();richCmd('underline')" title="تحته خط"><u>U</u></button>
+      <button onclick="saveSel();openColorPicker('text')" title="لون الخط">🎨 لون</button>
+      <button onclick="saveSel();openColorPicker('bg')" title="تظليل">🖌️ تظليل</button>
+      <button onclick="saveSel();richCmd('insertUnorderedList')" title="نقاط">• نقاط</button>
+      <button onclick="saveSel();richCmd('insertOrderedList')" title="ترقيم">1. ترقيم</button>
+      <button onclick="saveSel();changeRichSize(1)" title="تكبير">A+</button>
+      <button onclick="saveSel();changeRichSize(-1)" title="تصغير">A-</button>
+      <button onclick="clearAllNotes()" title="مسح الكل">🧹 مسح الكل</button>
     </div>
-    <div id="richEditor" class="rich-editor" contenteditable="true" placeholder="اكتب ملاحظاتك هنا..."></div>
-    <div id="colorPicker" style="display:none;gap:6px;flex-wrap:wrap;padding:8px;background:var(--bg-soft);border-radius:10px;border:1.5px solid var(--card-border);margin-top:6px">
-      <div class="color-dot" style="background:#ef4444" onclick="applyColor('#ef4444')"></div>
-      <div class="color-dot" style="background:#22c55e" onclick="applyColor('#22c55e')"></div>
-      <div class="color-dot" style="background:#3b82f6" onclick="applyColor('#3b82f6')"></div>
-      <div class="color-dot" style="background:#f59e0b" onclick="applyColor('#f59e0b')"></div>
-      <div class="color-dot" style="background:#000" onclick="applyColor('#000')"></div>
-      <div class="color-dot" style="background:#facc15" onclick="applyColor('#facc15')"></div>
-      <button onclick="document.getElementById('colorPicker').style.display='none'" style="border:none;background:var(--card);padding:6px 10px;border-radius:7px;font-size:10px">✕</button>
+    <div id="richEditor" class="rich-editor" contenteditable="true" placeholder="اكتب ملاحظاتك هنا... اضغط على النص وحدد جزء عشان تلونه"></div>
+    <div id="colorPicker" style="display:none;padding:8px;background:var(--card);border:1.5px solid var(--card-border);border-radius:10px;margin-top:6px;box-shadow:0 8px 20px rgba(0,0,0,.15)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><b style="font-size:9px" id="colorPickerTitle">اختر اللون</b><button onclick="document.getElementById('colorPicker').style.display='none';restoreSel()" style="border:none;background:var(--bg-soft);width:20px;height:20px;border-radius:5px;font-size:10px">✕</button></div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        <div class="color-dot" style="background:#ef4444;width:22px;height:22px" onclick="applyColor('#ef4444')"></div>
+        <div class="color-dot" style="background:#22c55e;width:22px;height:22px" onclick="applyColor('#22c55e')"></div>
+        <div class="color-dot" style="background:#3b82f6;width:22px;height:22px" onclick="applyColor('#3b82f6')"></div>
+        <div class="color-dot" style="background:#f59e0b;width:22px;height:22px" onclick="applyColor('#f59e0b')"></div>
+        <div class="color-dot" style="background:#a855f7;width:22px;height:22px" onclick="applyColor('#a855f7')"></div>
+        <div class="color-dot" style="background:#000;width:22px;height:22px" onclick="applyColor('#000000')"></div>
+        <div class="color-dot" style="background:#fff;border:1.5px solid #ddd;width:22px;height:22px" onclick="applyColor('#ffffff')"></div>
+        <div class="color-dot" style="background:#facc15;width:22px;height:22px" onclick="applyColor('#facc15')"></div>
+      </div>
     </div>
-    <button onclick="saveTask()" style="background:var(--hero);color:#fff;border:none;border-radius:12px;padding:12px;font-weight:900">💾 حفظ الملاحظات</button>
+    <button onclick="saveTask()" style="background:var(--hero);color:#fff;border:none;border-radius:12px;padding:12px;font-weight:900;margin-top:6px">💾 حفظ الملاحظات</button>
   </div>
   <div id="pane-media" class="pane"><div id="mediaGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
@@ -123,19 +141,53 @@ body{display:flex;flex-direction:column}
     <div id="camBtns" style="display:none;gap:6px;margin-top:6px"><button onclick="takePhoto()" style="flex:1;background:var(--hero);color:#fff;border:none;border-radius:10px;padding:10px;font-weight:900">📸 التقاط</button><button onclick="closeCamera()" style="flex:1;background:#FFF1F2;color:#ef4444;border:1.5px solid #FECDD3;border-radius:10px;padding:10px;font-weight:800">✕ إغلاق</button></div>
     <button onclick="saveTask()" style="background:var(--hero);color:#fff;border:none;border-radius:12px;padding:12px;font-weight:900;margin-top:8px">💾 حفظ الوسائط</button>
   </div>
-  <div id="pane-table" class="pane"><div style="display:flex;gap:6px;flex-wrap:wrap"><button onclick="addCol()" class="btn-icon">+ عمود</button><button onclick="addRow()" class="btn-icon">+ صف</button><button onclick="calcSum()" class="btn-icon">∑ جمع</button><button onclick="clearTable()" class="btn-icon" style="color:#ef4444">🗑️ مسح</button></div>
-    <div style="overflow:auto;border:1.5px solid var(--card-border);border-radius:12px"><table id="mainTable" style="width:100%;border-collapse:collapse"><thead id="tableHead"></thead><tbody id="tableBody"></tbody><tfoot id="tableFoot"></tfoot></table></div>
+  <div id="pane-table" class="pane">
+    <div class="card" style="padding:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="font-size:11px">📊 الجدول الاحترافي</b><span style="font-size:8px;color:var(--text-soft)">اكتب = للمعادلات مثل =A*B</span></div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px">
+        <button onclick="addCol()" class="btn-icon">+ عمود</button>
+        <button onclick="addRow()" class="btn-icon">+ صف</button>
+        <button onclick="addFormulaCol()" class="btn-icon" style="background:var(--hero);color:#fff;border-color:var(--hero)">+ عمود مجموع تلقائي</button>
+        <button onclick="clearTable()" class="btn-icon" style="color:#ef4444">🗑️ مسح</button>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;background:var(--bg-soft);padding:8px;border-radius:10px;border:1px solid var(--card-border);margin-bottom:8px">
+        <select id="calcOp" class="pro-select" style="flex:1;min-width:120px">
+          <option value="sum">∑ جمع العمود</option>
+          <option value="mul">× ضرب العمود</option>
+          <option value="avg">Ø متوسط</option>
+          <option value="min">↓ أقل قيمة</option>
+          <option value="max">↑ أكبر قيمة</option>
+          <option value="count"> # عدد</option>
+        </select>
+        <select id="calcCol" class="pro-select" style="flex:1;min-width:100px"></select>
+        <button onclick="calcColumn()" class="btn-add" style="padding:8px 12px">احسب</button>
+        <div id="calcResult" style="flex:1 1 100%;font-size:11px;font-weight:800;color:var(--hero);margin-top:4px;min-height:16px"></div>
+      </div>
+    </div>
+    <div style="overflow:auto;border:1.5px solid var(--card-border);border-radius:12px;background:var(--card)">
+      <table id="mainTable" style="width:100%;border-collapse:collapse;font-size:11px"><thead id="tableHead"></thead><tbody id="tableBody"></tbody><tfoot id="tableFoot" style="background:var(--bg-soft);font-weight:900"></tfoot></table>
+    </div>
+    <div id="tableSummary" class="card" style="background:linear-gradient(135deg,var(--hero),#000);color:#fff;border:none;display:none">
+      <b style="font-size:10px;display:block;margin-bottom:6px">📈 الملخص السريع</b>
+      <div id="tableSummaryContent" style="font-size:10px;line-height:1.6"></div>
+    </div>
     <button onclick="saveTask()" style="background:var(--hero);color:#fff;border:none;border-radius:12px;padding:12px;font-weight:900">💾 حفظ الجدول</button>
   </div>
   <div id="pane-reminder" class="pane">
-    <div class="card"><b style="font-size:11px;display:block;margin-bottom:8px">⏰ وقت التذكير</b><input id="remTime" type="datetime-local" class="input-pro"></div>
+    <div class="card"><b style="font-size:11px;display:block;margin-bottom:8px">⏰ وقت التذكير</b><input id="remTime" type="datetime-local" class="input-pro"><div style="font-size:8px;color:var(--text-soft);margin-top:4px">💡 التنبيه هيشتغل حتى لو التطبيق مقفول لو سمحت للإشعارات</div></div>
     <div class="card"><b style="font-size:11px;display:block;margin-bottom:8px">🔁 التكرار</b><select id="remRepeat" class="input-pro" onchange="toggleCustomRepeat()"><option value="once">مرة واحدة</option><option value="hourly">كل ساعة</option><option value="daily">يومياً</option><option value="weekly">أسبوعياً</option><option value="monthly">شهرياً</option><option value="custom">مخصص</option></select><div id="customRepeat" style="display:none;margin-top:8px"><input id="remCustomMin" type="number" placeholder="كل كم دقيقة" class="input-pro"></div></div>
     <div class="card"><b style="font-size:11px;display:block;margin-bottom:8px">🔊 النغمة</b>
-      <label style="display:flex;gap:8px;align-items:center;background:var(--bg-soft);padding:8px;border-radius:10px;border:1.5px solid var(--card-border);margin-bottom:4px"><input type="radio" name="remSound" value="bell" checked> 🔔 جرس <button type="button" onclick="previewSound('bell')" style="margin-right:auto">▶️</button></label>
-      <label style="display:flex;gap:8px;align-items:center;background:var(--bg-soft);padding:8px;border-radius:10px;border:1.5px solid var(--card-border);margin-bottom:4px"><input type="radio" name="remSound" value="chime"> 🎵 هادئ <button type="button" onclick="previewSound('chime')" style="margin-right:auto">▶️</button></label>
-      <label style="display:flex;gap:8px;align-items:center;background:var(--bg-soft);padding:8px;border-radius:10px;border:1.5px solid var(--card-border)"><input type="radio" name="remSound" value="alert"> 🚨 قوي <button type="button" onclick="previewSound('alert')" style="margin-right:auto">▶️</button></label>
+      <label style="display:flex;gap:8px;align-items:center;background:var(--bg-soft);padding:8px;border-radius:10px;border:1.5px solid var(--card-border);margin-bottom:4px"><input type="radio" name="remSound" value="bell" checked> 🔔 جرس كلاسيك <button type="button" onclick="previewSound('bell')" style="margin-right:auto;border:none;background:var(--card);width:28px;height:28px;border-radius:6px">▶️</button></label>
+      <label style="display:flex;gap:8px;align-items:center;background:var(--bg-soft);padding:8px;border-radius:10px;border:1.5px solid var(--card-border);margin-bottom:4px"><input type="radio" name="remSound" value="chime"> 🎵 هادئ <button type="button" onclick="previewSound('chime')" style="margin-right:auto;border:none;background:var(--card);width:28px;height:28px;border-radius:6px">▶️</button></label>
+      <label style="display:flex;gap:8px;align-items:center;background:var(--bg-soft);padding:8px;border-radius:10px;border:1.5px solid var(--card-border);margin-bottom:4px"><input type="radio" name="remSound" value="alert"> 🚨 قوي <button type="button" onclick="previewSound('alert')" style="margin-right:auto;border:none;background:var(--card);width:28px;height:28px;border-radius:6px">▶️</button></label>
+      <label style="display:flex;gap:8px;align-items:center;background:var(--bg-soft);padding:8px;border-radius:10px;border:1.5px solid var(--card-border);margin-bottom:4px"><input type="radio" name="remSound" value="digital"> ⏰ ديجيتال <button type="button" onclick="previewSound('digital')" style="margin-right:auto;border:none;background:var(--card);width:28px;height:28px;border-radius:6px">▶️</button></label>
+      <label style="display:flex;gap:8px;align-items:center;background:var(--bg-soft);padding:8px;border-radius:10px;border:1.5px solid var(--card-border);"><input type="radio" name="remSound" value="custom"> 📁 من التليفون <button type="button" onclick="document.getElementById('customSoundFile').click()" style="margin-right:auto;border:none;background:var(--hero);color:#fff;padding:4px 10px;border-radius:6px;font-size:9px">اختيار</button></label>
+      <input type="file" id="customSoundFile" accept="audio/*" style="display:none" onchange="handleCustomSound(this.files)">
+      <div id="customSoundName" style="font-size:8px;color:var(--text-soft);margin-top:6px;display:none">تم اختيار نغمة مخصصة</div>
+      <audio id="reminderAudio" style="display:none"></audio>
     </div>
-    <div class="card" style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:11px">تفعيل</b><input id="remEnabled" type="checkbox" checked onchange="updateRemToggle()"></div>
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:11px">تفعيل التذكير</b><label style="position:relative;display:inline-block;width:44px;height:24px"><input id="remEnabled" type="checkbox" checked style="opacity:0;width:0;height:0" onchange="updateRemToggle()"><span id="remToggle" style="position:absolute;top:0;left:0;right:0;bottom:0;background:var(--hero);border-radius:99px;transition:.2s"></span></label></div>
+    <div class="card" style="background:#f0fdf4;border-color:#bbf7d0"><div style="font-size:9px"><b>✅ التنبيه شغال كمنبه حقيقي:</b><br>• هيبعت إشعار حتى لو التطبيق في الخلفية<br>• هيشغل النغمة اللي اخترتها بصوت عالي<br>• دوس <b>السماح للإشعارات</b> أول مرة<br>• تقدر تختار نغمة من التليفون بزرار 📁</div><button onclick="testReminder()" style="width:100%;margin-top:8px;background:#111;color:#fff;border:none;border-radius:8px;padding:8px;font-size:10px;font-weight:800">🔔 جرب التنبيه دلوقتي</button></div>
     <button onclick="saveTask()" style="background:var(--hero);color:#fff;border:none;border-radius:12px;padding:12px;font-weight:900">💾 حفظ التذكير</button>
   </div>
 </div>
@@ -359,6 +411,14 @@ function editTask(id){
   let r=t.reminder||{time:'',repeat:'once',customMin:60,sound:'bell',enabled:false};
   document.getElementById('remTime').value=r.time||'';document.getElementById('remRepeat').value=r.repeat||'once';document.getElementById('remCustomMin').value=r.customMin||60;document.getElementById('remEnabled').checked=r.enabled||false;
   document.querySelectorAll('input[name="remSound"]').forEach(e=>e.checked=e.value===r.sound);
+  customSoundData=t.customSound||null;
+  if(customSoundData){
+    let audio=document.getElementById('reminderAudio'); if(audio) audio.src=customSoundData;
+    let nameEl=document.getElementById('customSoundName'); if(nameEl){ nameEl.style.display='block'; nameEl.textContent='✅ نغمة محفوظة: '+(t.customSoundName||'مخصصة'); }
+  } else {
+    let nameEl=document.getElementById('customSoundName'); if(nameEl) nameEl.style.display='none';
+  }
+  updateRemToggle();
   renderSubs();renderMedia();renderTable();toggleCustomRepeat();
   document.getElementById('modal').classList.add('show');
   switchPane('sub',document.querySelectorAll('.pro-seg-btn')[0]);
@@ -372,11 +432,160 @@ function renderSubs(){
 function autoSaveSubs(){if(!editingId)return;let t=tasks.find(x=>x.id===editingId);if(!t)return;t.subs=[...curSubs];saveLS(); /* render بدون ما يبوظ الاختيار */ let boardOnly=true; if(boardOnly){ let oldFilter=curFilter; renderBoardOnly(); } else render(); }
 function updateSubProgress(){let total=curSubs.length;let done=curSubs.filter(s=>s.done).length;let pct=total?Math.round(done/total*100):0;let bar=document.getElementById('subProgBar');let txt=document.getElementById('subProgText');if(bar)bar.style.width=pct+'%';if(txt)txt.textContent=pct+'%';}
 function addSub(){let inp=document.getElementById('newSub');if(!inp.value.trim())return;curSubs.push({text:inp.value.trim(),done:false});inp.value='';renderSubs();autoSaveSubs();}
-function switchPane(name,btn){document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));document.getElementById('pane-'+name).classList.add('active');if(btn){document.querySelectorAll('.pro-seg-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}}
-function richCmd(c){document.execCommand(c,false,null);document.getElementById('richEditor').focus();}
-function changeRichSize(d){let ed=document.getElementById('richEditor');let cur=parseInt(ed.style.fontSize)||13;ed.style.fontSize=(cur+d)+'px';}
-function openColorPicker(m){colorMode=m;document.getElementById('colorPicker').style.display='flex';}
-function applyColor(col){document.getElementById('richEditor').focus();if(colorMode==='text')document.execCommand('foreColor',false,col);else document.execCommand('hiliteColor',false,col);document.getElementById('colorPicker').style.display='none';}
+let savedRange=null;
+function saveSel(){
+  let sel=window.getSelection();
+  if(sel && sel.rangeCount>0){
+    let range=sel.getRangeAt(0);
+    let editor=document.getElementById('richEditor');
+    if(editor && editor.contains(range.commonAncestorContainer)){
+      savedRange=range.cloneRange();
+    }
+  }
+}
+function restoreSel(){
+  if(!savedRange) return false;
+  let sel=window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(savedRange);
+  document.getElementById('richEditor').focus();
+  return true;
+}
+function switchPane(name,btn){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById('pane-'+name).classList.add('active');
+  if(btn){document.querySelectorAll('.pro-seg-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+  if(name==='notes'){ setTimeout(()=>document.getElementById('richEditor').focus(),100); }
+}
+function richCmd(c){
+  restoreSel();
+  let ed=document.getElementById('richEditor');
+  ed.focus();
+  document.execCommand(c,false,null);
+  saveSel();
+}
+function changeRichSize(d){
+  restoreSel();
+  let sel=window.getSelection();
+  if(!sel || sel.isCollapsed){
+    let ed=document.getElementById('richEditor');
+    let cur=parseInt(ed.style.fontSize)||14;
+    ed.style.fontSize=(cur+d)+'px';
+    ed.focus();
+  } else {
+    document.execCommand('fontSize',false,'7');
+    let fonts=ed.querySelectorAll('font[size="7"]');
+    fonts.forEach(f=>{
+      let cur=parseInt(f.style.fontSize)||14;
+      f.removeAttribute('size');
+      f.style.fontSize=(cur+d)+'px';
+    });
+  }
+  saveSel();
+}
+function openColorPicker(m){
+  saveSel();
+  colorMode=m;
+  let picker=document.getElementById('colorPicker');
+  let title=document.getElementById('colorPickerTitle');
+  if(title) title.textContent= m==='text' ? '🎨 لون الخط' : '🖌️ لون التظليل';
+  picker.style.display='flex';
+}
+function applyColor(col){
+  let ed=document.getElementById('richEditor');
+  ed.focus();
+  // نرجع التحديد
+  if(!restoreSel()){
+    // لو مفيش تحديد محفوظ، نحدد كل النص أو نطبق على المؤشر
+    let sel=window.getSelection();
+    if(sel.rangeCount===0){
+      let range=document.createRange();
+      range.selectNodeContents(ed);
+      range.collapse(false);
+      sel.addRange(range);
+    }
+  }
+  // نطبق اللون
+  if(colorMode==='text'){
+    // طريقة حديثة بدون execCommand لو فشل
+    try{
+      document.execCommand('foreColor',false,col);
+    }catch(e){
+      document.execCommand('styleWithCSS',false,true);
+      document.execCommand('foreColor',false,col);
+    }
+    // fallback يدوي لو لسه مش شغال
+    let sel=window.getSelection();
+    if(sel && !sel.isCollapsed){
+      let range=sel.getRangeAt(0);
+      let span=document.createElement('span');
+      span.style.color=col;
+      try{
+        range.surroundContents(span);
+      }catch(e){
+        // لو مقدرش يعمل surround بسبب تقاطع
+        let frag=range.extractContents();
+        span.appendChild(frag);
+        range.insertNode(span);
+      }
+      // نحرك المؤشر بعد الـ span
+      range.setStartAfter(span);
+      range.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  } else {
+    try{
+      document.execCommand('hiliteColor',false,col);
+    }catch(e){
+      document.execCommand('backColor',false,col);
+    }
+    let sel=window.getSelection();
+    if(sel && !sel.isCollapsed){
+      let range=sel.getRangeAt(0);
+      let span=document.createElement('span');
+      span.style.backgroundColor=col;
+      span.style.padding='1px 3px';
+      span.style.borderRadius='3px';
+      try{
+        range.surroundContents(span);
+      }catch(e){
+        let frag=range.extractContents();
+        span.appendChild(frag);
+        range.insertNode(span);
+      }
+      range.setStartAfter(span);
+      range.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  }
+  document.getElementById('colorPicker').style.display='none';
+  ed.focus();
+  saveSel();
+}
+function clearAllNotes(){
+  if(confirm('متأكد عايز تمسح كل الملاحظات؟')){
+    document.getElementById('richEditor').innerHTML='';
+    document.getElementById('richEditor').focus();
+    showToast('تم مسح الكل');
+  }
+}
+function clearAllFormatting(){
+  // ده للتوافق القديم - بقى يمسح كله
+  clearAllNotes();
+}
+// حفظ الـ selection كل ما المستخدم يكتب أو يحدد
+document.addEventListener('selectionchange',()=>{
+  let sel=window.getSelection();
+  if(sel && sel.rangeCount>0){
+    let editor=document.getElementById('richEditor');
+    if(editor && document.activeElement===editor){
+      saveSel();
+    }
+  }
+});
+
 function renderMedia(){let grid=document.getElementById('mediaGrid');if(!grid)return;let h='';(curMedia.images||[]).forEach((img,i)=>{h+=`<div style="position:relative;border-radius:10px;overflow:hidden;border:1.5px solid var(--card-border)"><img src="${img}" style="width:100%;height:90px;object-fit:cover"><button onclick="curMedia.images.splice(${i},1);renderMedia()" style="position:absolute;top:4px;left:4px;background:#ef4444;color:#fff;border:none;width:22px;height:22px;border-radius:6px">✕</button></div>`});(curMedia.audios||[]).forEach((a,i)=>{h+=`<div style="background:var(--bg-soft);border:1.5px solid var(--card-border);border-radius:10px;padding:8px;display:flex;gap:6px"><audio src="${a}" controls style="flex:1;height:30px"></audio><button onclick="curMedia.audios.splice(${i},1);renderMedia()" style="border:none;background:#FEE2E2;width:24px;height:24px;border-radius:6px;color:#ef4444">✕</button></div>`});grid.innerHTML=h||'<div style="grid-column:1/-1;text-align:center;color:var(--text-soft);font-size:10px;padding:16px">لا يوجد وسائط</div>';}
 function handleImgs(files){Array.from(files).forEach(f=>{let r=new FileReader();r.onload=e=>{curMedia.images.push(e.target.result);renderMedia();};r.readAsDataURL(f);});}
 async function openCamera(){try{let s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});camStream=s;let v=document.getElementById('camPrev');v.srcObject=s;v.style.display='block';document.getElementById('camBtns').style.display='flex';}catch(e){showToast('الكاميرا مش شغالة');}}
@@ -388,18 +597,154 @@ async function toggleRec(){
   try{let stream=await navigator.mediaDevices.getUserMedia({audio:true});mediaRecorder=new MediaRecorder(stream);recChunks=[];btn.textContent='⏹️ إيقاف';btn.style.background='#ef4444';btn.style.color='#fff';mediaRecorder.ondataavailable=e=>{if(e.data.size>0)recChunks.push(e.data);};mediaRecorder.onstop=()=>{btn.textContent='🎤 تسجيل';btn.style.background='';btn.style.color='';let blob=new Blob(recChunks,{type:'audio/webm'});let r=new FileReader();r.onload=ev=>{curMedia.audios.push(ev.target.result);renderMedia();};r.readAsDataURL(blob);stream.getTracks().forEach(t=>t.stop());};mediaRecorder.start();}catch(e){showToast('الميكروفون مش شغال');}
 }
 function stopRec(){if(mediaRecorder&&mediaRecorder.state==='recording')mediaRecorder.stop();}
+function parseCellValue(v){
+  if(!v) return 0;
+  let s=v.toString().trim();
+  // لو معادلة تبدأ بـ =
+  if(s.startsWith('=')){
+    try{
+      // استبدال مرجع الأعمدة مثل A*B أو A1*B1 - نبسطها: لو كتب =العدد*السعر نحسبها
+      let expr=s.slice(1);
+      // اسمح فقط أرقام وعمليات
+      // لو فيه حروف عربية، نحاول نفهمها كأسماء أعمدة
+      // نستبدل أسماء الأعمدة بقيم الصف الحالي في سياق calc
+      // هنا هنرجع 0 والقيمة هتتحسب في render
+      return {isFormula:true, expr:expr};
+    }catch(e){ return 0; }
+  }
+  let num=parseFloat(s.replace(/[^0-9.-]/g,''));
+  return isNaN(num)?0:num;
+}
+function evalFormula(expr, row, colIdx){
+  try{
+    // expr مثل "2*3" أو "A*B" - نحول A,B,C لأرقام من الصف
+    let clean=expr;
+    // استبدال أسماء الأعمدة الشائعة
+    curTable.cols.forEach((colName, idx)=>{
+      let val=parseFloat((row[idx]||'').toString().replace(/[^0-9.-]/g,''))||0;
+      // استبدال اسم العمود
+      clean=clean.split(colName).join(val);
+      // استبدال حرف العمود A,B,C
+      let letter=String.fromCharCode(65+idx);
+      // لا نستبدل داخل أرقام
+      clean=clean.replace(new RegExp('\\b'+letter+'\\b','g'), val);
+    });
+    // فقط عمليات حسابية مسموحة
+    if(!/^[0-9+\-*/().\s]+$/.test(clean)) return 0;
+    return Function('"use strict";return ('+clean+')')();
+  }catch(e){ return 0; }
+}
 function renderTable(){
-  let head=document.getElementById('tableHead');let body=document.getElementById('tableBody');let foot=document.getElementById('tableFoot');if(!head)return;
-  head.innerHTML='<tr>'+curTable.cols.map((c,i)=>`<th style="padding:8px;font-size:10px;border:1px solid var(--card-border);background:var(--bg-soft)">${c} <span onclick="delCol(${i})" style="color:#ef4444;cursor:pointer">✕</span></th>`).join('')+'</tr>';
-  body.innerHTML=curTable.rows.map((r,ri)=>'<tr>'+r.map((cell,ci)=>`<td style="border:1px solid var(--card-border)"><input value="${cell||''}" oninput="curTable.rows[${ri}][${ci}]=this.value;calcFoot()" style="width:100%;border:none;padding:8px;background:transparent;outline:none;font-size:11px"></td>`).join('')+`<td style="border:none"><button onclick="curTable.rows.splice(${ri},1);renderTable()" style="border:none;background:#FEE2E2;width:24px;height:24px;border-radius:6px;color:#ef4444">✕</button></td></tr>`).join('');
+  let head=document.getElementById('tableHead');let body=document.getElementById('tableBody');let foot=document.getElementById('tableFoot');let calcColSel=document.getElementById('calcCol');
+  if(!head) return;
+  // header احترافي
+  head.innerHTML='<tr style="background:var(--bg-soft)">'+curTable.cols.map((c,i)=>`<th style="padding:10px 8px;font-size:10px;border:1px solid var(--card-border);text-align:center;position:relative"><span style="display:block;font-weight:900">${c}</span><span style="font-size:7px;color:var(--text-soft)">${String.fromCharCode(65+i)}</span><span onclick="delCol(${i})" style="position:absolute;top:2px;left:2px;color:#ef4444;cursor:pointer;background:#FFF1F2;width:16px;height:16px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px">✕</span></th>`).join('')+'<th style="border:none;background:transparent;width:30px"></th></tr>';
+  // body
+  body.innerHTML=curTable.rows.map((r,ri)=>{
+    return '<tr>'+r.map((cell,ci)=>{
+      let isNum=!isNaN(parseFloat((cell||'').toString().replace(/[^0-9.-]/g,''))) && cell && !cell.toString().startsWith('=');
+      let displayCell=cell||'';
+      // لو معادلة، نحسبها ونعرض النتيجة
+      if(displayCell.toString().startsWith('=')){
+        let res=evalFormula(displayCell.slice(1), r, ci);
+        return `<td style="border:1px solid var(--card-border);background:#f0fdf4;position:relative"><input value="${displayCell}" oninput="curTable.rows[${ri}][${ci}]=this.value;renderTable()" style="width:100%;border:none;padding:8px 8px 14px 8px;background:transparent;outline:none;font-size:11px;font-family:monospace" placeholder="=..." title="معادلة"><span style="position:absolute;bottom:1px;right:4px;font-size:8px;color:#16a34a;font-weight:900">= ${res}</span></td>`;
+      }
+      return `<td style="border:1px solid var(--card-border);${isNum?'background:#fffbeb':''}"><input value="${displayCell}" oninput="curTable.rows[${ri}][${ci}]=this.value;calcFoot()" style="width:100%;border:none;padding:9px 8px;background:transparent;outline:none;font-size:11px" placeholder="-"></td>`;
+    }).join('')+`<td style="border:none;background:transparent"><button onclick="curTable.rows.splice(${ri},1);renderTable()" style="border:none;background:#FEE2E2;width:26px;height:26px;border-radius:7px;color:#ef4444;font-size:12px">✕</button></td></tr>`;
+  }).join('');
+  // calcCol select
+  if(calcColSel){
+    calcColSel.innerHTML=curTable.cols.map((c,i)=>`<option value="${i}">${c} (${String.fromCharCode(65+i)})</option>`).join('');
+  }
   calcFoot();
 }
-function calcFoot(){let foot=document.getElementById('tableFoot');if(!foot)return;let sums=curTable.cols.map((_,ci)=>{let sum=0;let has=false;curTable.rows.forEach(r=>{let v=parseFloat((r[ci]||'').toString().replace(/[^0-9.-]/g,''));if(!isNaN(v)){sum+=v;has=true;}});return has?sum.toFixed(0):'';});foot.innerHTML='<tr>'+sums.map(s=>`<td style="padding:8px;text-align:center;font-weight:900;font-size:11px;color:var(--hero);border:1px solid var(--card-border)">${s||''}</td>`).join('')+'<td style="border:none"></td></tr>';}
-function addCol(){let n=prompt('اسم العمود:','جديد');if(!n)return;curTable.cols.push(n);curTable.rows.forEach(r=>r.push(''));renderTable();}
-function delCol(i){curTable.cols.splice(i,1);curTable.rows.forEach(r=>r.splice(i,1));renderTable();}
-function addRow(){curTable.rows.push(new Array(curTable.cols.length).fill(''));renderTable();}
-function calcSum(){calcFoot();showToast('تم الحساب');}
-function clearTable(){if(confirm('مسح الجدول؟')){curTable.rows=[new Array(curTable.cols.length).fill('')];renderTable();}}
+function calcFoot(){
+  let foot=document.getElementById('tableFoot');let summary=document.getElementById('tableSummary');let summaryContent=document.getElementById('tableSummaryContent');
+  if(!foot) return;
+  let sums=curTable.cols.map((_,ci)=>{
+    let sum=0; let mul=1; let has=false; let min=Infinity; let max=-Infinity; let count=0;
+    curTable.rows.forEach(r=>{
+      let raw=r[ci]||'';
+      let val;
+      if(raw.toString().startsWith('=')){
+        val=evalFormula(raw.slice(1), r, ci);
+      } else {
+        val=parseFloat(raw.toString().replace(/[^0-9.-]/g,''));
+      }
+      if(!isNaN(val) && raw!==''){
+        sum+=val;
+        mul*=val||1;
+        has=true;
+        count++;
+        if(val<min) min=val;
+        if(val>max) max=val;
+      }
+    });
+    return {sum, mul, has, min:has?min:0, max:has?max:0, count, avg:has?sum/count:0};
+  });
+  foot.innerHTML='<tr style="background:var(--bg-soft)">'+sums.map(s=>`<td style="padding:8px 4px;text-align:center;border:1px solid var(--card-border);font-size:10px"><div style="color:var(--text-soft);font-size:7px">مجموع</div><div style="font-weight:900;color:var(--hero);font-size:11px">${s.has? s.sum.toFixed(2).replace(/\.00$/,'') : ''}</div></td>`).join('')+'<td style="border:none"></td></tr>';
+  // ملخص
+  if(summary && summaryContent){
+    let hasNum=sums.some(s=>s.has);
+    if(hasNum){
+      summary.style.display='block';
+      summaryContent.innerHTML=sums.map((s,i)=>{
+        if(!s.has) return '';
+        return `<div>📌 ${curTable.cols[i]}: مجموع ${s.sum} | متوسط ${s.avg.toFixed(1)} | ضرب ${s.mul} | عدد ${s.count}</div>`;
+      }).filter(Boolean).join('');
+    } else {
+      summary.style.display='none';
+    }
+  }
+}
+function addCol(){
+  let n=prompt('اسم العمود الجديد:','جديد');
+  if(!n) return;
+  curTable.cols.push(n);
+  curTable.rows.forEach(r=>r.push(''));
+  renderTable();
+}
+function addFormulaCol(){
+  let name=prompt('اسم عمود المجموع (مثلا: الإجمالي)','الإجمالي');
+  if(!name) return;
+  let colA=prompt('العمود الأول للحساب (اكتب حرف العمود مثل A أو اسم العمود)','A');
+  let colB=prompt('العمود الثاني (مثل B)','B');
+  let op=prompt('العملية: * للضرب, + للجمع, / للقسمة, - للطرح','*');
+  if(!colA||!colB) return;
+  curTable.cols.push(name);
+  curTable.rows.forEach((r,ri)=>{
+    let expr=`=${colA}${op}${colB}`;
+    r.push(expr);
+  });
+  renderTable();
+  showToast('تم إضافة عمود بمعادلة تلقائية','مثال: =A*B');
+}
+function delCol(i){ curTable.cols.splice(i,1); curTable.rows.forEach(r=>r.splice(i,1)); renderTable(); }
+function addRow(){ curTable.rows.push(new Array(curTable.cols.length).fill('')); renderTable(); }
+function calcColumn(){
+  let op=document.getElementById('calcOp')?.value||'sum';
+  let colIdx=parseInt(document.getElementById('calcCol')?.value||'0');
+  let resDiv=document.getElementById('calcResult');
+  let sum=0,mul=1,count=0,min=Infinity,max=-Infinity;
+  curTable.rows.forEach(r=>{
+    let raw=r[colIdx]||'';
+    let v= raw.toString().startsWith('=') ? evalFormula(raw.slice(1), r, colIdx) : parseFloat(raw.toString().replace(/[^0-9.-]/g,''));
+    if(!isNaN(v) && raw!==''){
+      sum+=v; mul*=v||1; count++; if(v<min)min=v; if(v>max)max=v;
+    }
+  });
+  let result='';
+  if(op==='sum') result=`∑ المجموع = ${sum}`;
+  else if(op==='mul') result=`× حاصل الضرب = ${mul}`;
+  else if(op==='avg') result=`Ø المتوسط = ${count? (sum/count).toFixed(2):0}`;
+  else if(op==='min') result=`↓ أقل قيمة = ${min===Infinity?0:min}`;
+  else if(op==='max') result=`↑ أكبر قيمة = ${max===-Infinity?0:max}`;
+  else if(op==='count') result=`# العدد = ${count}`;
+  if(resDiv) resDiv.textContent=result;
+  showToast(result);
+}
+function clearTable(){ if(confirm('مسح الجدول؟')){ curTable.rows=[new Array(curTable.cols.length).fill('')]; renderTable(); } }
+
 function saveTask(){
   let title=document.getElementById('mTitle').value.trim();if(!title){showToast('اكتب العنوان');return;}
   let payload={
@@ -415,6 +760,8 @@ function saveTask(){
     media:JSON.parse(JSON.stringify(curMedia)),
     table:JSON.parse(JSON.stringify(curTable)),
     reminder:{time:document.getElementById('remTime')?.value||'',repeat:document.getElementById('remRepeat')?.value||'once',customMin:parseInt(document.getElementById('remCustomMin')?.value)||60,sound:document.querySelector('input[name="remSound"]:checked')?.value||'bell',enabled:document.getElementById('remEnabled')?.checked||false},
+    customSound: customSoundData || (editingId ? (tasks.find(t=>t.id===editingId)?.customSound||null) : null),
+    customSoundName: document.getElementById('customSoundName')?.textContent||'',
     done:editingId?(tasks.find(t=>t.id===editingId)?.done||false):false
   };
   if(editingId){let idx=tasks.findIndex(t=>t.id===editingId);if(idx>=0)tasks[idx]={...tasks[idx],...payload};}else tasks.unshift(payload);
@@ -446,7 +793,72 @@ function clearAllData(){
 function renderManagerLists(){let sel=document.getElementById('mCat');if(sel)sel.innerHTML=cats.map(c=>`<option value="${c.name}">${c.emoji} ${c.name}</option>`).join('')+`<option value="مخفي">🔒 مخفي</option>`;let list=document.getElementById('catList');if(list)list.innerHTML=cats.map(c=>`<div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg-soft);padding:7px 9px;border-radius:8px;margin-bottom:5px;border:1px solid var(--card-border)"><div style="font-size:10px">${c.emoji} <b>${c.name}</b></div><button onclick="delCat(${c.id})" style="border:none;background:#FEE2E2;width:25px;height:25px;border-radius:6px;color:#ef4444">✕</button></div>`).join('');/* كود المخفي مخفي عن الإعدادات الخارجية */}
 function saveHiddenCode(){ /* تم نقله جوه المخفي */ }
 function toggleCustomRepeat(){let sel=document.getElementById('remRepeat');let c=document.getElementById('customRepeat');if(!sel||!c)return;c.style.display=sel.value==='custom'?'flex':'none';}
-function previewSound(t){try{let ctx=new (window.AudioContext||window.webkitAudioContext)();let o=ctx.createOscillator();let g=ctx.createGain();o.connect(g);g.connect(ctx.destination);if(t==='bell'){o.frequency.value=880;g.gain.value=0.5;o.start();g.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+0.8);setTimeout(()=>ctx.close(),900);}else if(t==='chime'){o.frequency.value=523;g.gain.value=0.4;o.start();o.frequency.linearRampToValueAtTime(659,ctx.currentTime+0.3);g.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+1.2);setTimeout(()=>ctx.close(),1300);}else{o.frequency.value=440;o.type='square';g.gain.value=0.3;o.start();setTimeout(()=>{o.frequency.value=880},200);setTimeout(()=>ctx.close(),600);}}catch(e){}}
+let customSoundData=null;
+function handleCustomSound(files){
+  if(!files||!files[0]) return;
+  let file=files[0];
+  let reader=new FileReader();
+  reader.onload=e=>{
+    customSoundData=e.target.result;
+    let audio=document.getElementById('reminderAudio');
+    if(audio){ audio.src=customSoundData; }
+    let nameEl=document.getElementById('customSoundName');
+    if(nameEl){ nameEl.style.display='block'; nameEl.textContent='✅ تم اختيار: '+file.name; }
+    document.querySelector('input[name="remSound"][value="custom"]').checked=true;
+    showToast('تم تحميل النغمة: '+file.name);
+    // حفظها في المهمة الحالية
+    if(editingId){
+      let t=tasks.find(x=>x.id===editingId);
+      if(t){ t.customSound=customSoundData; t.customSoundName=file.name; saveLS(); }
+    }
+  };
+  reader.readAsDataURL(file);
+}
+function previewSound(t){
+  if(t==='custom'){
+    let audio=document.getElementById('reminderAudio');
+    if(customSoundData && audio){
+      audio.currentTime=0;
+      audio.play().catch(()=>{});
+    } else {
+      showToast('اختار نغمة من التليفون الأول بزرار 📁');
+    }
+    return;
+  }
+  try{
+    let ctx=new (window.AudioContext||window.webkitAudioContext)();
+    let o=ctx.createOscillator();let g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    if(t==='bell'){o.frequency.value=880;g.gain.value=0.5;o.start();g.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+0.8);setTimeout(()=>ctx.close(),900);}
+    else if(t==='chime'){o.frequency.value=523;g.gain.value=0.4;o.start();o.frequency.linearRampToValueAtTime(659,ctx.currentTime+0.3);g.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+1.2);setTimeout(()=>ctx.close(),1300);}
+    else if(t==='digital'){o.frequency.value=1000;g.gain.value=0.3;o.start();g.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+0.2);setTimeout(()=>{ let o2=ctx.createOscillator(); let g2=ctx.createGain(); o2.frequency.value=1000; o2.connect(g2); g2.connect(ctx.destination); g2.gain.value=0.3; o2.start(); g2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime+0.2); setTimeout(()=>{try{g2.disconnect();}catch(e){}},300); },250); setTimeout(()=>ctx.close(),800);}
+    else{o.frequency.value=440;o.type='square';g.gain.value=0.3;o.start();setTimeout(()=>{o.frequency.value=880},200);setTimeout(()=>ctx.close(),600);}
+  }catch(e){}
+}
+function testReminder(){
+  let sound=document.querySelector('input[name="remSound"]:checked')?.value||'bell';
+  previewSound(sound);
+  if(Notification && Notification.permission==='granted'){
+    new Notification('🔔 تجربة التنبيه', {body:'التنبيه شغال تمام! هتسمع النغمة دي لما يجي وقت المهمة'});
+  } else if(Notification && Notification.permission!=='denied'){
+    Notification.requestPermission().then(p=>{
+      if(p==='granted'){
+        new Notification('🔔 تجربة التنبيه', {body:'التنبيه شغال تمام!'});
+      } else {
+        showToast('🔔 تجربة: التنبيه شغال','افتح الإشعارات عشان يشتغل في الخلفية');
+      }
+    });
+  } else {
+    showToast('🔔 تجربة: التنبيه شغال','افتح الإشعارات من إعدادات المتصفح');
+  }
+  showToast('🔔 جربت النغمة: '+sound);
+}
+function updateRemToggle(){
+  let chk=document.getElementById('remEnabled'); let span=document.getElementById('remToggle');
+  if(!chk||!span) return;
+  span.style.background = chk.checked ? 'var(--hero)' : '#ccc';
+}
+
 function checkReminders(){
   let now=new Date();
   tasks.forEach(t=>{
@@ -454,8 +866,14 @@ function checkReminders(){
     let target=new Date(r.time);if(isNaN(target))return;
     let diff=now-target;
     if(diff>=0&&diff<65000){
-      previewSound(r.sound||'bell');
-      if(Notification&&Notification.permission==='granted'){new Notification('🔔 '+t.text,{body:t.cat});}else{showToast('🔔 تذكير: '+t.text);}
+      if(r.sound==='custom' && t.customSound){
+        let audio=document.getElementById('reminderAudio');
+        if(audio){ audio.src=t.customSound; audio.currentTime=0; audio.play().catch(()=>{ previewSound('bell'); }); }
+        else { previewSound('bell'); }
+      } else {
+        previewSound(r.sound||'bell');
+      }
+      if(Notification&&Notification.permission==='granted'){new Notification('🔔 '+t.text,{body:(t.subs?.length? t.subs.length+' مهام • ':'')+(t.cat||''), requireInteraction:true});}else{showToast('🔔 تذكير: '+t.text);}
       if(r.repeat==='hourly'){let nt=new Date(target);nt.setHours(nt.getHours()+1);t.reminder.time=nt.toISOString().slice(0,16);}
       else if(r.repeat==='daily'){let nt=new Date(target);nt.setDate(nt.getDate()+1);t.reminder.time=nt.toISOString().slice(0,16);}
       else if(r.repeat==='weekly'){let nt=new Date(target);nt.setDate(nt.getDate()+7);t.reminder.time=nt.toISOString().slice(0,16);}
