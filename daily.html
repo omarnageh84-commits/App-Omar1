@@ -1,27 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head><style>
-@font-face {
-  font-family: "Optimistic";
-  font-style: normal;
-  font-weight: 400 600;
-  font-display: swap;
-  src: url("/fonts/OptimisticAI_VF_Optimized.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Optimistic Mono";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/fonts/OptimisticMono_W_TextRegular.woff2") format("woff2");
-}
-:where(html) {
-  font-family: "Optimistic", system-ui, sans-serif;
-}
-:where(code, pre, kbd, samp) {
-  font-family: "Optimistic Mono", ui-monospace, monospace;
-}
-</style>
+<head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>اليومية</title>
 <script src="themes.js"></script>
@@ -122,26 +101,66 @@ td{padding:7px 3px;border-bottom:1px solid var(--bg-soft);text-align:center;font
 @keyframes toastIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
 
 
-.row-3{grid-template-columns:1fr 1fr 1fr!important}
-.row-2{grid-template-columns:1fr 1fr!important}
-.row-1{grid-template-columns:1fr!important}
-.highlight-value{background:var(--hero)!important;border-color:var(--hero)!important}
-.highlight-value label{color:#fff!important}
-.highlight-value input{font-size:16px!important;font-weight:900!important;text-align:center!important;background:#fff!important}
-.media-group{flex-direction:column!important;align-items:stretch!important}
-.media-btns{display:flex;gap:4px;margin-top:4px}
-.mbtn{flex:1;padding:6px 4px;border:1px solid var(--card-border);border-radius:8px;background:var(--bg-soft);font-size:8px;font-weight:800;cursor:pointer}
-.card{margin:5vh auto auto auto!important;max-height:85vh!important;max-height:85dvh!important;transform:none!important}
+/* Fix keyboard covering + 3-col layout */
 
-.tsec.total-sec tfoot td{background:#0F766E!important;color:#fff!important;font-weight:900!important;border-top:2px solid #0F766E!important;font-size:9.5px!important}
 
-.row-3{display:grid!important;grid-template-columns:1fr 1fr 1fr!important;gap:4px!important}
-.row-3 .group{width:100%!important;min-height:58px!important;display:flex!important;flex-direction:column!important;justify-content:center!important}
-.row-3 .group label{font-size:7px!important;margin-bottom:2px!important}
-.row-3 .group select, .row-3 .group input{font-size:10px!important;padding:6px 4px!important}
-.highlight-value{background:var(--hero)!important;border-color:var(--hero)!important}
-.highlight-value label{color:#fff!important}
-.highlight-value input{background:#fff!important;text-align:center!important;font-weight:900!important;font-size:14px!important}
+
+.row-3 .group{
+  margin:0 !important;
+}
+.row-3 .group label{
+  font-size:7px !important;
+}
+
+
+.group.wide{
+  grid-column: span 3;
+}
+
+
+
+
+
+
+/* Fix keyboard + 3-col layout - Omar */
+
+
+
+.row-3 .group{ margin:0 !important; }
+.row-3 .group label{ font-size:7px !important; }
+
+
+
+
+#addModal.lower-card .card{
+  margin:24vh auto 0 auto !important;
+  margin-top:24vh !important;
+  transform:translateY(0) !important;
+}
+#addModal.expense-card .card{
+  margin:20vh auto 0 auto !important;
+  margin-top:20vh !important;
+  transform:translateY(0) !important;
+}
+.modal{
+  align-items:flex-start !important;
+  padding-top:2vh !important;
+  padding-bottom:120px !important;
+  overflow-y:auto !important;
+}
+.modal .card{
+  max-height:85dvh !important;
+  overflow-y:auto !important;
+  margin-bottom:24px !important;
+}
+.row-3{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+  width:100%;
+  margin:5px 0;
+}
+.row-3 .group{ margin:0 !important; }
 
 </style>
 <script src="drive-sync.js"></script>
@@ -150,28 +169,6 @@ td{padding:7px 3px;border-bottom:1px solid var(--bg-soft);text-align:center;font
 .toast{display:flex;gap:8px;align-items:center;background:var(--card);border:1.5px solid var(--card-border);border-radius:12px;padding:10px 14px;box-shadow:0 10px 30px rgba(0,0,0,.2);min-width:240px;max-width:340px;pointer-events:auto;animation:toastIn .3s}
 .toast.ok{border-color:#16a34a;background:#f0fdf4}.toast.err{border-color:#ef4444;background:#fef2f2}
 @keyframes toastIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
-
-
-.row-3{grid-template-columns:1fr 1fr 1fr!important}
-.row-2{grid-template-columns:1fr 1fr!important}
-.row-1{grid-template-columns:1fr!important}
-.highlight-value{background:var(--hero)!important;border-color:var(--hero)!important}
-.highlight-value label{color:#fff!important}
-.highlight-value input{font-size:16px!important;font-weight:900!important;text-align:center!important;background:#fff!important}
-.media-group{flex-direction:column!important;align-items:stretch!important}
-.media-btns{display:flex;gap:4px;margin-top:4px}
-.mbtn{flex:1;padding:6px 4px;border:1px solid var(--card-border);border-radius:8px;background:var(--bg-soft);font-size:8px;font-weight:800;cursor:pointer}
-.card{margin:5vh auto auto auto!important;max-height:85vh!important;max-height:85dvh!important;transform:none!important}
-
-.tsec.total-sec tfoot td{background:#0F766E!important;color:#fff!important;font-weight:900!important;border-top:2px solid #0F766E!important;font-size:9.5px!important}
-
-.row-3{display:grid!important;grid-template-columns:1fr 1fr 1fr!important;gap:4px!important}
-.row-3 .group{width:100%!important;min-height:58px!important;display:flex!important;flex-direction:column!important;justify-content:center!important}
-.row-3 .group label{font-size:7px!important;margin-bottom:2px!important}
-.row-3 .group select, .row-3 .group input{font-size:10px!important;padding:6px 4px!important}
-.highlight-value{background:var(--hero)!important;border-color:var(--hero)!important}
-.highlight-value label{color:#fff!important}
-.highlight-value input{background:#fff!important;text-align:center!important;font-weight:900!important;font-size:14px!important}
 
 </style>
 </head>
@@ -216,52 +213,51 @@ td{padding:7px 3px;border-bottom:1px solid var(--bg-soft);text-align:center;font
 <button class="card-ttab" id="ct-amanat" onclick="switchCardTab('amanat')">أمانات</button>
 </div>
 <div id="form-expense">
-  <div class="row row-3">
+  <div class="row-3">
     <div class="group"><label>محفظة</label><select id="a-wallet"></select></div>
-    <div class="group highlight-value"><label>قيمة</label><input id="a-amount" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="0" onfocus="this.select()" autofocus></div>
+    <div class="group" style="background:var(--hero);border-color:var(--hero)"><label style="color:#fff">قيمة</label><input id="a-amount" type="number" placeholder="0" onfocus="this.select()"></div>
     <div class="group"><label>بند</label><select id="a-item" onchange="clearAmountOnBandChange()"></select></div>
   </div>
-  <div class="row row-3">
+  <div class="row-3">
     <div class="group"><label>تاريخ</label><input id="a-date" type="date"></div>
-    <div class="group"><label>ملاحظات</label><input id="a-note" placeholder="اختياري"></div>
-    <div class="group"><label>وسائط</label><select id="a-media-type" onchange="handleMediaType(this)"><option value="">بدون</option><option value="image">🖼️ صورة</option><option value="camera">📷 كاميرا</option><option value="voice">🎙️ مسجل صوت</option></select><input type="file" id="mediaFile" accept="image/*" style="display:none" onchange="handleMedia(this)"></div>
+    <div class="group"><label>ملاحظة</label><input id="a-note" placeholder="..."></div>
+    <div class="group"><label>وسائط 📎</label><input type="file" id="a-attach" accept="image/*,video/*" style="font-size:8px;padding:4px"></div>
   </div>
-  <div class="row row-3">
-    <div class="group toggle-row" style="grid-column: span 3;"><div style="display:flex;align-items:center;gap:6px"><label>الرصيد</label><span id="a-exclude-lbl" class="switch-label on">يؤثر على الرصيد</span></div><label class="switch"><input id="a-exclude-chk" type="checkbox" onchange="toggleExclude()"><span class="slider"></span></label></div>
-  </div>
-  <div id="mediaPreview" style="display:none;margin-top:4px;font-size:8px"></div>
+  <div class="group toggle-row" style="background:var(--card);margin-top:6px"><div style="display:flex;align-items:center;gap:6px"><label>الرصيد</label><span id="a-exclude-lbl" class="switch-label on">يؤثر على الرصيد</span></div><label class="switch"><input id="a-exclude-chk" type="checkbox" onchange="toggleExclude()"><span class="slider"></span></label></div>
 </div>
 <div id="form-debt" style="display:none">
-  <div class="row row-3">
+  <div class="row-3">
     <div class="group"><label>محفظة</label><select id="a-wallet-debt"></select></div>
-    <div class="group highlight-value"><label>قيمة</label><input id="a-amount-debt" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="0" onfocus="this.select()"></div>
-    <div class="group"><label>النوع</label><select id="a-direction"><option value="عليا">عليا</option><option value="ليا">ليا</option></select></div>
+    <div class="group" style="background:var(--hero);border-color:var(--hero)"><label style="color:#fff">قيمة</label><input id="a-amount-debt" type="number" placeholder="0" onfocus="this.select()"></div>
+    <div class="group"><label>نوع</label><select id="a-status"><option value="due">مستحق</option><option value="def">آجل</option></select></div>
   </div>
-  <div class="row row-3">
+  <div class="row-3">
+    <div class="group"><label>عليا/ليا</label><select id="a-direction"><option value="عليا">عليا</option><option value="ليا">ليا</option></select></div>
     <div class="group"><label>الشخص</label><select id="a-person-debt" onchange="clearAmountOnBandChange()"></select></div>
-    <div class="group"><label>حالة</label><select id="a-status"><option value="due">مستحق</option><option value="def">مؤجل</option></select></div>
-    <div class="group"><label>تاريخ السحب</label><input id="a-date-debt" type="date"></div>
+    <div class="group"><label>ملاحظة</label><input id="a-note-debt" placeholder="..."></div>
   </div>
-  <div class="row row-3">
-    <div class="group"><label>ملاحظات</label><input id="a-note-debt" placeholder="اختياري"></div>
-    <div class="group"><label>وسائط</label><select class="media-select" onchange="handleMediaType(this)"><option value="">بدون</option><option value="image">🖼️ صورة</option><option value="camera">📷 كاميرا</option><option value="voice">🎙️ مسجل صوت</option></select></div>
-    <div class="group toggle-row"><div style="display:flex;align-items:center;gap:4px"><label>الرصيد</label><span id="a-exclude-lbl-debt" class="switch-label on" style="font-size:7px">يؤثر</span></div><label class="switch"><input id="a-exclude-chk-debt" type="checkbox" onchange="toggleExclude()"><span class="slider"></span></label></div>
+  <div class="row-3">
+    <div class="group"><label>وسائط 📎</label><input type="file" id="a-attach-debt" accept="image/*,video/*" style="font-size:8px;padding:4px"></div>
+    <div class="group"><label>تاريخ الأخذ</label><input id="a-date" type="date"></div>
+    <div class="group"><label>تاريخ السداد</label><input id="a-date-repay" type="date"></div>
   </div>
+  <div class="group toggle-row" style="background:var(--card);margin-top:6px"><div style="display:flex;align-items:center;gap:6px"><label>الرصيد</label><span id="a-exclude-lbl-debt" class="switch-label on">يؤثر على الرصيد</span></div><label class="switch"><input id="a-exclude-chk-debt" type="checkbox" onchange="toggleExclude()"><span class="slider"></span></label></div>
 </div>
 <div id="form-amanat" style="display:none">
-  <div class="row row-3">
+  <div class="row-3">
     <div class="group"><label>محفظة</label><select id="a-wallet-ama"><option>الأمانات</option></select></div>
-    <div class="group highlight-value"><label>قيمة</label><input id="a-amount-ama" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="0" onfocus="this.select()"></div>
-    <div class="group"><label>النوع</label><select id="a-amanat-type"><option value="إيداع">إيداع ➕</option><option value="سحب">سحب ➖</option></select></div>
-  </div>
-  <div class="row row-3">
+    <div class="group" style="background:var(--hero);border-color:var(--hero)"><label style="color:#fff">قيمة</label><input id="a-amount-ama" type="number" placeholder="0" onfocus="this.select()"></div>
     <div class="group"><label>الشخص</label><select id="a-person-ama" onchange="clearAmountOnBandChange()"></select></div>
-    <div class="group"><label>التاريخ</label><input id="a-date-ama" type="date"></div>
-    <div class="group"><label>وسائط</label><select class="media-select" onchange="handleMediaType(this)"><option value="">بدون</option><option value="image">🖼️ صورة</option><option value="camera">📷 كاميرا</option><option value="voice">🎙️ مسجل صوت</option></select></div>
   </div>
-  <div class="row row-3">
-    <div class="group"><label>ملاحظات</label><input id="a-note-ama" placeholder="اختياري"></div>
-    <div class="group toggle-row" style="grid-column: span 2;"><div style="display:flex;align-items:center;gap:6px"><label>الرصيد</label><span id="a-exclude-lbl-ama" class="switch-label on">يؤثر على الرصيد</span></div><label class="switch"><input id="a-exclude-chk-ama" type="checkbox" onchange="toggleExclude()"><span class="slider"></span></label></div>
+  <div class="row-3">
+    <div class="group"><label>سحب/إيداع</label><select id="a-amanat-type"><option value="ايداع">إيداع</option><option value="سحب">سحب</option></select></div>
+    <div class="group"><label>تاريخ</label><input id="a-date-ama" type="date"></div>
+    <div class="group"><label>ملاحظة</label><input id="a-note-ama" placeholder="..."></div>
+  </div>
+  <div class="row-3">
+    <div class="group"><label>وسائط 📎</label><input type="file" id="a-attach-ama" accept="image/*,video/*" style="font-size:8px;padding:4px"></div>
+    <div class="group" style="opacity:0;pointer-events:none"><label>ـ</label><input disabled></div>
+    <div class="group" style="opacity:0;pointer-events:none"><label>ـ</label><input disabled></div>
   </div>
 </div>
 <div class="card-actions">
@@ -380,12 +376,16 @@ allMonth.filter(t=>t.type==='debt').forEach(t=>{
 if(t.subType==='debt_due'||t.status==='due'){if(!t.excludeFromBalance){if(t.direction==='عليا')o+=Number(t.amount);else l+=Number(t.amount)}}
 else{if(t.direction==='عليا')od+=Number(t.amount);else ld+=Number(t.amount)}
 });
-el.innerHTML=`<div class="kpi-grid-5">
-<div class="stat neg"><small>عليا (مستحق)</small><b>${o.toLocaleString()}</b></div>
-<div class="stat pos"><small>ليا (مستحق)</small><b>${l.toLocaleString()}</b></div>
-<div class="stat neu"><small>صافي المستحق</small><b>${(l-o).toLocaleString()}</b></div>
-<div class="stat neu"><small>الصافي العام</small><b>${(l-o+(isActive?(ld-od):0)).toLocaleString()}</b></div>
-<div class="stat def ${isActive?'active':'inactive'}" onclick="toggleDeferredInclude()"><span style="font-size:5px;background:${isActive?'#dcfce7':'#fee2e2'};color:${isActive?'#16a34a':'#ef4444'};padding:1px 4px;border-radius:10px">${isActive?'✅ مفعلة':'❌ مخفية'}</span><small>مؤجل</small><b>${(ld-od).toLocaleString()}</b></div>
+const safiDue = l - o;
+const safiDef = ld - od;
+el.innerHTML=`
+<div style="display:flex;gap:4px;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;scrollbar-width:none">
+  <div class="stat neg" style="min-width:88px"><small>عليا مستحق</small><b>${o.toLocaleString()}</b></div>
+  <div class="stat pos" style="min-width:88px"><small>ليا مستحق</small><b>${l.toLocaleString()}</b></div>
+  <div class="stat neu" style="min-width:88px;border-color:var(--hero)"><small>صافي المستحق</small><b>${safiDue.toLocaleString()}</b></div>
+  <div class="stat neg" style="min-width:88px"><small>عليا مؤجل</small><b>${od.toLocaleString()}</b></div>
+  <div class="stat pos" style="min-width:88px"><small>ليا مؤجل</small><b>${ld.toLocaleString()}</b></div>
+  <div class="stat neu" style="min-width:88px"><small>صافي المؤجل</small><b>${safiDef.toLocaleString()}</b></div>
 </div>`;
 }else{el.innerHTML=top5}
 });
@@ -454,4 +454,48 @@ function renderTotal(){
     if(sec.isWallet){
       let walletNames=wallets.filter(w=>w!=='الأمانات');
       if(q) walletNames=walletNames.filter(n=>n.includes(q));
-      const monthFiltered=transactions.filte
+      const monthFiltered=transactions.filter(t=>t.date&&t.date.startsWith(curYM)&&walletNames.includes(t.wallet));
+      const monthLabel=`${curYM.slice(5,7)}-${curYM.slice(0,4)}`;
+      const monthSum=monthFiltered.reduce((a,b)=>a+(Number(b.amount)||0),0);
+      html+=`<div class="total-header"><span></span><span style="font-size:12px;font-weight:900">${monthSum.toLocaleString()}</span><b>${sec.title} (${monthLabel})</b></div>`;
+      if(!walletNames.length){ html+=`<div style="padding:10px;text-align:center;color:var(--text-soft);background:var(--card);border:1px solid var(--card-border);border-radius:8px;margin-bottom:10px">فاضي</div>`; return; }
+      html+=`<div class="tsec total-sec"><div class="twrap"><table><thead><tr><th style="min-width:80px">بند</th>${months.map(m=>`<th>${m}</th>`).join('')}<th>إجمالي</th></tr></thead><tbody>`;
+      walletNames.forEach(wName=>{
+        const items=transactions.filter(t=>t.wallet===wName);
+        const perMonth=Array(12).fill(0);
+        items.forEach(t=>{const d=new Date(t.date); if(!isNaN(d)) perMonth[d.getMonth()]+=(Number(t.amount)||0);});
+        const total=perMonth.reduce((a,c)=>a+c,0);
+        html+=`<tr><td style="font-weight:900">${wName}</td>${perMonth.map(v=>`<td>${v?v.toLocaleString():'-'}</td>`).join('')}<td style="font-weight:900;color:var(--hero)">${total.toLocaleString()}</td></tr>`;
+      });
+      html+=`</tbody></table></div></div>`;
+      return;
+    }
+    // For all other sections, build bands from masterBands + transactions
+    let bands=masterBands.filter(b=>b.section===sec.key);
+    const existNames=new Set(bands.map(b=>b.name));
+    // Auto-add from transactions
+    transactions.filter(sec.filter).forEach(t=>{
+      const nm=(t.person||t.item||'').trim();
+      if(nm && !existNames.has(nm)){
+        masterBands.push({id:Date.now()+Math.random()*1000,name:nm,section:sec.key});
+        existNames.add(nm);
+        bands.push({name:nm,section:sec.key});
+      }
+    });
+    if(q) bands=bands.filter(b=>b.name.includes(q));
+    let list=transactions.filter(sec.filter);
+    const monthFiltered=list.filter(t=>t.date&&t.date.startsWith(curYM));
+    const monthLabel=`${curYM.slice(5,7)}-${curYM.slice(0,4)}`;
+    const monthSum=monthFiltered.reduce((a,b)=>a+(Number(b.amount)||0),0);
+    html+=`<div class="total-header"><button class="add-row-btn" onclick="addNewRow('${sec.key}')">+ بند</button><span style="font-size:12px;font-weight:900">${monthSum.toLocaleString()}</span><b>${sec.title} (${monthLabel})</b></div>`;
+    if(!bands.length){
+      // Still show empty table structure for the 3 requested tables so they are visible
+      html+=`<div class="tsec total-sec"><div class="twrap"><table><thead><tr><th style="min-width:80px">بند</th>${months.map(m=>`<th>${m}</th>`).join('')}<th>إجمالي</th></tr></thead><tbody><tr><td colspan="${months.length+2}" style="padding:10px;color:var(--text-soft)">فاضي - دوس + بند</td></tr></tbody></table></div></div>`;
+      return;
+    }
+    html+=`<div class="tsec total-sec"><div class="twrap"><table><thead><tr><th style="min-width:80px">بند</th>${months.map(m=>`<th>${m}</th>`).join('')}<th>إجمالي</th></tr></thead><tbody>`;
+    bands.forEach(b=>{
+      const band=b.name;
+      const items=list.filter(t=> (t.item===band || t.person===band) );
+      const perMonth=Array(12).fill(0);
+      items.forEach(t=>{const d=new Date(t.dat
